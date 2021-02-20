@@ -1,0 +1,4 @@
+.idea/*
+target/*
+oozie/target/*
+pig/target/*

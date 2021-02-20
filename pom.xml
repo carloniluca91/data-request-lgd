@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.luca.lgd</groupId>
+    <artifactId>data-request-lgd</artifactId>
+    <version>0.1.0</version>
+    <description>DataRequestLGD</description>
+    <packaging>pom</packaging>
+    <organization>
+        <name>it.luca</name>
+    </organization>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <cdh.version>cdh5.13.0</cdh.version>
+        <pig.version>0.12.0-${cdh.version}</pig.version>
+        <oozie.version>4.1.0-${cdh.version}</oozie.version>
+        <lombok.version>1.18.10</lombok.version>
+    </properties>
+
+    <modules>
+        <module>oozie</module>
+        <module>pig</module>
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>
