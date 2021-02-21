@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum JobId {
+public enum WorkflowJobId {
 
     CICLILAV_STEP1("CICLILAV_STEP1");
 
