@@ -20,5 +20,26 @@
             <artifactId>oozie-client</artifactId>
             <version>${oozie.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-auth -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-auth</artifactId>
+            <version>${hadoop.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-configuration/commons-configuration -->
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>${commons.configuration.version}</version>
+        </dependency>
+
     </dependencies>
 </project>
