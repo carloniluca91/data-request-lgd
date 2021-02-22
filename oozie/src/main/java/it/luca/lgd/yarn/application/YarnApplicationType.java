@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ApplicationType {
+public enum YarnApplicationType {
 
     MAPREDUCE("MAPREDUCE");
 

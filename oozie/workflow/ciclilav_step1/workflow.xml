@@ -8,6 +8,15 @@
         <pig>
             <job-tracker>${jobTracker}</job-tracker>
             <name-node>${nameNode}</name-node>
+            <prepare>
+                <delete path="${ciclilavStep1_output}"/>
+            </prepare>
+            <configuration>
+                <property>
+                    <name>mapred.queue.name</name>
+                    <value>${yarnQueue}</value>
+                </property>
+            </configuration>
             <script>${pigScript}</script>
             <argument>-param</argument>
             <argument>ciclilavStep1_input=${ciclilavStep1_input}</argument>

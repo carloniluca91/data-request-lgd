@@ -29,6 +29,7 @@
         <module>pig</module>
     </modules>
 
+    <!-- Cloudera Repository -->
     <repositories>
         <repository>
             <id>cloudera</id>
