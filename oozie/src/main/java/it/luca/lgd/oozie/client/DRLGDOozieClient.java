@@ -60,22 +60,27 @@ public class DRLGDOozieClient extends OozieClient {
         jobProperties.setProperty(WorkflowJobParameter.WORKFLOW_NAME, workflobJobName);
         jobProperties.setParameters(parameterMap);
 
-        WorkflowJobParameter oozieWfHDFSPath;
-        WorkflowJobParameter pigScriptHDFSPath;
+        WorkflowJobParameter oozieWfPath, pigScriptPath;
         switch (workflowJobId) {
             case CICLILAV_STEP1:
 
-                oozieWfHDFSPath = WorkflowJobParameter.CICLILAV_STEP1_WORKFLOW_PATH;
-                pigScriptHDFSPath = WorkflowJobParameter.CICLILAV_STEP1_PIG_SCRIPT_PATH;
+                oozieWfPath = WorkflowJobParameter.CICLILAV_STEP1_WORKFLOW;
+                pigScriptPath = WorkflowJobParameter.CICLILAV_STEP1_PIG;
+                break;
+
+            case FPASPERD:
+
+                oozieWfPath = WorkflowJobParameter.FPASPERD_WORKFLOW;
+                pigScriptPath = WorkflowJobParameter.FPASPERD_WORKFLOW;
                 break;
 
             default:
-                log.warn("Undefined workflow jobId ({}). Thus, nothing will be executed", workflowJobId.getId());
+                log.warn("Undefined workflow jobId '{}'. Thus, nothing will be executed", workflowJobId.getId());
                 return;
         }
 
-        jobProperties.setProperty(OozieClient.APP_PATH, jobConfiguration.getString(oozieWfHDFSPath));
-        jobProperties.setProperty(WorkflowJobParameter.PIG_SCRIPT, jobConfiguration.getString(pigScriptHDFSPath));
+        jobProperties.setProperty(OozieClient.APP_PATH, jobConfiguration.getString(oozieWfPath));
+        jobProperties.setProperty(WorkflowJobParameter.PIG_SCRIPT_PATH, jobConfiguration.getString(pigScriptPath));
         log.info("Provided properties for workflow job '{}': {}", workflowJobId.getId(), jobProperties.getPropertiesReport());
 
         //String userName = jobConfiguration.getString(OozieClient.USER_NAME);

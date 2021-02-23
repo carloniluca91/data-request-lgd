@@ -1,8 +1,11 @@
 package it.luca.lgd.oozie.utils;
 
+import it.luca.lgd.oozie.exception.IllegalWorkflowParameterException;
 import it.luca.lgd.oozie.job.WorkflowJobParameter;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+
+import java.util.Optional;
 
 public class JobConfiguration extends PropertiesConfiguration {
 
@@ -10,7 +13,8 @@ public class JobConfiguration extends PropertiesConfiguration {
         super(fileName);
     }
 
-    public String getString(WorkflowJobParameter workflowJobParameter) {
-        return super.getString(workflowJobParameter.getName());
+    public String getString(WorkflowJobParameter workflowJobParameter) throws IllegalWorkflowParameterException {
+        return Optional.ofNullable(super.getString(workflowJobParameter.getName()))
+                .orElseThrow(() -> new IllegalWorkflowParameterException(workflowJobParameter));
     }
 }
