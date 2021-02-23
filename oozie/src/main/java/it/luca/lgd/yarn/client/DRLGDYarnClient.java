@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import it.luca.lgd.yarn.application.ApplicationSearchCriteria;
 import it.luca.lgd.yarn.report.ApplicationReportSerializer;
-import it.luca.lgd.yarn.utils.TimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ApplicationReport;
@@ -14,7 +13,10 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -55,6 +57,7 @@ public class DRLGDYarnClient {
                         applicationReport.getQueue().equals(applicationSearchCriteria.getQueue()) &&
                         applicationStates.contains(applicationReport.getYarnApplicationState());
 
+        // Get applicationId of first application matching provided criteria, ordered by startTime
         Optional<ApplicationId> optionalApplicationId = yarnClient.getApplications()
                 .stream().filter(predicate)
                 .min(Comparator.comparing(ApplicationReport::getStartTime))
@@ -76,9 +79,7 @@ public class DRLGDYarnClient {
 
             ApplicationReport applicationReport = yarnClient.getApplicationReport(applicationId);
             String applicationReportJson = objectMapper.writeValueAsString(applicationReport);
-            log.info("Report for application '{}' at {}:\n\n{}\n", applicationReport.getName(),
-                    TimeUtils.epochMillsToZonedTimestamp(System.currentTimeMillis(), TimeUtils.romeZoneId()),
-                    applicationReportJson);
+            log.info("Report for application '{}':\n\n{}\n", applicationReport.getName(), applicationReportJson);
         }
     }
 }

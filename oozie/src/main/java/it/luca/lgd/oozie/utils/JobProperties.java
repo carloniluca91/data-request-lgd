@@ -20,14 +20,16 @@ public class JobProperties extends Properties {
         return jobProperties;
     }
 
-    public void setParameter(WorkflowJobParameter workflowJobParameter, Map<WorkflowJobParameter, String> parameterMap) {
-
-        super.setProperty(workflowJobParameter.getName(), parameterMap.get(workflowJobParameter));
+    public void setParameters(Map<WorkflowJobParameter, String> parameterMap) {
+        parameterMap.forEach(((workflowJobParameter, s) -> super.setProperty(workflowJobParameter.getName(), s)));
     }
 
     public void setProperty(WorkflowJobParameter workflowJobParameter, String value) {
+        this.setProperty(workflowJobParameter, value);
+    }
 
-        super.setProperty(workflowJobParameter.getName(), value);
+    public void setProperty(WorkflowJobParameter workflowJobParameter, PropertiesConfiguration propertiesConfiguration) {
+        this.setProperty(workflowJobParameter.getName(), propertiesConfiguration.getString(workflowJobParameter.getName()));
     }
 
     public String getPropertiesReport() {
