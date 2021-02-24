@@ -21,8 +21,6 @@ import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("BusyWait")
 @Slf4j
@@ -56,22 +54,20 @@ public class DRLGDOozieClient extends OozieClient {
         JobProperties jobProperties = JobProperties.copyOf(jobConfiguration);
 
         // Set specific workflow job properties (name, workflow path, pig script path) and parameters
-        String workflobJobName = String.format("DataRequestLGD - %s Wf", workflowJobId.getId());
+        String workflobJobName = String.format("DataRequestLGD - %s", workflowJobId.getId());
         jobProperties.setProperty(WorkflowJobParameter.WORKFLOW_NAME, workflobJobName);
         jobProperties.setParameters(parameterMap);
 
         WorkflowJobParameter oozieWfPath, pigScriptPath;
         switch (workflowJobId) {
             case CICLILAV_STEP1:
-
                 oozieWfPath = WorkflowJobParameter.CICLILAV_STEP1_WORKFLOW;
                 pigScriptPath = WorkflowJobParameter.CICLILAV_STEP1_PIG;
                 break;
 
             case FPASPERD:
-
                 oozieWfPath = WorkflowJobParameter.FPASPERD_WORKFLOW;
-                pigScriptPath = WorkflowJobParameter.FPASPERD_WORKFLOW;
+                pigScriptPath = WorkflowJobParameter.FPASPERD_PIG;
                 break;
 
             default:
@@ -91,7 +87,7 @@ public class DRLGDOozieClient extends OozieClient {
         // Submit and start the workflow job
         String oozieWorkflowJobId = super.run(jobProperties);
         log.info("Workflow job '{}' ({}) submitted", workflowJobId.getId(), oozieWorkflowJobId);
-        this.monitorWorkflowJobExecution(oozieWorkflowJobId);
+        monitorExecution(oozieWorkflowJobId);
     }
 
     private void monitorExecution(String oozieWorkflowJobId,
@@ -121,60 +117,22 @@ public class DRLGDOozieClient extends OozieClient {
         drlgdYarnClient.pollApplicationReport(pigApplicationId);
     }
 
-    private void monitorWorkflowJobExecution(String oozieWorkflowJobId) throws OozieClientException, JsonProcessingException, InterruptedException {
+    private void monitorExecution(String oozieWorkflowJobId) throws OozieClientException, JsonProcessingException, InterruptedException {
 
         // Wait until the workflow job finishes printing the status every N seconds
         int POLLING_SECONDS = 5;
-        List<WorkflowAction.Status> completeStatuses = Arrays.asList(WorkflowAction.Status.FAILED,
-                WorkflowAction.Status.KILLED,
-                WorkflowAction.Status.DONE);
-
-        Predicate<WorkflowAction> isFinished = workflowAction -> completeStatuses.contains(workflowAction.getStatus());
-        Predicate<WorkflowAction> isRunning = workflowAction -> workflowAction.getStatus() == WorkflowAction.Status.RUNNING;
 
         // While workflow job is running
         while (super.getJobInfo(oozieWorkflowJobId).getStatus() == WorkflowJob.Status.RUNNING) {
 
-            log.info("Workflow job '{}' is running. Status information(s) will be polled every {} second(s)", oozieWorkflowJobId, POLLING_SECONDS);
-            List<WorkflowAction> workflowActions = super.getJobInfo(oozieWorkflowJobId).getActions();
-            List<WorkflowAction> completedActions = workflowActions.stream()
-                    .filter(isFinished)
-                    .collect(Collectors.toList());
-
-            // Log completed workflow actions (if any)
-            if (!completedActions.isEmpty()) {
-                log.info("Completed {} on workflow job '{}': [{}]",
-                        WorkflowAction.class.getSimpleName(),
-                        oozieWorkflowJobId,
-                        completedActions.stream()
-                                .sorted(Comparator.comparing(WorkflowAction::getStartTime))
-                                .map(workflowAction -> String.format("'%s'", workflowAction.getName()))
-                                .collect(Collectors.joining(", ")));
-            }
-
-            // Log running workflow actions (if any)
-            List<WorkflowAction> runningActionList = workflowActions.stream()
-                    .filter(isRunning)
-                    .sorted(Comparator.comparing(WorkflowAction::getStartTime))
-                    .collect(Collectors.toList());
-
-            if (runningActionList.isEmpty()) {
-                log.warn("Unable to detect any {} with status {}",
-                        WorkflowAction.class.getSimpleName(),
-                        WorkflowAction.Status.RUNNING.toString());
-            } else {
-                log.info("Report for {} '{}'",
-                        WorkflowAction.class.getSimpleName(),
-                        objectMapper.writeValueAsString(runningActionList.get(0)));
-            }
-
+            log.info("Workflow job '{}' is running. Polling information(s) on its execution every {} second(s)", oozieWorkflowJobId, POLLING_SECONDS);
             Thread.sleep(POLLING_SECONDS * 1000);
+            log.info("Workflow job report: {}", objectMapper.writeValueAsString(super.getJobInfo(oozieWorkflowJobId)));
         }
 
         // Final workflow job report
         WorkflowJob workflowJob =  super.getJobInfo(oozieWorkflowJobId);
         log.info("Final report for workflow job '{}':\n{}\n", oozieWorkflowJobId, objectMapper.writeValueAsString(workflowJob));
-
         if (workflowJob.getStatus() == WorkflowJob.Status.SUCCEEDED) {
             log.info("Successfully executed workflow job '{}'", oozieWorkflowJobId);
         } else {
