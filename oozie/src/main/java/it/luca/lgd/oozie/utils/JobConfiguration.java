@@ -13,7 +13,7 @@ public class JobConfiguration extends PropertiesConfiguration {
         super(fileName);
     }
 
-    public String getString(WorkflowJobParameter workflowJobParameter) throws IllegalWorkflowParameterException {
+    public String getParameter(WorkflowJobParameter workflowJobParameter) throws IllegalWorkflowParameterException {
         return Optional.ofNullable(super.getString(workflowJobParameter.getName()))
                 .orElseThrow(() -> new IllegalWorkflowParameterException(workflowJobParameter));
     }

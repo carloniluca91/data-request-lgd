@@ -1,6 +1,5 @@
 package it.luca.lgd.oozie.utils;
 
-import it.luca.lgd.oozie.exception.IllegalWorkflowParameterException;
 import it.luca.lgd.oozie.job.WorkflowJobParameter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
@@ -25,19 +24,8 @@ public class JobProperties extends Properties {
         parameterMap.forEach(((workflowJobParameter, s) -> super.setProperty(workflowJobParameter.getName(), s)));
     }
 
-    public void setProperty(WorkflowJobParameter workflowJobParameter, String value) {
+    public void setParameter(WorkflowJobParameter workflowJobParameter, String value) {
         super.setProperty(workflowJobParameter.getName(), value);
-    }
-
-    public void setProperty(WorkflowJobParameter workflowJobParameter, PropertiesConfiguration propertiesConfiguration)
-            throws IllegalWorkflowParameterException {
-
-        String key = workflowJobParameter.getName();
-        if (propertiesConfiguration.containsKey(key)) {
-            super.setProperty(key, propertiesConfiguration.getString(key));
-        } else {
-            throw new IllegalWorkflowParameterException(workflowJobParameter);
-        }
     }
 
     public String getPropertiesReport() {
