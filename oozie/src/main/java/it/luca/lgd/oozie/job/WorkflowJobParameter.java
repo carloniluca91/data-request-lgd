@@ -2,6 +2,7 @@ package it.luca.lgd.oozie.job;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.oozie.client.OozieClient;
 
 @Getter
 @AllArgsConstructor
@@ -10,8 +11,9 @@ public enum WorkflowJobParameter {
     // COMMON PARAMETERS
     END_DATE("end_date"),
     PIG_SCRIPT_PATH("pigScript"),
-    WORKFLOW_NAME("workflowName"),
     START_DATE("start_date"),
+    WORKFLOW_NAME("workflowName"),
+    WORKFLOW_PATH(OozieClient.APP_PATH),
 
     // CICLILAV_STEP1
     CICLILAV_STEP1_WORKFLOW("ciclilavStep1_workflow"),

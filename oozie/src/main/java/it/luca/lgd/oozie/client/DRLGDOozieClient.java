@@ -45,8 +45,7 @@ public class DRLGDOozieClient extends OozieClient {
         jobProperties.setParameters(parameterMap);
 
         // ... and properties (workflow job name, workflow job HDFS path, pig script HDFS path)
-        String workflobJobName = String.format("DataRequestLGD - %s", workflowJobId.getId());
-        jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_NAME, workflobJobName);
+        jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_NAME, String.format("DataRequestLGD - %s", workflowJobId.getId()));
         WorkflowJobParameter oozieWfPath, pigScriptPath;
         switch (workflowJobId) {
             case CICLILAV_STEP1:
@@ -64,7 +63,7 @@ public class DRLGDOozieClient extends OozieClient {
                 return;
         }
 
-        jobProperties.setProperty(OozieClient.APP_PATH, jobConfiguration.getParameter(oozieWfPath));
+        jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_PATH, jobConfiguration.getParameter(oozieWfPath));
         jobProperties.setParameter(WorkflowJobParameter.PIG_SCRIPT_PATH, jobConfiguration.getParameter(pigScriptPath));
         log.info("Provided properties for workflow job '{}': {}", workflowJobId.getId(), jobProperties.getPropertiesReport());
 
@@ -78,9 +77,9 @@ public class DRLGDOozieClient extends OozieClient {
 
         // Wait until the workflow job finishes printing the status every N seconds
         int POLLING_SECONDS = 5;
+        log.info("Workflow job '{}' is running. Information(s) on its execution will be polled every {} second(s)", workflowJobId, POLLING_SECONDS);
         while (super.getJobInfo(workflowJobId).getStatus() == WorkflowJob.Status.RUNNING) {
 
-            log.info("Workflow job '{}' is running. Polling information(s) on its execution every {} second(s)", workflowJobId, POLLING_SECONDS);
             Thread.sleep(POLLING_SECONDS * 1000);
             log.info("Workflow job report: {}", objectMapper.writeValueAsString(super.getJobInfo(workflowJobId)));
         }
