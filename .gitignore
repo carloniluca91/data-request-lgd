@@ -2,3 +2,4 @@
 target/*
 oozie/target/*
 pig/target/*
+*.iml
