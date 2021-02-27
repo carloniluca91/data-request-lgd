@@ -23,15 +23,15 @@ public class DRLGDOozieClient extends OozieClient {
     private final JobConfiguration jobConfiguration = new JobConfiguration("job.properties");
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public DRLGDOozieClient(String url) throws ConfigurationException {
+    public DRLGDOozieClient(String oozierServerUrl) throws ConfigurationException {
 
-        super(url);
+        super(oozierServerUrl);
 
         // Initialize ObjectMapper
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addSerializer(WorkflowJob.class, new WorkflowJobJsonSerializer());
         objectMapper.registerModule(simpleModule);
-        log.info("Successfully connected to Oozie Url {}", url);
+        log.info("Successfully connected to Oozie Url {}", oozierServerUrl);
     }
 
     public void runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterMap) throws Exception {
