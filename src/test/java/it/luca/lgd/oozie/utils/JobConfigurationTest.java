@@ -4,7 +4,8 @@ import it.luca.lgd.oozie.exception.IllegalWorkflowParameterException;
 import it.luca.lgd.oozie.job.WorkflowJobParameter;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JobConfigurationTest {
 

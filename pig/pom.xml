@@ -4,16 +4,48 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>it.luca.lgd</groupId>
-        <artifactId>data-request-lgd</artifactId>
-        <version>0.1.0</version>
-    </parent>
-
+    <groupId>it.luca.lgd</groupId>
     <artifactId>pig</artifactId>
-    <version>${parent.version}</version>
+    <version>0.1.0</version>
+    <description>DatRequestLGD - Pig UDF to be used for batch processing</description>
+    <organization>
+        <name>it.luca</name>
+    </organization>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <lombok.version>1.18.10</lombok.version>
+        <cdh.version>cdh5.13.0</cdh.version>
+        <hadoop.version>2.6.0-${cdh.version}</hadoop.version>
+        <pig.version>0.12.0-${cdh.version}</pig.version>
+
+        <!-- Test properties -->
+        <junit.version>5.5.2</junit.version>
+        <mockito.version>3.3.3</mockito.version>
+    </properties>
+
+    <!-- Cloudera Repository -->
+    <repositories>
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+        </repository>
+    </repositories>
 
     <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.pig/pig -->
         <dependency>
             <groupId>org.apache.pig</groupId>
@@ -22,5 +54,20 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
