@@ -1,4 +1,4 @@
-package it.luca.lgd.model;
+package it.luca.lgd.model.jdbc;
 
 import it.luca.lgd.oozie.job.WorkflowJobType;
 import lombok.Builder;

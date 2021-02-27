@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.oozie.client.OozieClient;
 
-@Getter
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 @AllArgsConstructor
 public enum WorkflowJobParameter {
 
-    // COMMON PARAMETERS
+    // common parameters
     END_DATE("end_date"),
     PIG_SCRIPT_PATH("pigScript"),
     START_DATE("start_date"),
@@ -23,5 +26,17 @@ public enum WorkflowJobParameter {
     FPASPERD_WORKFLOW("fpasperd_workflow"),
     FPASPERD_PIG("fpasperd_pig");
 
+    @Getter
     private final String name;
+
+    private static final Map<String, WorkflowJobParameter> map = new HashMap<>();
+    static {
+        Arrays.stream(WorkflowJobParameter.values())
+                .forEach(workflowJobParameter ->
+                        map.put(workflowJobParameter.getName(), workflowJobParameter));
+    }
+
+    public static WorkflowJobParameter withName(String name) {
+        return map.get(name);
+    }
 }

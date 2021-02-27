@@ -34,7 +34,7 @@ public class DRLGDOozieClient extends OozieClient {
         log.info("Successfully connected to Oozie Url {}", oozierServerUrl);
     }
 
-    public void runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterMap) throws Exception {
+    public void runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterStringMap) throws Exception {
 
         log.info("Received a request for executing workflow jobId '{}'", workflowJobId.getId());
 
@@ -42,7 +42,7 @@ public class DRLGDOozieClient extends OozieClient {
         JobProperties jobProperties = JobProperties.copyOf(jobConfiguration);
 
         // Set specific workflow job parameters ...
-        jobProperties.setParameters(parameterMap);
+        jobProperties.setParameters(parameterStringMap);
 
         // ... and properties (workflow job name, workflow job HDFS path, pig script HDFS path)
         jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_NAME, String.format("DataRequestLGD - %s", workflowJobId.getId()));
