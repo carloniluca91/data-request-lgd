@@ -1,4 +1,4 @@
-package it.luca.lgd.oozie.utils;
+package it.luca.lgd.utils;
 
 import it.luca.lgd.oozie.job.WorkflowJobParameter;
 import org.apache.commons.configuration.PropertiesConfiguration;

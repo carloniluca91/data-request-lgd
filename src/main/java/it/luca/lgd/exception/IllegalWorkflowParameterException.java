@@ -1,4 +1,4 @@
-package it.luca.lgd.oozie.exception;
+package it.luca.lgd.exception;
 
 import it.luca.lgd.oozie.job.WorkflowJobParameter;
 

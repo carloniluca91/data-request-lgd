@@ -1,6 +1,6 @@
-package it.luca.lgd.oozie.utils;
+package it.luca.lgd.utils;
 
-import it.luca.lgd.oozie.exception.IllegalWorkflowParameterException;
+import it.luca.lgd.exception.IllegalWorkflowParameterException;
 import it.luca.lgd.oozie.job.WorkflowJobParameter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

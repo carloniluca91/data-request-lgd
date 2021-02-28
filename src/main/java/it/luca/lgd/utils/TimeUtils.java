@@ -18,12 +18,8 @@ public class TimeUtils {
 
     public static Boolean isBeforeOrEqual(String firstDate, String seconDate, String commonFormat) {
 
-        try {
-            return toLocalDate(firstDate, commonFormat)
-                    .compareTo(toLocalDate(seconDate, commonFormat)) <= 0;
-        } catch (Exception e) {
-            return false;
-        }
+        return toLocalDate(firstDate, commonFormat)
+                .compareTo(toLocalDate(seconDate, commonFormat)) <= 0;
     }
 
     public static String changeDateFormat(String date, String oldFormat, String newFormat) {
