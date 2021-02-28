@@ -1,6 +1,6 @@
 package it.luca.lgd.controller;
 
-import it.luca.lgd.model.jdbc.WorkflowJobRecord;
+import it.luca.lgd.model.jdbc.OozieJobRecord;
 import it.luca.lgd.model.parameters.CiclilavStep1Parameters;
 import it.luca.lgd.model.parameters.JobParameters;
 import it.luca.lgd.model.response.WorkflowJobResponse;
@@ -47,7 +47,7 @@ public class DRLGDController {
     }
 
     @GetMapping("/status")
-    public WorkflowJobRecord getJobStatus(@RequestParam("id") String workflowJobId) {
+    public OozieJobRecord getJobStatus(@RequestParam("id") String workflowJobId) {
 
         return drlgdService.monitorWorkflowJobExecution(workflowJobId);
     }

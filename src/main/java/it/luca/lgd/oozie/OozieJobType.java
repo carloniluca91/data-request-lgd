@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum WorkflowJobType {
+public enum OozieJobType {
 
-    WORKFLOW_JOB("WORKFLOW_JOB");
+    WORKFLOW("WORKFLOW");
 
     private final String type;
 }

@@ -1,7 +1,8 @@
 package it.luca.lgd.model.jdbc;
 
-import it.luca.lgd.oozie.WorkflowJobType;
-import lombok.*;
+import it.luca.lgd.oozie.OozieJobType;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
 
@@ -16,11 +17,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Entity
-@Table
 @Data
+@Entity
+@Table(schema = "oozie", name = "oozie_job")
 @NoArgsConstructor
-public class WorkflowJobRecord {
+public class OozieJobRecord {
 
     @Id private String jobLauncherId;
     private String jobType;
@@ -31,13 +32,13 @@ public class WorkflowJobRecord {
     private LocalDateTime jobStartTime;
     private LocalDate jobEndDate;
     private LocalDateTime jobEndTime;
-    private Long jobTotalActions;
-    private Long jobCompletedActions;
+    private int jobTotalActions;
+    private int jobCompletedActions;
     private String jobTrackingUrl;
     private LocalDateTime recordInsertTime;
     private LocalDateTime lastRecordUpdateTime;
 
-    public static WorkflowJobRecord fromWorkflowJob(WorkflowJob workflowJob) {
+    public static OozieJobRecord fromWorkflowJob(WorkflowJob workflowJob) {
 
         Function<java.util.Date, LocalDate> toLocalDate = date -> Optional.ofNullable(date)
                 .map(d -> d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
@@ -52,24 +53,24 @@ public class WorkflowJobRecord {
                 WorkflowAction.Status.KILLED,
                 WorkflowAction.Status.OK);
 
-        WorkflowJobRecord workflowJobRecord = new WorkflowJobRecord();
-        workflowJobRecord.setJobLauncherId(workflowJob.getId());
-        workflowJobRecord.setJobType(WorkflowJobType.WORKFLOW_JOB.getType());
-        workflowJobRecord.setJobName(workflowJob.getAppName());
-        workflowJobRecord.setJobUser(workflowJob.getUser());
-        workflowJobRecord.setJobStatus(workflowJob.getStatus().toString());
-        workflowJobRecord.setJobStartDate(toLocalDate.apply(workflowJob.getStartTime()));
-        workflowJobRecord.setJobStartTime(toLocalDateTime.apply(workflowJob.getStartTime()));
-        workflowJobRecord.setJobEndDate(toLocalDate.apply(workflowJob.getEndTime()));
-        workflowJobRecord.setJobEndTime(toLocalDateTime.apply(workflowJob.getEndTime()));
-        workflowJobRecord.setJobTotalActions((long) workflowJob.getActions().size());
-        workflowJobRecord.setJobCompletedActions(workflowJob.getActions().stream()
+        OozieJobRecord oozieJobRecord = new OozieJobRecord();
+        oozieJobRecord.setJobLauncherId(workflowJob.getId());
+        oozieJobRecord.setJobType(OozieJobType.WORKFLOW.getType());
+        oozieJobRecord.setJobName(workflowJob.getAppName());
+        oozieJobRecord.setJobUser(workflowJob.getUser());
+        oozieJobRecord.setJobStatus(workflowJob.getStatus().toString());
+        oozieJobRecord.setJobStartDate(toLocalDate.apply(workflowJob.getStartTime()));
+        oozieJobRecord.setJobStartTime(toLocalDateTime.apply(workflowJob.getStartTime()));
+        oozieJobRecord.setJobEndDate(toLocalDate.apply(workflowJob.getEndTime()));
+        oozieJobRecord.setJobEndTime(toLocalDateTime.apply(workflowJob.getEndTime()));
+        oozieJobRecord.setJobTotalActions(workflowJob.getActions().size());
+        oozieJobRecord.setJobCompletedActions((int) workflowJob.getActions().stream()
                 .filter(workflowAction -> completedStatuses.contains(workflowAction.getStatus()))
                 .count());
 
-        workflowJobRecord.setJobTrackingUrl(workflowJob.getConsoleUrl());
-        workflowJobRecord.setRecordInsertTime(LocalDateTime.now());
-        workflowJobRecord.setLastRecordUpdateTime(LocalDateTime.now());
-        return workflowJobRecord;
+        oozieJobRecord.setJobTrackingUrl(workflowJob.getConsoleUrl());
+        oozieJobRecord.setRecordInsertTime(LocalDateTime.now());
+        oozieJobRecord.setLastRecordUpdateTime(LocalDateTime.now());
+        return oozieJobRecord;
     }
 }

@@ -1,8 +1,6 @@
 package it.luca.lgd.dao;
 
-import it.luca.lgd.model.jdbc.WorkflowJobRecord;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.oozie.client.WorkflowJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;

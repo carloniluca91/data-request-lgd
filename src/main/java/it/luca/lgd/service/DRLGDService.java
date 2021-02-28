@@ -1,7 +1,7 @@
 package it.luca.lgd.service;
 
 import it.luca.lgd.dao.WorkflowJobDao;
-import it.luca.lgd.model.jdbc.WorkflowJobRecord;
+import it.luca.lgd.model.jdbc.OozieJobRecord;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.JobConfiguration;
@@ -70,7 +70,7 @@ public class DRLGDService {
         }
     }
 
-    public WorkflowJobRecord monitorWorkflowJobExecution(String workflowJobId) {
+    public OozieJobRecord monitorWorkflowJobExecution(String workflowJobId) {
 
         try {
             OozieClient oozieClient = startOozieClient();
@@ -80,9 +80,9 @@ public class DRLGDService {
                 return workflowJobDao.findById(workflowJobId).get();
             } else {
                 log.warn("Workflow '{}' does not exist yet", workflowJobId);
-                WorkflowJobRecord workflowJobRecord = WorkflowJobRecord.fromWorkflowJob(oozieClient.getJobInfo(workflowJobId));
-                workflowJobDao.save(workflowJobRecord);
-                return workflowJobRecord;
+                OozieJobRecord oozieJobRecord = OozieJobRecord.fromWorkflowJob(oozieClient.getJobInfo(workflowJobId));
+                workflowJobDao.save(oozieJobRecord);
+                return oozieJobRecord;
             }
 
         } catch (Exception e) {
