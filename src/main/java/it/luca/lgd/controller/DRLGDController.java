@@ -1,9 +1,9 @@
 package it.luca.lgd.controller;
 
-import it.luca.lgd.model.input.AbstractJobInput;
-import it.luca.lgd.model.input.CiclilavStep1Input;
+import it.luca.lgd.model.input.CiclilavStep1Parameters;
+import it.luca.lgd.model.input.JobParameters;
+import it.luca.lgd.model.response.WorkflowJobResponse;
 import it.luca.lgd.oozie.job.WorkflowJobId;
-import it.luca.lgd.oozie.job.WorkflowJobParameter;
 import it.luca.lgd.service.DRLGDService;
 import it.luca.lgd.utils.Tuple2;
 import lombok.AllArgsConstructor;
@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 @Slf4j
 @RestController
@@ -28,36 +25,27 @@ public class DRLGDController {
     @Autowired
     private final DRLGDService drlgdService;
 
-    private <T extends AbstractJobInput> String runWorkflowJob(WorkflowJobId workflowJobId,
-                                                               T abstractJobInput,
-                                                               Function<T, Map<WorkflowJobParameter, String>> jobInputMapFunction) {
+    private <T extends JobParameters> WorkflowJobResponse<T> runWorkflowJob(T jobParameters) {
 
-        Tuple2<Boolean, String> tuple2 = abstractJobInput.isValid();
-        if (tuple2.getT1()) {
+        Tuple2<Boolean, String> inputValidation = jobParameters.areValid();
+        WorkflowJobId workflowJobId = jobParameters.getWorkflowJobId();
+        if (inputValidation.getT1()) {
 
             // If provided input matches given criterium, run workflow job
-            log.info("Successsully validated input for workflow job '{}'. Parameters: {}", workflowJobId.getId(), abstractJobInput.toString());
-            Map<WorkflowJobParameter, String> parameterStringMap = jobInputMapFunction.apply(abstractJobInput);
-            //return drlgdService.runWorkflowJob(workflowJobId, parameterStringMap);
-            return "Vamos!";
+            log.info("Successsully validated input for workflow job '{}'. Parameters: {}", workflowJobId.getId(), jobParameters.toString());
+            return WorkflowJobResponse.fromTuple2(jobParameters, drlgdService.runWorkflowJob(workflowJobId, jobParameters.toMap()));
         } else {
 
             // Otherwise, report the issue
-            String invalidInputMessage = String.format("Invalid input for workflow job '%s'. Rationale: %s", workflowJobId.getId(), tuple2.getT2());
-            log.warn(invalidInputMessage);
-            return invalidInputMessage;
+            String errorMsg = String.format("Invalid input for workflow job '%s'. Rationale: %s", workflowJobId.getId(), inputValidation.getT2());
+            log.warn(errorMsg);
+            return WorkflowJobResponse.fromTuple2(jobParameters, inputValidation);
         }
     }
 
     @PostMapping("/ciclilavstep1")
-    public String runCiclilavStep1(@Valid @RequestBody CiclilavStep1Input ciclilavStep1Input) {
+    public WorkflowJobResponse<CiclilavStep1Parameters> runCiclilavStep1(@Valid @RequestBody CiclilavStep1Parameters ciclilavStep1Parameters) {
 
-        Function<CiclilavStep1Input, Map<WorkflowJobParameter, String>> inputMapFunction = input ->
-                new HashMap<WorkflowJobParameter, String>(){{
-                    put(WorkflowJobParameter.START_DATE, input.getStartDate());
-                    put(WorkflowJobParameter.END_DATE, input.getEndDate());
-        }};
-
-        return runWorkflowJob(WorkflowJobId.CICLILAV_STEP1, ciclilavStep1Input, inputMapFunction);
+        return runWorkflowJob(ciclilavStep1Parameters);
     }
 }

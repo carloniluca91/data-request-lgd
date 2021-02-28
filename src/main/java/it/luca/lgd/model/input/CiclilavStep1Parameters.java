@@ -7,14 +7,16 @@ import it.luca.lgd.utils.Tuple2;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
-public class CiclilavStep1Input extends AbstractJobInput {
+public class CiclilavStep1Parameters extends JobParameters {
 
     @NotBlank private final String startDate;
     @NotBlank private final String endDate;
 
-    public CiclilavStep1Input(String startDate, String endDate) {
+    public CiclilavStep1Parameters(String startDate, String endDate) {
 
         super(WorkflowJobId.CICLILAV_STEP1);
         this.startDate = startDate;
@@ -22,7 +24,7 @@ public class CiclilavStep1Input extends AbstractJobInput {
     }
 
     @Override
-    public Tuple2<Boolean, String> isValid() {
+    public Tuple2<Boolean, String> areValid() {
 
         String defaultFormat = "yyyy-MM-dd";
         return TimeUtils.isValidDate(startDate, defaultFormat) ?
@@ -41,6 +43,15 @@ public class CiclilavStep1Input extends AbstractJobInput {
                 // Invalid startDate
                 new Tuple2<>(false, String.format("Invalid %s (%s). It should follow format '%s'",
                         WorkflowJobParameter.START_DATE.getName(), startDate, defaultFormat));
+    }
+
+    @Override
+    public Map<WorkflowJobParameter, String> toMap() {
+
+        return new HashMap<WorkflowJobParameter, String>() {{
+            put(WorkflowJobParameter.START_DATE, startDate);
+            put(WorkflowJobParameter.END_DATE, endDate);
+        }};
     }
 
     @Override

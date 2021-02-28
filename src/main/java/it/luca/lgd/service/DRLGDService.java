@@ -4,6 +4,7 @@ import it.luca.lgd.oozie.job.WorkflowJobId;
 import it.luca.lgd.oozie.job.WorkflowJobParameter;
 import it.luca.lgd.utils.JobConfiguration;
 import it.luca.lgd.utils.JobProperties;
+import it.luca.lgd.utils.Tuple2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.WorkflowJob;
@@ -26,13 +27,13 @@ public class DRLGDService {
 
     private OozieClient startOozieClient() {
 
-        // Start OozieClient and run workflow job
+        // Start OozieClient
         OozieClient oozieClient = new OozieClient(oozieServerUrl);
         log.info("Successfully connected to Oozie Server Url {}", oozieServerUrl);
         return oozieClient;
     }
 
-    public String runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterStringMap) {
+    public Tuple2<Boolean, String> runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterStringMap) {
 
         try {
             WorkflowJobParameter oozieWfPath, pigScriptPath;
@@ -61,11 +62,11 @@ public class DRLGDService {
 
             String oozieWorkflowJobId = startOozieClient().run(jobProperties);
             log.info("Workflow job '{}' submitted ({})", workflowJobId.getId(), oozieWorkflowJobId);
-            return oozieWorkflowJobId;
+            return new Tuple2<>(true, oozieWorkflowJobId);
 
         } catch (Exception e) {
             log.error("Unable to run workflow job '{}'. Stack trace: ", workflowJobId.getId(), e);
-            return e.getMessage();
+            return new Tuple2<>(false, e.getMessage());
         }
     }
 
