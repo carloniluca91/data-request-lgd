@@ -1,7 +1,7 @@
-package it.luca.lgd.model.input;
+package it.luca.lgd.model.parameters;
 
-import it.luca.lgd.oozie.job.WorkflowJobId;
-import it.luca.lgd.oozie.job.WorkflowJobParameter;
+import it.luca.lgd.oozie.WorkflowJobId;
+import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.TimeUtils;
 import it.luca.lgd.utils.Tuple2;
 import lombok.Getter;

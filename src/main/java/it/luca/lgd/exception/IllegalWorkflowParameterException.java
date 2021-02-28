@@ -1,6 +1,6 @@
 package it.luca.lgd.exception;
 
-import it.luca.lgd.oozie.job.WorkflowJobParameter;
+import it.luca.lgd.oozie.WorkflowJobParameter;
 
 public class IllegalWorkflowParameterException extends Exception {
 

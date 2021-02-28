@@ -1,6 +1,6 @@
 package it.luca.lgd.utils;
 
-import it.luca.lgd.oozie.job.WorkflowJobParameter;
+import it.luca.lgd.oozie.WorkflowJobParameter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 import java.util.Map;

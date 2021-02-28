@@ -1,6 +1,6 @@
 package it.luca.lgd.model.jdbc;
 
-import it.luca.lgd.oozie.job.WorkflowJobType;
+import it.luca.lgd.oozie.WorkflowJobType;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.oozie.client.WorkflowAction;

@@ -1,7 +1,7 @@
 package it.luca.lgd.utils;
 
 import it.luca.lgd.exception.IllegalWorkflowParameterException;
-import it.luca.lgd.oozie.job.WorkflowJobParameter;
+import it.luca.lgd.oozie.WorkflowJobParameter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -1,4 +1,4 @@
-package it.luca.lgd.oozie.job;
+package it.luca.lgd.oozie;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

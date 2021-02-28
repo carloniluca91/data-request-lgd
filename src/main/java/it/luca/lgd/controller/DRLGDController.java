@@ -1,9 +1,9 @@
 package it.luca.lgd.controller;
 
-import it.luca.lgd.model.input.CiclilavStep1Parameters;
-import it.luca.lgd.model.input.JobParameters;
+import it.luca.lgd.model.parameters.CiclilavStep1Parameters;
+import it.luca.lgd.model.parameters.JobParameters;
 import it.luca.lgd.model.response.WorkflowJobResponse;
-import it.luca.lgd.oozie.job.WorkflowJobId;
+import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.service.DRLGDService;
 import it.luca.lgd.utils.Tuple2;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
 package it.luca.lgd.service;
 
-import it.luca.lgd.oozie.job.WorkflowJobId;
-import it.luca.lgd.oozie.job.WorkflowJobParameter;
+import it.luca.lgd.oozie.WorkflowJobId;
+import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.JobConfiguration;
 import it.luca.lgd.utils.JobProperties;
 import it.luca.lgd.utils.Tuple2;
@@ -73,7 +73,6 @@ public class DRLGDService {
     public void monitorWorkflowJobExecution(String workflowJobId) {
 
         try {
-
             OozieClient oozieClient = startOozieClient();
             WorkflowJob workflowJob = oozieClient.getJobInfo(workflowJobId);
         } catch (Exception e) {
