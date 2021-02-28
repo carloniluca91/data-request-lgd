@@ -1,5 +1,7 @@
 package it.luca.lgd.service;
 
+import it.luca.lgd.dao.WorkflowJobDao;
+import it.luca.lgd.model.jdbc.WorkflowJobRecord;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.JobConfiguration;
@@ -7,10 +9,8 @@ import it.luca.lgd.utils.JobProperties;
 import it.luca.lgd.utils.Tuple2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oozie.client.OozieClient;
-import org.apache.oozie.client.WorkflowJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -23,7 +23,7 @@ public class DRLGDService {
     private String oozieServerUrl;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private WorkflowJobDao workflowJobDao;
 
     private OozieClient startOozieClient() {
 
@@ -70,14 +70,25 @@ public class DRLGDService {
         }
     }
 
-    public void monitorWorkflowJobExecution(String workflowJobId) {
+    public WorkflowJobRecord monitorWorkflowJobExecution(String workflowJobId) {
 
         try {
             OozieClient oozieClient = startOozieClient();
-            WorkflowJob workflowJob = oozieClient.getJobInfo(workflowJobId);
+            if (workflowJobDao.existsById(workflowJobId)) {
+
+                log.info("Workflow '{}' already defined", workflowJobId);
+                return workflowJobDao.findById(workflowJobId).get();
+            } else {
+                log.warn("Workflow '{}' does not exist yet", workflowJobId);
+                WorkflowJobRecord workflowJobRecord = WorkflowJobRecord.fromWorkflowJob(oozieClient.getJobInfo(workflowJobId));
+                workflowJobDao.save(workflowJobRecord);
+                return workflowJobRecord;
+            }
+
         } catch (Exception e) {
 
             log.warn("Caught an exception while trying to poll information about Oozie job '{}'. Stack trace: ", workflowJobId, e);
+            return null;
         }
     }
 }

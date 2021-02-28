@@ -1,5 +1,6 @@
 package it.luca.lgd.controller;
 
+import it.luca.lgd.model.jdbc.WorkflowJobRecord;
 import it.luca.lgd.model.parameters.CiclilavStep1Parameters;
 import it.luca.lgd.model.parameters.JobParameters;
 import it.luca.lgd.model.response.WorkflowJobResponse;
@@ -9,10 +10,7 @@ import it.luca.lgd.utils.Tuple2;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -45,7 +43,12 @@ public class DRLGDController {
 
     @PostMapping("/ciclilavstep1")
     public WorkflowJobResponse<CiclilavStep1Parameters> runCiclilavStep1(@Valid @RequestBody CiclilavStep1Parameters ciclilavStep1Parameters) {
-
         return runWorkflowJob(ciclilavStep1Parameters);
+    }
+
+    @GetMapping("/status")
+    public WorkflowJobRecord getJobStatus(@RequestParam("id") String workflowJobId) {
+
+        return drlgdService.monitorWorkflowJobExecution(workflowJobId);
     }
 }

@@ -5,5 +5,5 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class OozieActionRecord {
+public class WorkflowActionRecord {
 }
