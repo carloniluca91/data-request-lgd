@@ -1,6 +1,6 @@
 package it.luca.lgd.service;
 
-import it.luca.lgd.dao.WorkflowJobDao;
+import it.luca.lgd.jdbc.dao.WorkflowJobDao;
 import it.luca.lgd.model.jdbc.OozieJobRecord;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.oozie.WorkflowJobParameter;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -74,10 +75,11 @@ public class DRLGDService {
 
         try {
             OozieClient oozieClient = startOozieClient();
-            if (workflowJobDao.existsById(workflowJobId)) {
+            Optional<OozieJobRecord> oozieJobRecordOptional = workflowJobDao.findById(workflowJobId);
+            if (oozieJobRecordOptional.isPresent()) {
 
                 log.info("Workflow '{}' already defined", workflowJobId);
-                return workflowJobDao.findById(workflowJobId).get();
+                return oozieJobRecordOptional.get();
             } else {
                 log.warn("Workflow '{}' does not exist yet", workflowJobId);
                 OozieJobRecord oozieJobRecord = OozieJobRecord.fromWorkflowJob(oozieClient.getJobInfo(workflowJobId));
