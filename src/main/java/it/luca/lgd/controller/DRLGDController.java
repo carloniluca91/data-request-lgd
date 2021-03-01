@@ -1,6 +1,7 @@
 package it.luca.lgd.controller;
 
-import it.luca.lgd.model.jdbc.OozieJobRecord;
+import it.luca.lgd.jdbc.model.OozieActionRecord;
+import it.luca.lgd.jdbc.model.OozieJobRecord;
 import it.luca.lgd.model.parameters.CiclilavStep1Parameters;
 import it.luca.lgd.model.parameters.JobParameters;
 import it.luca.lgd.model.response.WorkflowJobResponse;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -23,7 +25,7 @@ public class DRLGDController {
     @Autowired
     private final DRLGDService drlgdService;
 
-    private <T extends JobParameters> WorkflowJobResponse<T> runWorkflowJob(T jobParameters) {
+    private <T extends JobParameters> WorkflowJobResponse<T> runOozieJob(T jobParameters) {
 
         Tuple2<Boolean, String> inputValidation = jobParameters.areValid();
         WorkflowJobId workflowJobId = jobParameters.getWorkflowJobId();
@@ -43,12 +45,22 @@ public class DRLGDController {
 
     @PostMapping("/ciclilavstep1")
     public WorkflowJobResponse<CiclilavStep1Parameters> runCiclilavStep1(@Valid @RequestBody CiclilavStep1Parameters ciclilavStep1Parameters) {
-        return runWorkflowJob(ciclilavStep1Parameters);
+
+        return runOozieJob(ciclilavStep1Parameters);
     }
 
     @GetMapping("/status")
-    public OozieJobRecord getJobStatus(@RequestParam("id") String workflowJobId) {
+    public OozieJobRecord getOozieJobStatusById(@RequestParam("id") String workflowJobId) {
+        return drlgdService.getOozieJobStatusById(workflowJobId);
+    }
 
-        return drlgdService.monitorWorkflowJobExecution(workflowJobId);
+    @GetMapping("/actions")
+    public List<OozieActionRecord> getOozieJobActions(@RequestParam("id") String workflowJobId) {
+        return null;
+    }
+
+    @GetMapping("/last")
+    public List<OozieJobRecord> getLastOozieJobStatus(@RequestParam(name = "n", required = false, defaultValue = "1") Integer n) {
+        return drlgdService.getLastNOozieJobsStatuses(n);
     }
 }

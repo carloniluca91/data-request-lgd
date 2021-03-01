@@ -1,7 +1,7 @@
 package it.luca.lgd.service;
 
-import it.luca.lgd.jdbc.dao.WorkflowJobDao;
-import it.luca.lgd.model.jdbc.OozieJobRecord;
+import it.luca.lgd.jdbc.dao.OozieJobDao;
+import it.luca.lgd.jdbc.model.OozieJobRecord;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.JobConfiguration;
@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,7 +27,7 @@ public class DRLGDService {
     private String oozieServerUrl;
 
     @Autowired
-    private WorkflowJobDao workflowJobDao;
+    private OozieJobDao oozieJobDao;
 
     private OozieClient startOozieClient() {
 
@@ -61,8 +64,10 @@ public class DRLGDService {
             jobProperties.setParameter(WorkflowJobParameter.PIG_SCRIPT_PATH, jobConfiguration.getParameter(pigScriptPath));
             log.info("Provided properties for workflow job '{}': {}", workflowJobId.getId(), jobProperties.getPropertiesReport());
 
-            String oozieWorkflowJobId = startOozieClient().run(jobProperties);
+            OozieClient oozieClient = startOozieClient();
+            String oozieWorkflowJobId = oozieClient.run(jobProperties);
             log.info("Workflow job '{}' submitted ({})", workflowJobId.getId(), oozieWorkflowJobId);
+            oozieJobDao.save(OozieJobRecord.fromWorkflowJob(oozieClient.getJobInfo(oozieWorkflowJobId)));
             return new Tuple2<>(true, oozieWorkflowJobId);
 
         } catch (Exception e) {
@@ -71,26 +76,30 @@ public class DRLGDService {
         }
     }
 
-    public OozieJobRecord monitorWorkflowJobExecution(String workflowJobId) {
+    public OozieJobRecord getOozieJobStatusById(String workflowJobId) {
 
         try {
-            OozieClient oozieClient = startOozieClient();
-            Optional<OozieJobRecord> oozieJobRecordOptional = workflowJobDao.findById(workflowJobId);
+            Optional<OozieJobRecord> oozieJobRecordOptional = oozieJobDao.findById(workflowJobId);
             if (oozieJobRecordOptional.isPresent()) {
-
-                log.info("Workflow '{}' already defined", workflowJobId);
                 return oozieJobRecordOptional.get();
             } else {
-                log.warn("Workflow '{}' does not exist yet", workflowJobId);
-                OozieJobRecord oozieJobRecord = OozieJobRecord.fromWorkflowJob(oozieClient.getJobInfo(workflowJobId));
-                workflowJobDao.save(oozieJobRecord);
+                log.warn("Workflow job '{}' not found in table '{}'. Requesting information through {} API",
+                        workflowJobId, oozieJobDao.fQTableName(), OozieClient.class.getName());
+                OozieJobRecord oozieJobRecord = OozieJobRecord.fromWorkflowJob(startOozieClient().getJobInfo(workflowJobId));
+                oozieJobDao.save(oozieJobRecord);
                 return oozieJobRecord;
             }
-
         } catch (Exception e) {
 
             log.warn("Caught an exception while trying to poll information about Oozie job '{}'. Stack trace: ", workflowJobId, e);
             return null;
         }
+    }
+
+    public List<OozieJobRecord> getLastNOozieJobsStatuses(int n) {
+
+        return oozieJobDao.lastNOozieJobs(n)
+                .stream().sorted(Comparator.comparing(OozieJobRecord::getJobStartTime).reversed())
+                .collect(Collectors.toList());
     }
 }

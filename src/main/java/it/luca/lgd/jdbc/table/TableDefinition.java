@@ -2,6 +2,7 @@ package it.luca.lgd.jdbc.table;
 
 import it.luca.lgd.exception.IllegalTableEntityException;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import javax.persistence.Table;
 import java.util.List;
@@ -10,14 +11,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public abstract class TableDefinition<T> {
 
-    protected final Class<T> tClass;
+    @Getter protected final Class<T> tClass;
 
     public abstract List<String> allColumns();
-
-    public String allColumnsSeparatedByComma() {
-
-        return String.join(", ", allColumns());
-    }
 
     public String schema() {
 

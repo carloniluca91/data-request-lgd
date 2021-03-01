@@ -23,13 +23,13 @@ CREATE TABLE IF NOT EXISTS oozie_job (
     PRIMARY KEY (job_launcher_id)
 );
 
-COMMENT ON COLUMN oozie_job.job_launcher_id IS "Oozie job Id (generated through Oozie Client API)";
-COMMENT ON COLUMN oozie_job.job_type IS "Oozie job type (WORKFLOW|COORDINATOR|BUNDLE)";
-COMMENT ON COLUMN oozie_job.job_total_actions IS "Number of actions defined by the Oozie job";
-COMMENT ON COLUMN oozie_job.job_completed_actions IS "Number of completed actions of the Oozie job";
-COMMENT ON COLUMN oozie_job.job_tracking_url IS "Oozie job tracking URL (for logging)";
-COMMENT ON COLUMN oozie_job.record_insert_time IS "Record insert time";
-COMMENT ON COLUMN oozie_job.last_record_update_time IS "Last update time of this records";
+COMMENT ON COLUMN oozie_job.job_launcher_id IS 'Oozie job Id (generated through Oozie Client API)';
+COMMENT ON COLUMN oozie_job.job_type IS 'Oozie job type (WORKFLOW|COORDINATOR|BUNDLE)';
+COMMENT ON COLUMN oozie_job.job_total_actions IS 'Number of actions defined by the Oozie job';
+COMMENT ON COLUMN oozie_job.job_completed_actions IS 'Number of completed actions of the Oozie job';
+COMMENT ON COLUMN oozie_job.job_tracking_url IS 'Oozie job tracking URL (for logging)';
+COMMENT ON COLUMN oozie_job.record_insert_time IS 'Record insert time';
+COMMENT ON COLUMN oozie_job.last_record_update_time IS 'Last update time of this records';
 
 -- oozie_action table (and comments)
 CREATE TABLE IF NOT EXISTS oozie_action (
@@ -53,16 +53,16 @@ CREATE TABLE IF NOT EXISTS oozie_action (
     last_record_update_time TIMESTAMP NOT NULL DEFAULT NOW(),
     PRIMARY KEY (job_launcher_id, action_id),
     CONSTRAINT oozie_action_job_launcher_id_fk
-    FOREIGN KEY job_launcher_id
-        REFERENCES oozie_job.job_launcher_id
+    FOREIGN KEY (job_launcher_id)
+        REFERENCES oozie_job (job_launcher_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
-COMMENT ON COLUMN oozie_action.job_launcher_id IS "Oozie job Id of parent Oozie job";
-COMMENT ON COLUMN oozie_action.action_number IS "Action sequence number within parent Oozie job";
-COMMENT ON COLUMN oozie_action.action_child_id IS "Job Id of action's child process";
-COMMENT ON COLUMN oozie_action.action_child_yarn_application_id IS "Yarn application Id of action's child process";
-COMMENT ON COLUMN oozie_action.action_tracking_url IS "Action tracking URL (for logging)";
-COMMENT ON COLUMN oozie_action.record_insert_time IS "Record insert time";
-COMMENT ON COLUMN oozie_action.last_record_update_time IS "Last update time of this records";
+COMMENT ON COLUMN oozie_action.job_launcher_id IS 'Oozie job Id of parent Oozie job';
+COMMENT ON COLUMN oozie_action.action_number IS 'Action sequence number within parent Oozie job';
+COMMENT ON COLUMN oozie_action.action_child_id IS 'Job Id of action child process';
+COMMENT ON COLUMN oozie_action.action_child_yarn_application_id IS 'Yarn application Id of action child process';
+COMMENT ON COLUMN oozie_action.action_tracking_url IS 'Action tracking URL (for logging)';
+COMMENT ON COLUMN oozie_action.record_insert_time IS 'Record insert time';
+COMMENT ON COLUMN oozie_action.last_record_update_time IS 'Last update time of this records';

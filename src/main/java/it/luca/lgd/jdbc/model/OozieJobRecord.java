@@ -1,4 +1,4 @@
-package it.luca.lgd.model.jdbc;
+package it.luca.lgd.jdbc.model;
 
 import it.luca.lgd.oozie.OozieJobType;
 import it.luca.lgd.utils.TimeUtils;
@@ -10,6 +10,7 @@ import org.apache.oozie.client.WorkflowJob;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -19,7 +20,7 @@ import java.util.List;
 @Entity
 @Table(schema = "oozie", name = "oozie_job")
 @NoArgsConstructor
-public class OozieJobRecord {
+public class OozieJobRecord implements Serializable {
 
     @Id private String jobLauncherId;
     private String jobType;
