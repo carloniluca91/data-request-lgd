@@ -1,6 +1,6 @@
 package it.luca.lgd.jdbc.dao;
 
-import it.luca.lgd.jdbc.model.OozieJobRecord;
+import it.luca.lgd.jdbc.record.OozieJobRecord;
 import it.luca.lgd.jdbc.table.OozieJobTable;
 import org.apache.oozie.client.WorkflowJob;
 

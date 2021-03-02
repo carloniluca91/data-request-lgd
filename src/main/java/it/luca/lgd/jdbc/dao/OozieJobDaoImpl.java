@@ -1,6 +1,6 @@
 package it.luca.lgd.jdbc.dao;
 
-import it.luca.lgd.jdbc.model.OozieJobRecord;
+import it.luca.lgd.jdbc.record.OozieJobRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oozie.client.WorkflowJob;
 import org.springframework.stereotype.Repository;

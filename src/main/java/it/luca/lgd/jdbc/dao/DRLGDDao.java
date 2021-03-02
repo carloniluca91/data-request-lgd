@@ -1,6 +1,6 @@
 package it.luca.lgd.jdbc.dao;
 
-import it.luca.lgd.jdbc.model.DRLGDRecord;
+import it.luca.lgd.jdbc.record.DRLGDRecord;
 import it.luca.lgd.jdbc.table.DRLGDTable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

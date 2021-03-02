@@ -2,8 +2,8 @@ package it.luca.lgd.service;
 
 import it.luca.lgd.jdbc.dao.OozieActionDao;
 import it.luca.lgd.jdbc.dao.OozieJobDao;
-import it.luca.lgd.jdbc.model.OozieActionRecord;
-import it.luca.lgd.jdbc.model.OozieJobRecord;
+import it.luca.lgd.jdbc.record.OozieActionRecord;
+import it.luca.lgd.jdbc.record.OozieJobRecord;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.JobConfiguration;
@@ -75,7 +75,7 @@ public class DRLGDService {
             log.info("Workflow job '{}' submitted ({})", workflowJobId.getId(), oozieWorkflowJobId);
             WorkflowJob workflowJob = startOozieClient().getJobInfo(oozieWorkflowJobId);
             oozieJobDao.save(OozieJobRecord.fromWorkflowJob(workflowJob));
-
+            oozieActionDao.saveBatch(OozieActionRecord.fromWorkflowJob(workflowJob));
             return new Tuple2<>(true, oozieWorkflowJobId);
 
         } catch (Exception e) {
@@ -87,9 +87,9 @@ public class DRLGDService {
     public OozieJobRecord getOozieJobStatusById(String workflowJobId) {
 
         try {
-            Optional<OozieJobRecord> oozieJobRecordOptional = oozieJobDao.findById(workflowJobId);
-            if (oozieJobRecordOptional.isPresent()) {
-                return oozieJobRecordOptional.get();
+            Optional<OozieJobRecord> optionalOozieJobRecord = oozieJobDao.findById(workflowJobId);
+            if (optionalOozieJobRecord.isPresent()) {
+                return optionalOozieJobRecord.get();
             } else {
                 log.warn("Workflow job '{}' not found in table '{}'. Requesting information through {} API",
                         workflowJobId, oozieJobDao.fQTableName(), OozieClient.class.getName());
@@ -108,8 +108,16 @@ public class DRLGDService {
 
     public List<OozieJobRecord> getLastOozieJobs(int n) {
 
-        return oozieJobDao.lastNOozieJobs(n)
-                .stream().sorted(Comparator.comparing(OozieJobRecord::getJobStartTime).reversed())
+        return oozieJobDao.lastNOozieJobs(n).stream()
+                .sorted(Comparator.comparing(OozieJobRecord::getJobStartTime).reversed())
                 .collect(Collectors.toList());
+    }
+
+    public List<OozieActionRecord> getOozieJobActions(String workflowJobId) {
+
+        return oozieActionDao.getOozieJobActions(workflowJobId).stream()
+                .sorted(Comparator.comparing(OozieActionRecord::getActionStartTime))
+                .collect(Collectors.toList());
+
     }
 }

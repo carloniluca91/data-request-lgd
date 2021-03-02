@@ -1,6 +1,6 @@
 package it.luca.lgd.jdbc.table;
 
-import it.luca.lgd.jdbc.model.OozieJobRecord;
+import it.luca.lgd.jdbc.record.OozieJobRecord;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,24 +43,24 @@ public class OozieJobTable extends DRLGDTable<OozieJobRecord> {
     }
 
     @Override
-    protected OozieJobRecord fromResultSetToTableRecord(ResultSet resultSet) throws SQLException {
+    protected OozieJobRecord fromResultSetToTableRecord(ResultSet rs) throws SQLException {
 
         OozieJobRecord oozieJobRecord = new OozieJobRecord();
 
-        oozieJobRecord.setJobLauncherId(resultSet.getString(JOB_LAUNCHER_ID));
-        oozieJobRecord.setJobType(resultSet.getString(JOB_TYPE));
-        oozieJobRecord.setJobName(resultSet.getString(JOB_NAME));
-        oozieJobRecord.setJobUser(resultSet.getString(JOB_USER));
-        oozieJobRecord.setJobStatus(resultSet.getString(JOB_STATUS));
-        oozieJobRecord.setJobStartDate(resultSet.getDate(JOB_START_DATE).toLocalDate());
-        oozieJobRecord.setJobStartTime(resultSet.getTimestamp(JOB_START_TIME).toLocalDateTime());
-        oozieJobRecord.setJobEndDate(resultSet.getDate(JOB_END_DATE).toLocalDate());
-        oozieJobRecord.setJobEndTime(resultSet.getTimestamp(JOB_END_TIME).toLocalDateTime());
-        oozieJobRecord.setJobTotalActions(resultSet.getInt(JOB_TOTAL_ACTIONS));
-        oozieJobRecord.setJobCompletedActions(resultSet.getInt(JOB_COMPLETED_ACTIONS));
-        oozieJobRecord.setJobTrackingUrl(resultSet.getString(JOB_TRACKING_URL));
-        oozieJobRecord.setRecordInsertTime(resultSet.getTimestamp(RECORD_INSERT_TIME).toLocalDateTime());
-        oozieJobRecord.setLastRecordUpdateTime(resultSet.getTimestamp(LAST_RECORD_UPDATE_TIME).toLocalDateTime());
+        oozieJobRecord.setJobLauncherId(rs.getString(JOB_LAUNCHER_ID));
+        oozieJobRecord.setJobType(rs.getString(JOB_TYPE));
+        oozieJobRecord.setJobName(rs.getString(JOB_NAME));
+        oozieJobRecord.setJobUser(rs.getString(JOB_USER));
+        oozieJobRecord.setJobStatus(rs.getString(JOB_STATUS));
+        oozieJobRecord.setJobStartDate(rs.getDate(JOB_START_DATE));
+        oozieJobRecord.setJobStartTime(rs.getTimestamp(JOB_START_TIME));
+        oozieJobRecord.setJobEndDate(rs.getDate(JOB_END_DATE));
+        oozieJobRecord.setJobEndTime(rs.getTimestamp(JOB_END_TIME));
+        oozieJobRecord.setJobTotalActions(rs.getInt(JOB_TOTAL_ACTIONS));
+        oozieJobRecord.setJobCompletedActions(rs.getInt(JOB_COMPLETED_ACTIONS));
+        oozieJobRecord.setJobTrackingUrl(rs.getString(JOB_TRACKING_URL));
+        oozieJobRecord.setRecordInsertTime(rs.getTimestamp(RECORD_INSERT_TIME));
+        oozieJobRecord.setLastRecordUpdateTime(rs.getTimestamp(LAST_RECORD_UPDATE_TIME));
 
         return oozieJobRecord;
     }

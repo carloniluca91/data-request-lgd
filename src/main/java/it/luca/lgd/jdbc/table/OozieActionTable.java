@@ -1,6 +1,6 @@
 package it.luca.lgd.jdbc.table;
 
-import it.luca.lgd.jdbc.model.OozieActionRecord;
+import it.luca.lgd.jdbc.record.OozieActionRecord;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,7 +47,27 @@ public class OozieActionTable extends DRLGDTable<OozieActionRecord> {
     }
 
     @Override
-    protected OozieActionRecord fromResultSetToTableRecord(ResultSet resultSet) throws SQLException {
-        return null;
+    protected OozieActionRecord fromResultSetToTableRecord(ResultSet rs) throws SQLException {
+
+        OozieActionRecord oozieActionRecord = new OozieActionRecord();
+
+        oozieActionRecord.setJobLauncherId(rs.getString(JOB_LAUNCHER_ID));
+        oozieActionRecord.setActionId(rs.getString(ACTION_ID));
+        oozieActionRecord.setActionType(rs.getString(ACTION_TYPE));
+        oozieActionRecord.setActionName(ACTION_NAME);
+        oozieActionRecord.setActionNumber(rs.getInt(ACTION_NUMBER));
+        oozieActionRecord.setActionStatus(rs.getString(ACTION_STATUS));
+        oozieActionRecord.setActionChildId(rs.getString(ACTION_CHILD_ID));
+        oozieActionRecord.setActionChildYarnApplicationId(rs.getString(ACTION_CHILD_YARN_APPLICATION_ID));
+        oozieActionRecord.setActionStartDate(rs.getDate(ACTION_START_DATE));
+        oozieActionRecord.setActionStartTime(rs.getTimestamp(ACTION_START_TIME));
+        oozieActionRecord.setActionEndDate(rs.getDate(ACTION_END_DATE));
+        oozieActionRecord.setActionEndTime(rs.getTimestamp(ACTION_END_TIME));
+        oozieActionRecord.setActionErrorCode(rs.getString(ACTION_ERROR_CODE));
+        oozieActionRecord.setActionErrorMessage(rs.getString(ACTION_ERROR_MESSAGE));
+        oozieActionRecord.setActionTrackingUrl(rs.getString(ACTION_TRACKING_URL));
+        oozieActionRecord.setRecordInsertTime(rs.getTimestamp(RECORD_INSERT_TIME));
+        oozieActionRecord.setLastRecordUpdateTime(rs.getTimestamp(LAST_RECORD_UPDATE_TIME));
+        return oozieActionRecord;
     }
 }

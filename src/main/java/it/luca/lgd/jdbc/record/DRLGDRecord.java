@@ -1,4 +1,4 @@
-package it.luca.lgd.jdbc.model;
+package it.luca.lgd.jdbc.record;
 
 public interface DRLGDRecord {
 

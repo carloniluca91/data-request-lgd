@@ -27,6 +27,20 @@ public class TimeUtils {
                 .orElse(null);
     }
 
+    public static java.sql.Date fromUtilDateToSqlDate(java.util.Date date) {
+
+        return Optional.ofNullable(date)
+                .map(d -> new java.sql.Date(d.getTime()))
+                .orElse(null);
+    }
+
+    public static java.sql.Timestamp fromUtilDateToSqlTimestamp(java.util.Date date) {
+
+        return Optional.ofNullable(date)
+                .map(d -> new java.sql.Timestamp(d.getTime()))
+                .orElse(null);
+    }
+
     public static Boolean isValidDate(String date, String format) {
 
         try { toLocalDate(date, format);

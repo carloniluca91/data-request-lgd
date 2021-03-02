@@ -1,9 +1,8 @@
 package it.luca.lgd.jdbc.table;
 
 import it.luca.lgd.exception.IllegalTableEntityException;
-import it.luca.lgd.jdbc.model.DRLGDRecord;
+import it.luca.lgd.jdbc.record.DRLGDRecord;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import javax.persistence.Table;
@@ -25,7 +24,7 @@ public abstract class DRLGDTable<R extends DRLGDRecord> {
                 fromResultSetToTableRecord(resultSet) : null;
     }
 
-    protected abstract R fromResultSetToTableRecord(ResultSet resultSet) throws SQLException;
+    protected abstract R fromResultSetToTableRecord(ResultSet rs) throws SQLException;
 
     public String fQTableName() {
         return schema() + "." + tableName();
