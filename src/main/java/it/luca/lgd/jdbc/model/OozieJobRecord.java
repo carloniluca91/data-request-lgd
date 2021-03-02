@@ -14,13 +14,14 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Entity
 @Table(schema = "oozie", name = "oozie_job")
 @NoArgsConstructor
-public class OozieJobRecord implements Serializable {
+public class OozieJobRecord implements DRLGDRecord, Serializable {
 
     @Id private String jobLauncherId;
     private String jobType;
@@ -63,5 +64,19 @@ public class OozieJobRecord implements Serializable {
         oozieJobRecord.setRecordInsertTime(LocalDateTime.now());
         oozieJobRecord.setLastRecordUpdateTime(LocalDateTime.now());
         return oozieJobRecord;
+    }
+
+    @Override
+    public Object[] primaryKeyValues() {
+        return new Object[]{jobLauncherId};
+    }
+
+    @Override
+    public Object[] allValues() {
+
+        return new Object[] {jobLauncherId, jobType, jobName, jobUser, jobStatus, jobStartDate, jobStartTime,
+                jobEndDate, jobEndTime, jobTotalActions, jobCompletedActions, jobTrackingUrl,
+                recordInsertTime, lastRecordUpdateTime
+        };
     }
 }

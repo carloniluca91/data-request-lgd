@@ -1,6 +1,8 @@
 package it.luca.lgd.service;
 
+import it.luca.lgd.jdbc.dao.OozieActionDao;
 import it.luca.lgd.jdbc.dao.OozieJobDao;
+import it.luca.lgd.jdbc.model.OozieActionRecord;
 import it.luca.lgd.jdbc.model.OozieJobRecord;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.oozie.WorkflowJobParameter;
@@ -9,6 +11,7 @@ import it.luca.lgd.utils.JobProperties;
 import it.luca.lgd.utils.Tuple2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oozie.client.OozieClient;
+import org.apache.oozie.client.WorkflowJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,9 @@ public class DRLGDService {
 
     @Autowired
     private OozieJobDao oozieJobDao;
+
+    @Autowired
+    private OozieActionDao oozieActionDao;
 
     private OozieClient startOozieClient() {
 
@@ -67,7 +73,9 @@ public class DRLGDService {
             OozieClient oozieClient = startOozieClient();
             String oozieWorkflowJobId = oozieClient.run(jobProperties);
             log.info("Workflow job '{}' submitted ({})", workflowJobId.getId(), oozieWorkflowJobId);
-            oozieJobDao.save(OozieJobRecord.fromWorkflowJob(oozieClient.getJobInfo(oozieWorkflowJobId)));
+            WorkflowJob workflowJob = startOozieClient().getJobInfo(oozieWorkflowJobId);
+            oozieJobDao.save(OozieJobRecord.fromWorkflowJob(workflowJob));
+
             return new Tuple2<>(true, oozieWorkflowJobId);
 
         } catch (Exception e) {
@@ -85,8 +93,10 @@ public class DRLGDService {
             } else {
                 log.warn("Workflow job '{}' not found in table '{}'. Requesting information through {} API",
                         workflowJobId, oozieJobDao.fQTableName(), OozieClient.class.getName());
-                OozieJobRecord oozieJobRecord = OozieJobRecord.fromWorkflowJob(startOozieClient().getJobInfo(workflowJobId));
+                WorkflowJob workflowJob = startOozieClient().getJobInfo(workflowJobId);
+                OozieJobRecord oozieJobRecord = OozieJobRecord.fromWorkflowJob(workflowJob);
                 oozieJobDao.save(oozieJobRecord);
+                oozieActionDao.saveBatch(OozieActionRecord.fromWorkflowJob(workflowJob));
                 return oozieJobRecord;
             }
         } catch (Exception e) {
@@ -96,7 +106,7 @@ public class DRLGDService {
         }
     }
 
-    public List<OozieJobRecord> getLastNOozieJobsStatuses(int n) {
+    public List<OozieJobRecord> getLastOozieJobs(int n) {
 
         return oozieJobDao.lastNOozieJobs(n)
                 .stream().sorted(Comparator.comparing(OozieJobRecord::getJobStartTime).reversed())

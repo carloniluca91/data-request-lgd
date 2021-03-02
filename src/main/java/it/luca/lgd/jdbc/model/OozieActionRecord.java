@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,7 +21,7 @@ import java.util.stream.IntStream;
 @Entity
 @Table(schema = "oozie", name = "oozie_action")
 @NoArgsConstructor
-public class OozieActionRecord implements Serializable {
+public class OozieActionRecord implements DRLGDRecord, Serializable {
 
     @Id private String jobLauncherId;
     @Id private String actionId;
@@ -40,7 +41,7 @@ public class OozieActionRecord implements Serializable {
     private LocalDateTime recordInsertTime;
     private LocalDateTime lastRecordUpdateTime;
 
-    public List<OozieActionRecord> fromWorkflowJob(WorkflowJob workflowJob) {
+    public static List<OozieActionRecord> fromWorkflowJob(WorkflowJob workflowJob) {
 
         return IntStream.range(0, workflowJob.getActions().size())
                 .mapToObj(i -> {
@@ -68,5 +69,17 @@ public class OozieActionRecord implements Serializable {
 
                     return oozieActionRecord;
                 }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Object[] primaryKeyValues() {
+        return new Object[]{jobLauncherId, actionId};
+    }
+
+    @Override
+    public Object[] allValues() {
+        return new Object[] {
+
+        };
     }
 }

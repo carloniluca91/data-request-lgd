@@ -1,19 +1,37 @@
 package it.luca.lgd.jdbc.table;
 
 import it.luca.lgd.exception.IllegalTableEntityException;
+import it.luca.lgd.jdbc.model.DRLGDRecord;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import javax.persistence.Table;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
-public abstract class TableDefinition<T> {
+public abstract class DRLGDTable<R extends DRLGDRecord> {
 
-    @Getter protected final Class<T> tClass;
+    private final Class<R> tClass;
 
     public abstract List<String> allColumns();
+
+    public ResultSetExtractor<R> getResultSetExtractor() {
+
+        return resultSet -> resultSet.next() ?
+                fromResultSetToTableRecord(resultSet) : null;
+    }
+
+    protected abstract R fromResultSetToTableRecord(ResultSet resultSet) throws SQLException;
+
+    public String fQTableName() {
+        return schema() + "." + tableName();
+    }
+
+    public abstract List<String> primaryKeyColumns();
 
     public String schema() {
 
@@ -29,7 +47,7 @@ public abstract class TableDefinition<T> {
                 .orElseThrow(() -> new IllegalTableEntityException(tClass, "name"));
     }
 
-    public String fQTableName() {
-        return schema() + "." + tableName();
+    public String tClassName() {
+        return tClass.getName();
     }
 }

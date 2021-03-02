@@ -60,7 +60,7 @@ public class DRLGDController {
     }
 
     @GetMapping("/last")
-    public List<OozieJobRecord> getLastOozieJobStatus(@RequestParam(name = "n", required = false, defaultValue = "1") Integer n) {
-        return drlgdService.getLastNOozieJobsStatuses(n);
+    public List<OozieJobRecord> getLastOozieJobs(@RequestParam(name = "n", required = false, defaultValue = "1") Integer n) {
+        return drlgdService.getLastOozieJobs(n);
     }
 }
