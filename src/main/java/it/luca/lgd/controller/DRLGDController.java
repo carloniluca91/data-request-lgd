@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -54,7 +56,9 @@ public class DRLGDController {
         log.info("Received a request for running workflow job '{}'", workflowJobId);
         WorkflowJobResponse<CiclilavStep1Parameters> workflowJobResponse = runOozieJob(ciclilavStep1Parameters);
         log.info("Successfully retrieved {}<{}> for workflow job '{}'",
-                WorkflowJobResponse.class.getName(), CiclilavStep1Parameters.class.getName(), workflowJobId);
+                WorkflowJobResponse.class.getSimpleName(),
+                CiclilavStep1Parameters.class.getSimpleName(),
+                workflowJobId);
         return workflowJobResponse;
     }
 
@@ -67,36 +71,34 @@ public class DRLGDController {
     @GetMapping("/jobs/status")
     public OozieJobRecord getOozieJob(@RequestParam("id") String workflowJobId) {
 
-        String className = OozieJobRecord.class.getName();
+        String className = OozieJobRecord.class.getSimpleName();
         log.info("Received a request for getting {} for workflow job '{}'", className, workflowJobId);
-        OozieJobRecord oozieJobRecord = drlgdService.getOozieJobStatusById(workflowJobId);
+        OozieJobRecord oozieJobRecord = drlgdService.getOozieJobStatus(workflowJobId);
         log.info("Successfully retrieved {} for workflow job '{}'", className, workflowJobId);
         return oozieJobRecord;
+    }
+
+    @GetMapping("jobs/actions")
+    public List<OozieActionRecord> getOozieJobActions(@RequestParam("id") String workflowJobId) {
+
+        String className = OozieActionRecord.class.getSimpleName();
+        log.info("Received a request for getting all of {}(s) related to workflow job '{}'", className, workflowJobId);
+        List<OozieActionRecord> oozieActionRecords = drlgdService.getOozieJobActions(workflowJobId).stream()
+                .sorted(Comparator.comparing(OozieActionRecord::getActionStartTime))
+                .collect(Collectors.toList());
+        log.info("Successfully retrieved {} {}(s) related to workflow job '{}'", className, oozieActionRecords.size(), workflowJobId);
+        return oozieActionRecords;
     }
 
     @GetMapping("/jobs/last")
     public List<OozieJobRecord> getLastNOozieJobs(@Valid @RequestParam(name = "n", required = false, defaultValue = "1") Integer n) {
 
-        String className = OozieJobRecord.class.getName();
+        String className = OozieJobRecord.class.getSimpleName();
         log.info("Received a request for getting {} of last {} workflow job(s)", className, n);
-        List<OozieJobRecord> oozieJobRecords = drlgdService.getLastOozieJobs(n);
+        List<OozieJobRecord> oozieJobRecords = drlgdService.getLastOozieJobs(n).stream()
+                .sorted(Comparator.comparing(OozieJobRecord::getJobStartTime).reversed())
+                .collect(Collectors.toList());
         log.info("Successfully retrieved {} of last {} (found {}) workflow job(s)", className, n, oozieJobRecords.size());
         return oozieJobRecords;
-    }
-
-    /*
-     ********************************
-     * OOZIE JOB ACTIONS MONITORING *
-     ********************************
-     */
-
-    @GetMapping("/actions")
-    public List<OozieActionRecord> getOozieJobActions(@RequestParam("id") String workflowJobId) {
-
-        String className = OozieActionRecord.class.getName();
-        log.info("Received a request for getting all of {}(s) workflow job '{}'", className, workflowJobId);
-        List<OozieActionRecord> oozieActionRecords = drlgdService.getOozieJobActions(workflowJobId);
-        log.info("Successfully retrieved {} {}(s) related to workflow job '{}'", className, oozieActionRecords.size(), workflowJobId);
-        return oozieActionRecords;
     }
 }

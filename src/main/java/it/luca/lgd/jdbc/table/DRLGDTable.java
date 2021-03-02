@@ -47,6 +47,6 @@ public abstract class DRLGDTable<R extends DRLGDRecord> {
     }
 
     public String tClassName() {
-        return tClass.getName();
+        return tClass.getSimpleName();
     }
 }

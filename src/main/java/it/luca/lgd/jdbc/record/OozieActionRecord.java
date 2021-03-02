@@ -44,16 +44,9 @@ public class OozieActionRecord implements DRLGDRecord, Serializable {
 
     public static List<OozieActionRecord> fromWorkflowJob(WorkflowJob workflowJob) {
 
-        // Carefully order workflow actions
-        List<WorkflowAction> workflowActions = workflowJob.getActions();
-        List<WorkflowAction> orderedActions = workflowActions.stream()
-                .filter(a -> Optional.ofNullable(a.getStartTime()).isPresent())
+        List<WorkflowAction> orderedActions = workflowJob.getActions().stream()
                 .sorted(Comparator.comparing(WorkflowAction::getStartTime))
                 .collect(Collectors.toList());
-
-        orderedActions.addAll(workflowActions.stream()
-                .filter(a -> !Optional.ofNullable(a.getStartTime()).isPresent())
-                .collect(Collectors.toList()));
 
         return IntStream.range(0, orderedActions.size())
                 .mapToObj(i -> {

@@ -4,6 +4,7 @@ import it.luca.lgd.jdbc.dao.OozieActionDao;
 import it.luca.lgd.jdbc.dao.OozieJobDao;
 import it.luca.lgd.jdbc.record.OozieActionRecord;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
+import it.luca.lgd.oozie.OozieJobStatuses;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.JobConfiguration;
@@ -16,11 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -42,6 +42,12 @@ public class DRLGDService {
         log.info("Successfully connected to Oozie Server Url {}", oozieServerUrl);
         return oozieClient;
     }
+
+    /*
+     *************************
+     * OOZIE JOBS SUBMISSION *
+     *************************
+     */
 
     public Tuple2<Boolean, String> runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterStringMap) {
 
@@ -73,9 +79,6 @@ public class DRLGDService {
             OozieClient oozieClient = startOozieClient();
             String oozieWorkflowJobId = oozieClient.run(jobProperties);
             log.info("Workflow job '{}' submitted ({})", workflowJobId.getId(), oozieWorkflowJobId);
-            WorkflowJob workflowJob = startOozieClient().getJobInfo(oozieWorkflowJobId);
-            oozieJobDao.save(OozieJobRecord.fromWorkflowJob(workflowJob));
-            oozieActionDao.saveBatch(OozieActionRecord.fromWorkflowJob(workflowJob));
             return new Tuple2<>(true, oozieWorkflowJobId);
 
         } catch (Exception e) {
@@ -84,40 +87,87 @@ public class DRLGDService {
         }
     }
 
-    public OozieJobRecord getOozieJobStatusById(String workflowJobId) {
+    /*
+     *************************
+     * OOZIE JOBS MONITORING *
+     *************************
+     */
+
+    public OozieJobRecord getOozieJobStatus(String workflowJobId) {
 
         try {
+            // Check if this Oozie job has been inserted into Oozie job table
+            String oozieJobTableName = oozieJobDao.fQTableName();
             Optional<OozieJobRecord> optionalOozieJobRecord = oozieJobDao.findById(workflowJobId);
             if (optionalOozieJobRecord.isPresent()) {
                 return optionalOozieJobRecord.get();
             } else {
-                log.warn("Workflow job '{}' not found in table '{}'. Requesting information through {} API",
-                        workflowJobId, oozieJobDao.fQTableName(), OozieClient.class.getName());
+
+                // If not, request information through Oozie Client API
+                log.info("Workflow job '{}' not found in table {}. Requesting information through {} API",
+                        workflowJobId, oozieJobTableName, OozieClient.class.getName());
+
                 WorkflowJob workflowJob = startOozieClient().getJobInfo(workflowJobId);
                 OozieJobRecord oozieJobRecord = OozieJobRecord.fromWorkflowJob(workflowJob);
-                oozieJobDao.save(oozieJobRecord);
-                oozieActionDao.saveBatch(OozieActionRecord.fromWorkflowJob(workflowJob));
+                String workflowJobStatus = workflowJob.getStatus().toString();
+
+                // If joc has completed, insert records on both Oozie Job and Oozie Action table
+                if (OozieJobStatuses.COMPLETED.contains(workflowJob.getStatus())) {
+
+                    log.warn("Workflow job '{}' has completed (status {}), but yet not found in table '{}'",
+                            workflowJobId, workflowJobStatus, oozieJobTableName);
+                    oozieJobDao.save(oozieJobRecord);
+                    oozieActionDao.saveBatch(OozieActionRecord.fromWorkflowJob(workflowJob));
+
+                } else {
+
+                    log.info("Workflow job '{}' has not completed yet (status {})", workflowJobId, workflowJobStatus);
+                }
                 return oozieJobRecord;
             }
         } catch (Exception e) {
 
-            log.warn("Caught an exception while trying to poll information about Oozie job '{}'. Stack trace: ", workflowJobId, e);
+            log.error("Caught an exception while trying to poll information about Oozie job '{}'. Stack trace: ", workflowJobId, e);
             return null;
+        }
+    }
+
+    public List<OozieActionRecord> getOozieJobActions(String workflowJobId) {
+
+        String tClassName = oozieActionDao.tClassName();
+        try {
+
+            // Check if some Oozie Actions can be retrieved for provided Oozie Job id
+            List<OozieActionRecord> oozieActionRecords = oozieActionDao.getOozieJobActions(workflowJobId);
+            if (oozieActionRecords.isEmpty()) {
+
+                // If not, retrieve them through Oozie Client API
+                log.warn("Unable to retrieve any {}(s) for workflow job '{}' from table '{}'. Requesting them using {} API",
+                        tClassName, workflowJobId, oozieActionDao.fQTableName(), OozieClient.class.getSimpleName());
+                WorkflowJob workflowJob = startOozieClient().getJobInfo(workflowJobId);
+                List<OozieActionRecord> actionRecords = OozieActionRecord.fromWorkflowJob(workflowJob);
+
+                // If Oozie job has completed, insert its Actions into table
+                if (OozieJobStatuses.COMPLETED.contains(workflowJob.getStatus())) {
+
+                    log.warn("Workflow job '{}' has completed (status {}), but actions yet not found on table '{}'",
+                            workflowJobId, workflowJob.getStatus(), oozieActionDao.fQTableName());
+                    oozieJobDao.save(OozieJobRecord.fromWorkflowJob(workflowJob));
+                    oozieActionDao.saveBatch(actionRecords);
+                }
+                return actionRecords;
+            } else {
+                return oozieActionRecords;
+            }
+        } catch (Exception e) {
+            log.error("Caught an exception while trying to retrieve {}(s) for workflow job '{}'. Stack trace: ",
+                    tClassName, workflowJobId, e);
+            return Collections.emptyList();
         }
     }
 
     public List<OozieJobRecord> getLastOozieJobs(int n) {
 
-        return oozieJobDao.lastNOozieJobs(n).stream()
-                .sorted(Comparator.comparing(OozieJobRecord::getJobStartTime).reversed())
-                .collect(Collectors.toList());
-    }
-
-    public List<OozieActionRecord> getOozieJobActions(String workflowJobId) {
-
-        return oozieActionDao.getOozieJobActions(workflowJobId).stream()
-                .sorted(Comparator.comparing(OozieActionRecord::getActionStartTime))
-                .collect(Collectors.toList());
-
+        return oozieJobDao.lastNOozieJobs(n);
     }
 }
