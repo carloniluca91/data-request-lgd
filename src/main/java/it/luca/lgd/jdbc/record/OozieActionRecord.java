@@ -42,7 +42,7 @@ public class OozieActionRecord implements DRLGDRecord, Serializable {
     private Timestamp recordInsertTime;
     private Timestamp lastRecordUpdateTime;
 
-    public static List<OozieActionRecord> fromWorkflowJob(WorkflowJob workflowJob) {
+    public static List<OozieActionRecord> batchFrom(WorkflowJob workflowJob) {
 
         List<WorkflowAction> orderedActions = workflowJob.getActions().stream()
                 .sorted(Comparator.comparing(WorkflowAction::getStartTime))

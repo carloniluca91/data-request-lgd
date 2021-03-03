@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.surefire.version>2.22.2</maven.surefire.version>
 
         <lombok.version>1.18.10</lombok.version>
         <cdh.version>cdh5.13.0</cdh.version>
@@ -27,6 +28,22 @@
         <junit.version>5.5.2</junit.version>
         <mockito.version>3.3.3</mockito.version>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven.surefire.version}</version>
+            </plugin>
+        </plugins>
+    </build>
 
     <!-- Cloudera Repository -->
     <repositories>

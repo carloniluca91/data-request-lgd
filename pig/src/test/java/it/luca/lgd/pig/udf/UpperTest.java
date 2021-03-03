@@ -7,6 +7,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class UpperTest extends AbstractPigUDFTest<String> {
 
     public UpperTest() {
-        super(new Upper(), String::toUpperCase, "aWord");
+        super(new Upper(), String::toUpperCase, new String[]{"aWord"});
     }
 }

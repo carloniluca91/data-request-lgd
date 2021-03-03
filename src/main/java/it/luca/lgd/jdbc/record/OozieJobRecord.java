@@ -37,7 +37,7 @@ public class OozieJobRecord implements DRLGDRecord, Serializable {
     private Timestamp recordInsertTime;
     private Timestamp lastRecordUpdateTime;
 
-    public static OozieJobRecord fromWorkflowJob(WorkflowJob workflowJob) {
+    public static OozieJobRecord from(WorkflowJob workflowJob) {
 
         List<WorkflowAction.Status> completedStatuses = Arrays.asList(WorkflowAction.Status.DONE,
                 WorkflowAction.Status.FAILED,

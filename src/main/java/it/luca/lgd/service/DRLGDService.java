@@ -12,6 +12,7 @@ import it.luca.lgd.utils.JobProperties;
 import it.luca.lgd.utils.Tuple2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oozie.client.OozieClient;
+import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,10 +38,27 @@ public class DRLGDService {
 
     private OozieClient startOozieClient() {
 
-        // Start OozieClient
         OozieClient oozieClient = new OozieClient(oozieServerUrl);
         log.info("Successfully connected to Oozie Server Url {}", oozieServerUrl);
         return oozieClient;
+    }
+
+    private WorkflowJob getWorkflowJobFromOozieClient(String workflowJobId) throws OozieClientException {
+
+        log.info("Retrieving information about workflow job '{}' by means of {} API", workflowJobId, OozieClient.class.getName());
+        WorkflowJob workflowJob = startOozieClient().getJobInfo(workflowJobId);
+        WorkflowJob.Status status = workflowJob.getStatus();
+
+        // If job has completed, insert records on both Oozie Job and Oozie Action table
+        boolean hasCompleted = OozieJobStatuses.COMPLETED.contains(status);
+        if (hasCompleted) {
+
+            oozieJobDao.save(OozieJobRecord.from(workflowJob));
+            oozieActionDao.saveBatch(OozieActionRecord.batchFrom(workflowJob));
+        }
+
+        log.info("Workflow job '{}' has{}completed (status {})", workflowJobId, hasCompleted ? " " : " not ", status);
+        return workflowJob;
     }
 
     /*
@@ -52,6 +70,7 @@ public class DRLGDService {
     public Tuple2<Boolean, String> runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterStringMap) {
 
         try {
+
             WorkflowJobParameter oozieWfPath, pigScriptPath;
             switch (workflowJobId) {
                 case CICLILAV_STEP1:
@@ -76,8 +95,7 @@ public class DRLGDService {
             jobProperties.setParameter(WorkflowJobParameter.PIG_SCRIPT_PATH, jobConfiguration.getParameter(pigScriptPath));
             log.info("Provided properties for workflow job '{}': {}", workflowJobId.getId(), jobProperties.getPropertiesReport());
 
-            OozieClient oozieClient = startOozieClient();
-            String oozieWorkflowJobId = oozieClient.run(jobProperties);
+            String oozieWorkflowJobId = startOozieClient().run(jobProperties);
             log.info("Workflow job '{}' submitted ({})", workflowJobId.getId(), oozieWorkflowJobId);
             return new Tuple2<>(true, oozieWorkflowJobId);
 
@@ -97,37 +115,17 @@ public class DRLGDService {
 
         try {
             // Check if this Oozie job has been inserted into Oozie job table
-            String oozieJobTableName = oozieJobDao.fQTableName();
             Optional<OozieJobRecord> optionalOozieJobRecord = oozieJobDao.findById(workflowJobId);
             if (optionalOozieJobRecord.isPresent()) {
+
                 return optionalOozieJobRecord.get();
             } else {
 
-                // If not, request information through Oozie Client API
-                log.info("Workflow job '{}' not found in table {}. Requesting information through {} API",
-                        workflowJobId, oozieJobTableName, OozieClient.class.getName());
-
-                WorkflowJob workflowJob = startOozieClient().getJobInfo(workflowJobId);
-                OozieJobRecord oozieJobRecord = OozieJobRecord.fromWorkflowJob(workflowJob);
-                String workflowJobStatus = workflowJob.getStatus().toString();
-
-                // If joc has completed, insert records on both Oozie Job and Oozie Action table
-                if (OozieJobStatuses.COMPLETED.contains(workflowJob.getStatus())) {
-
-                    log.warn("Workflow job '{}' has completed (status {}), but yet not found in table '{}'",
-                            workflowJobId, workflowJobStatus, oozieJobTableName);
-                    oozieJobDao.save(oozieJobRecord);
-                    oozieActionDao.saveBatch(OozieActionRecord.fromWorkflowJob(workflowJob));
-
-                } else {
-
-                    log.info("Workflow job '{}' has not completed yet (status {})", workflowJobId, workflowJobStatus);
-                }
-                return oozieJobRecord;
+                WorkflowJob workflowJob = getWorkflowJobFromOozieClient(workflowJobId);
+                return OozieJobRecord.from(workflowJob);
             }
         } catch (Exception e) {
-
-            log.error("Caught an exception while trying to poll information about Oozie job '{}'. Stack trace: ", workflowJobId, e);
+            log.error("Exception while trying to poll information about Oozie job '{}'. Stack trace: ", workflowJobId, e);
             return null;
         }
     }
@@ -136,32 +134,14 @@ public class DRLGDService {
 
         String tClassName = oozieActionDao.tClassName();
         try {
-
             // Check if some Oozie Actions can be retrieved for provided Oozie Job id
             List<OozieActionRecord> oozieActionRecords = oozieActionDao.getOozieJobActions(workflowJobId);
-            if (oozieActionRecords.isEmpty()) {
+            return oozieActionRecords.isEmpty() ?
+                    OozieActionRecord.batchFrom(getWorkflowJobFromOozieClient(workflowJobId)) :
+                    oozieActionRecords;
 
-                // If not, retrieve them through Oozie Client API
-                log.warn("Unable to retrieve any {}(s) for workflow job '{}' from table '{}'. Requesting them using {} API",
-                        tClassName, workflowJobId, oozieActionDao.fQTableName(), OozieClient.class.getSimpleName());
-                WorkflowJob workflowJob = startOozieClient().getJobInfo(workflowJobId);
-                List<OozieActionRecord> actionRecords = OozieActionRecord.fromWorkflowJob(workflowJob);
-
-                // If Oozie job has completed, insert its Actions into table
-                if (OozieJobStatuses.COMPLETED.contains(workflowJob.getStatus())) {
-
-                    log.warn("Workflow job '{}' has completed (status {}), but actions yet not found on table '{}'",
-                            workflowJobId, workflowJob.getStatus(), oozieActionDao.fQTableName());
-                    oozieJobDao.save(OozieJobRecord.fromWorkflowJob(workflowJob));
-                    oozieActionDao.saveBatch(actionRecords);
-                }
-                return actionRecords;
-            } else {
-                return oozieActionRecords;
-            }
         } catch (Exception e) {
-            log.error("Caught an exception while trying to retrieve {}(s) for workflow job '{}'. Stack trace: ",
-                    tClassName, workflowJobId, e);
+            log.error("Exception while trying to retrieve {}(s) for workflow job '{}'. Stack trace: ", tClassName, workflowJobId, e);
             return Collections.emptyList();
         }
     }
