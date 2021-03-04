@@ -1,4 +1,4 @@
-package it.luca.lgd.pig.udf;
+package pig.udf;
 
 import org.apache.pig.backend.executionengine.ExecException;
 import org.apache.pig.data.Tuple;

@@ -1,11 +1,11 @@
-package it.luca.lgd.pig.udf;
+package pig.udf;
 
 import org.apache.pig.backend.executionengine.ExecException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static it.luca.lgd.pig.udf.DecodeCancellationReason.*;
+import static pig.udf.DecodeCancellationReason.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DecodeCancellationReasonTest extends AbstractPigUDFTest<String, String> {

@@ -1,0 +1,70 @@
+<workflow-app name="${workflowName}" xmlns="uri:oozie:workflow:0.5">
+
+    <!-- Oozie starting action -->
+    <start to="truncate_table"/>
+
+    <!-- Hive action -->
+    <action name="truncate_table">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <job-xml>/etc/hive/conf/hive-site.xml</job-xml>
+            <configuration>
+                <property>
+                    <name>mapred.queue.name</name>
+                    <value>${yarnQueue}</value>
+                </property>
+            </configuration>
+            <script>${hiveScriptPath}</script>
+            <param>db=${db}</param>
+            <param>output_table=${output_table}</param>
+        </hive>
+        <ok to="flights_cancelled"/>
+        <error to="kill"/>
+    </action>
+
+    <!-- Pig action -->
+    <action name="flights_cancelled">
+        <pig>
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>mapred.queue.name</name>
+                    <value>${yarnQueue}</value>
+                </property>
+            </configuration>
+            <script>${pigScript}</script>
+            <argument>-useHCatalog</argument>
+            <argument>-param</argument>
+            <argument>udf_jar_path=${udf_jar_path}</argument>
+            <argument>-param</argument>
+            <argument>db=${db}</argument>
+            <argument>-param</argument>
+            <argument>airports_table=${airports_table}</argument>
+            <argument>-param</argument>
+            <argument>iata_code=${iata_code}</argument>
+            <argument>-param</argument>
+            <argument>flights_table=${flights_table}</argument>
+            <argument>-param</argument>
+            <argument>start_date=${start_date}</argument>
+            <argument>-param</argument>
+            <argument>end_date=${end_date}</argument>
+            <argument>-param</argument>
+            <argument>output_table=${output_table}</argument>
+            <argument>-param</argument>
+            <argument>user_name=${user.name}</argument>
+        </pig>
+        <ok to="end"/>
+        <error to="kill"/>
+    </action>
+
+    <!-- Kill node (mandatory) -->
+    <kill name="kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+
+    <!-- End node (mandatory) -->
+    <end name="end"/>
+
+</workflow-app>
