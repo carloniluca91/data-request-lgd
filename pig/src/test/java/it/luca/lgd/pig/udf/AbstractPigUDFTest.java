@@ -7,30 +7,26 @@ import org.apache.pig.data.Tuple;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.Arrays;
-import java.util.function.Function;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @AllArgsConstructor
-public abstract class AbstractPigUDFTest<T> {
+public abstract class AbstractPigUDFTest<T, R> {
 
     protected final Tuple tuple = Mockito.mock(Tuple.class);
-    private final AbstractPigUDF<T> tAbstractPigUDF;
-    private final Function<T, T> ttFunction;
-    protected final T[] tMockValues;
+    private final AbstractPigUDF<R> tAbstractPigUDF;
+    protected final T[] inputValues;
 
-    protected void setMockingBehavior() throws ExecException {
+    abstract protected void setMockingBehavior() throws ExecException;
 
-        Mockito.when(tuple.get(0)).thenReturn(tMockValues[0]);
-    }
+    abstract protected R expectedFunction(T input);
 
     @Test
     public void testUDFExec() throws ExecException {
 
         setMockingBehavior();
-        Arrays.stream(tMockValues)
-                .forEach(t -> assertEquals(ttFunction.apply(t), tAbstractPigUDF.exec(tuple)));
+        for (T inputValue: inputValues) {
+            assertEquals(expectedFunction(inputValue), tAbstractPigUDF.exec(tuple));
+        }
     }
 }

@@ -13,11 +13,12 @@
     </organization>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>1.7</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.surefire.version>2.22.2</maven.surefire.version>
+        <maven.jar.plugin>2.4</maven.jar.plugin>
 
         <lombok.version>1.18.10</lombok.version>
         <cdh.version>cdh5.13.0</cdh.version>
@@ -41,6 +42,15 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven.surefire.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin}</version>
+                <configuration>
+                    <finalName>pig-udf-${project.version}</finalName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
