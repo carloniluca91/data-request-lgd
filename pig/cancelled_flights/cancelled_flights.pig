@@ -9,6 +9,7 @@
         - end_date: upper date (inclusive) (yyyy-MM-dd)
         - output_table: output Hive table name
         - user_name: user that triggered the data request
+        - wf_id: parent workflow job id
  */
 
 REGISTER $udf_jar_path;
@@ -65,6 +66,7 @@ cancelled_flights_output = FOREACH join_airport_cancelled_flights_destination GE
     CurrentTime() AS ts_insert,
     ToString(CurrentTime(), 'yyyy-MM-dd') AS dt_insert,
     '$user_name' AS requesting_user,
+    '$wf_id' AS workflow_job_id,
     'PIG' AS job_type;
 
 cancelled_flights_output_ordered = ORDER cancelled_flights_output BY flight_date;

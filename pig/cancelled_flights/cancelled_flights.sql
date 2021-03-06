@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS ${db}.${output_table} (
     ts_insert TIMESTAMP COMMENT "Data insert timestamp",
     dt_insert STRING COMMENT "Data insert date",
     requesting_user STRING COMMENT "User that issued the data request",
+    workflow_job_id STRING COMMENT "Oozie workflow job id",
     job_type STRING COMMENT "Job type (PIG|HIVE|SPARK)"
 )
 STORED AS PARQUET;
