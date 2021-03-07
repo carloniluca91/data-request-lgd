@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum WorkflowJobId {
 
-    CICLILAV_STEP1("CICLILAV_STEP1"),
+    CANCELLED_FLIGHTS("CANCELLED_FLIGHTS"),
     FPASPERD("FPASPERD");
 
     private final String id;

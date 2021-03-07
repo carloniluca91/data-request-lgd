@@ -24,8 +24,6 @@ public class OozieActionTable extends DRLGDTable<OozieActionRecord> {
     public final String ACTION_ERROR_CODE = "action_error_code";
     public final String ACTION_ERROR_MESSAGE = "action_error_message";
     public final String ACTION_TRACKING_URL = "action_tracking_url";
-    public final String RECORD_INSERT_TIME = "record_insert_time";
-    public final String LAST_RECORD_UPDATE_TIME = "last_record_update_time";
 
     public OozieActionTable() {
         super(OozieActionRecord.class);
@@ -56,7 +54,7 @@ public class OozieActionTable extends DRLGDTable<OozieActionRecord> {
         oozieActionRecord.setActionType(rs.getString(ACTION_TYPE));
         oozieActionRecord.setActionName(ACTION_NAME);
         oozieActionRecord.setActionNumber(rs.getInt(ACTION_NUMBER));
-        oozieActionRecord.setActionStatus(rs.getString(ACTION_STATUS));
+        oozieActionRecord.setActionFinishStatus(rs.getString(ACTION_STATUS));
         oozieActionRecord.setActionChildId(rs.getString(ACTION_CHILD_ID));
         oozieActionRecord.setActionChildYarnApplicationId(rs.getString(ACTION_CHILD_YARN_APPLICATION_ID));
         oozieActionRecord.setActionStartDate(rs.getDate(ACTION_START_DATE));
@@ -66,8 +64,9 @@ public class OozieActionTable extends DRLGDTable<OozieActionRecord> {
         oozieActionRecord.setActionErrorCode(rs.getString(ACTION_ERROR_CODE));
         oozieActionRecord.setActionErrorMessage(rs.getString(ACTION_ERROR_MESSAGE));
         oozieActionRecord.setActionTrackingUrl(rs.getString(ACTION_TRACKING_URL));
-        oozieActionRecord.setRecordInsertTime(rs.getTimestamp(RECORD_INSERT_TIME));
-        oozieActionRecord.setLastRecordUpdateTime(rs.getTimestamp(LAST_RECORD_UPDATE_TIME));
+        oozieActionRecord.setTsInsert(rs.getTimestamp(RECORD_INSERT_TIME));
+        oozieActionRecord.setDtInsert(rs.getDate(LAST_RECORD_UPDATE_TIME));
+
         return oozieActionRecord;
     }
 }

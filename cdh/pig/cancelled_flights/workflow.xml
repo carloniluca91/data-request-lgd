@@ -26,28 +26,43 @@
     <action name="create_table">
         <hive xmlns="uri:oozie:hive-action:0.5">
             <script>lib/cancelled_flights.sql</script>
-            <param>db=${db}</param>
-            <param>output_table=${output_table}</param>
+            <param>db=${hive_db}</param>
+            <param>table=${hive_t_cancelled_flights}</param>
         </hive>
         <ok to="pig_job"/>
         <error to="kill"/>
     </action>
 
-    <!-- Pig action -->
+    <!-- Pig action (PROCESS DATA) -->
     <action name="pig_job">
         <pig>
             <script>lib/cancelled_flights.pig</script>
-            <param>udf_jar_path=${udf_jar_path}</param>
-            <param>db=${db}</param>
-            <param>airports_table=${airports_table}</param>
+            <param>udf_jar_path=${lgdApp_lib}/${udfJarName}</param>
+            <param>db=${hive_db}</param>
+            <param>airports=${hive_t_airports}</param>
             <param>iata_code=${iata_code}</param>
-            <param>flights_table=${flights_table}</param>
+            <param>flights=${hive_t_flights}</param>
             <param>start_date=${start_date}</param>
             <param>end_date=${end_date}</param>
-            <param>output_table=${output_table}</param>
-            <param>user_name=${user.name}</param>
+            <param>output_table=${hive_t_cancelled_flights}</param>
+            <param>user_name=${wf:user()}</param>
             <param>wf_id=${wf:id()}</param>
         </pig>
+        <ok to="impala"/>
+        <error to="kill"/>
+    </action>
+
+    <!-- Java action (Impala) -->
+    <action name="impala">
+        <java>
+            <main-class>it.luca.lgd.impala.Main</main-class>
+            <arg>-u</arg>
+            <arg>${impalaUrl}</arg>
+            <arg>-s</arg>
+            <arg>"INVALIDATE METADATA ${hive_db}.${hive_t_cancelled_flights}"</arg>
+            <file>${lgdApp_lib}/${impalaJarName}#${impalaJarName}</file>
+            <capture-output/>
+        </java>
         <ok to="end"/>
         <error to="kill"/>
     </action>

@@ -2,9 +2,9 @@
     parameters:
         - udf_jar_path: HDFS path of jar defining PIG UDFs
         - db : database name
-        - airports_table: airport table name
+        - airports: airport table name
         - iata_code: airport iata code
-        - flights_table: flights table name
+        - flights: flights table name
         - start_date: lower date (inclusive) (yyyy-MM-dd)
         - end_date: upper date (inclusive) (yyyy-MM-dd)
         - output_table: output Hive table name
@@ -15,7 +15,7 @@
 REGISTER $udf_jar_path;
 
 -- AIRPORTS table
-airports = LOAD '$db.$airports_table' USING org.apache.hive.hcatalog.pig.HCatLoader();
+airports = LOAD '$db.$airports' USING org.apache.hive.hcatalog.pig.HCatLoader();
 airports_final = FOREACH airports GENERATE
 
     iata_code,
@@ -24,7 +24,7 @@ airports_final = FOREACH airports GENERATE
 
 
 -- FLIGHTS table
-flights = LOAD '$db.$flights_table' USING org.apache.hive.hcatalog.pig.HCatLoader();
+flights = LOAD '$db.$flights' USING org.apache.hive.hcatalog.pig.HCatLoader();
 
 flights_filtered = FILTER flights BY
     (origin_airport == '$iata_code' OR destination_airport == '$iata_code') AND
@@ -63,11 +63,11 @@ cancelled_flights_output = FOREACH join_airport_cancelled_flights_destination GE
     cancelled_flights_origin::flight_date AS flight_date,
     cancelled_flights_origin::cancellation_reason AS cancellation_code,
     pig.udf.DecodeCancellationReason(cancelled_flights_origin::cancellation_reason) AS cancellation_rationale,
-    CurrentTime() AS ts_insert,
-    ToString(CurrentTime(), 'yyyy-MM-dd') AS dt_insert,
     '$user_name' AS requesting_user,
     '$wf_id' AS workflow_job_id,
-    'PIG' AS job_type;
+    'PIG' AS job_type,
+    CurrentTime() AS ts_insert,
+    ToString(CurrentTime(), 'yyyy-MM-dd') AS dt_insert;
 
 cancelled_flights_output_ordered = ORDER cancelled_flights_output BY flight_date;
 

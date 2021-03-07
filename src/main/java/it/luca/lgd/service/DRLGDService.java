@@ -70,16 +70,14 @@ public class DRLGDService {
 
         try {
 
-            WorkflowJobParameter oozieWfPath, pigScriptPath;
+            WorkflowJobParameter oozieWfPath;
             switch (workflowJobId) {
-                case CICLILAV_STEP1:
-                    oozieWfPath = WorkflowJobParameter.CICLILAV_STEP1_WORKFLOW;
-                    pigScriptPath = WorkflowJobParameter.CICLILAV_STEP1_PIG;
+                case CANCELLED_FLIGHTS:
+                    oozieWfPath = WorkflowJobParameter.CANCELLED_FLIGHTS_APP_PATH;
                     break;
 
                 default:
                     oozieWfPath = WorkflowJobParameter.FPASPERD_WORKFLOW;
-                    pigScriptPath = WorkflowJobParameter.FPASPERD_PIG;
                     break;
             }
 
@@ -91,7 +89,6 @@ public class DRLGDService {
             jobProperties.setParameters(parameterStringMap);
             jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_NAME, String.format("DataRequestLGD - %s", workflowJobId.getId()));
             jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_PATH, jobConfiguration.getParameter(oozieWfPath));
-            jobProperties.setParameter(WorkflowJobParameter.PIG_SCRIPT_PATH, jobConfiguration.getParameter(pigScriptPath));
             log.info("Provided properties for workflow job '{}': {}", workflowJobId.getId(), jobProperties.getPropertiesReport());
 
             String oozieWorkflowJobId = startOozieClient().run(jobProperties);
@@ -116,10 +113,8 @@ public class DRLGDService {
             // Check if this Oozie job has been inserted into Oozie job table
             Optional<OozieJobRecord> optionalOozieJobRecord = oozieJobDao.findById(workflowJobId);
             if (optionalOozieJobRecord.isPresent()) {
-
                 return optionalOozieJobRecord.get();
             } else {
-
                 WorkflowJob workflowJob = getWorkflowJob(workflowJobId);
                 return OozieJobRecord.from(workflowJob);
             }
@@ -133,6 +128,7 @@ public class DRLGDService {
 
         String tClassName = oozieActionDao.tClassName();
         try {
+
             // Check if some Oozie Actions can be retrieved for provided Oozie Job id
             List<OozieActionRecord> oozieActionRecords = oozieActionDao.getOozieJobActions(workflowJobId);
             return oozieActionRecords.isEmpty() ?

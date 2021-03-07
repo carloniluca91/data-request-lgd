@@ -26,7 +26,7 @@ public class OozieJobDaoImpl extends OozieJobDao {
     public Optional<OozieJobRecord> lastOozieJobWithStatus(WorkflowJob.Status status) {
 
         String SELECT_LAST_JOB_WITH_STATUS = String.format("SELECT * FROM %s WHERE %s = '%s' ORDER BY %s DESC LIMIT 1",
-                fQTableName(), table.JOB_STATUS, status.toString(), table.JOB_START_TIME);
+                fQTableName(), table.JOB_FINAL_STATUS, status.toString(), table.JOB_START_TIME);
         return Optional.ofNullable(jdbcTemplate.query(SELECT_LAST_JOB_WITH_STATUS, table.getResultSetExtractor()));
     }
 }

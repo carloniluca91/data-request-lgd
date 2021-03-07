@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS ${db}.${output_table} (
+CREATE TABLE IF NOT EXISTS ${db}.${table} (
 
     origin_iata STRING COMMENT "Origin airport IATA code",
     origin_aiport STRING,
@@ -9,12 +9,12 @@ CREATE TABLE IF NOT EXISTS ${db}.${output_table} (
     flight_date STRING,
     cancellation_code VARCHAR(1),
     cancellation_rationale STRING,
-    ts_insert TIMESTAMP COMMENT "Data insert timestamp",
-    dt_insert STRING COMMENT "Data insert date",
     requesting_user STRING COMMENT "User that issued the data request",
     workflow_job_id STRING COMMENT "Oozie workflow job id",
-    job_type STRING COMMENT "Job type (PIG|HIVE|SPARK)"
+    job_type STRING COMMENT "Job type (PIG|HIVE|SPARK)",
+    ts_insert TIMESTAMP COMMENT "Data insert timestamp",
+    dt_insert STRING COMMENT "Data insert date"
 )
 STORED AS PARQUET;
 
-TRUNCATE TABLE ${db}.${output_table};
+TRUNCATE TABLE ${db}.${table};

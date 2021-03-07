@@ -2,6 +2,7 @@ package it.luca.lgd.jdbc.record;
 
 import it.luca.lgd.utils.TimeUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
@@ -9,7 +10,6 @@ import org.apache.oozie.client.WorkflowJob;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Comparator;
@@ -18,18 +18,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(schema = "oozie", name = "oozie_action")
 @NoArgsConstructor
-public class OozieActionRecord implements DRLGDRecord, Serializable {
+public class OozieActionRecord extends DRLGDRecord {
 
     @Id private String jobLauncherId;
     @Id private String actionId;
     private String actionType;
     private String actionName;
     private int actionNumber;
-    private String actionStatus;
+    private String actionFinishStatus;
     private String actionChildId;
     private String actionChildYarnApplicationId;
     private Date actionStartDate;
@@ -39,8 +40,6 @@ public class OozieActionRecord implements DRLGDRecord, Serializable {
     private String actionErrorCode;
     private String actionErrorMessage;
     private String actionTrackingUrl;
-    private Timestamp recordInsertTime;
-    private Timestamp lastRecordUpdateTime;
 
     public static List<OozieActionRecord> batchFrom(WorkflowJob workflowJob) {
 
@@ -59,7 +58,7 @@ public class OozieActionRecord implements DRLGDRecord, Serializable {
                     oozieActionRecord.setActionType(workflowAction.getType());
                     oozieActionRecord.setActionName(workflowAction.getName());
                     oozieActionRecord.setActionNumber(i + 1);
-                    oozieActionRecord.setActionStatus(workflowAction.getStatus().toString());
+                    oozieActionRecord.setActionFinishStatus(workflowAction.getStatus().toString());
                     oozieActionRecord.setActionChildId(workflowAction.getExternalChildIDs());
                     oozieActionRecord.setActionChildYarnApplicationId(Optional.ofNullable(workflowAction.getExternalChildIDs())
                             .map(s -> s.replace("job", "application"))
@@ -72,8 +71,8 @@ public class OozieActionRecord implements DRLGDRecord, Serializable {
                     oozieActionRecord.setActionErrorCode(workflowAction.getErrorCode());
                     oozieActionRecord.setActionErrorMessage(workflowAction.getErrorMessage());
                     oozieActionRecord.setActionTrackingUrl(workflowAction.getTrackerUri());
-                    oozieActionRecord.setRecordInsertTime(new Timestamp(System.currentTimeMillis()));
-                    oozieActionRecord.setLastRecordUpdateTime(new Timestamp(System.currentTimeMillis()));
+                    oozieActionRecord.setTsInsert(new Timestamp(System.currentTimeMillis()));
+                    oozieActionRecord.setDtInsert(new Date(System.currentTimeMillis()));
 
                     return oozieActionRecord;
                 }).collect(Collectors.toList());
@@ -87,9 +86,9 @@ public class OozieActionRecord implements DRLGDRecord, Serializable {
     @Override
     public Object[] allValues() {
 
-        return new Object[] {jobLauncherId, actionId, actionType, actionName, actionNumber, actionStatus, actionChildId,
+        return new Object[] {jobLauncherId, actionId, actionType, actionName, actionNumber, actionFinishStatus, actionChildId,
                 actionChildYarnApplicationId, actionStartDate, actionStartTime, actionEndDate, actionEndTime,
-                actionErrorCode, actionErrorMessage, actionTrackingUrl, recordInsertTime, lastRecordUpdateTime
+                actionErrorCode, actionErrorMessage, actionTrackingUrl, tsInsert, dtInsert
         };
     }
 }

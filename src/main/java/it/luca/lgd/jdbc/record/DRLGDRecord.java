@@ -1,8 +1,18 @@
 package it.luca.lgd.jdbc.record;
 
-public interface DRLGDRecord {
+import lombok.Data;
 
-    Object[] primaryKeyValues();
+import java.io.Serializable;
+import java.sql.Date;
+import java.sql.Timestamp;
 
-    Object[] allValues();
+@Data
+public abstract class DRLGDRecord implements Serializable {
+
+    protected Timestamp tsInsert;
+    protected Date dtInsert;
+
+    public abstract Object[] primaryKeyValues();
+
+    public abstract Object[] allValues();
 }

@@ -3,6 +3,7 @@ package it.luca.lgd.jdbc.record;
 import it.luca.lgd.oozie.OozieJobType;
 import it.luca.lgd.utils.TimeUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
@@ -10,23 +11,22 @@ import org.apache.oozie.client.WorkflowJob;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(schema = "oozie", name = "oozie_job")
 @NoArgsConstructor
-public class OozieJobRecord implements DRLGDRecord, Serializable {
+public class OozieJobRecord extends DRLGDRecord {
 
     @Id private String jobLauncherId;
     private String jobType;
     private String jobName;
-    private String jobUser;
-    private String jobStatus;
+    private String jobFinishStatus;
     private Date jobStartDate;
     private Timestamp jobStartTime;
     private Date jobEndDate;
@@ -34,8 +34,6 @@ public class OozieJobRecord implements DRLGDRecord, Serializable {
     private int jobTotalActions;
     private int jobCompletedActions;
     private String jobTrackingUrl;
-    private Timestamp recordInsertTime;
-    private Timestamp lastRecordUpdateTime;
 
     public static OozieJobRecord from(WorkflowJob workflowJob) {
 
@@ -48,8 +46,7 @@ public class OozieJobRecord implements DRLGDRecord, Serializable {
         oozieJobRecord.setJobLauncherId(workflowJob.getId());
         oozieJobRecord.setJobType(OozieJobType.WORKFLOW.getType());
         oozieJobRecord.setJobName(workflowJob.getAppName());
-        oozieJobRecord.setJobUser(workflowJob.getUser());
-        oozieJobRecord.setJobStatus(workflowJob.getStatus().toString());
+        oozieJobRecord.setJobFinishStatus(workflowJob.getStatus().toString());
         oozieJobRecord.setJobStartDate(TimeUtils.fromUtilDateToSqlDate(workflowJob.getStartTime()));
         oozieJobRecord.setJobStartTime(TimeUtils.fromUtilDateToSqlTimestamp(workflowJob.getStartTime()));
         oozieJobRecord.setJobEndDate(TimeUtils.fromUtilDateToSqlDate(workflowJob.getEndTime()));
@@ -60,8 +57,8 @@ public class OozieJobRecord implements DRLGDRecord, Serializable {
                 .count());
 
         oozieJobRecord.setJobTrackingUrl(workflowJob.getConsoleUrl());
-        oozieJobRecord.setRecordInsertTime(new Timestamp(System.currentTimeMillis()));
-        oozieJobRecord.setLastRecordUpdateTime(new Timestamp(System.currentTimeMillis()));
+        oozieJobRecord.setTsInsert(new Timestamp(System.currentTimeMillis()));
+        oozieJobRecord.setDtInsert(new Date(System.currentTimeMillis()));
         return oozieJobRecord;
     }
 
@@ -73,9 +70,9 @@ public class OozieJobRecord implements DRLGDRecord, Serializable {
     @Override
     public Object[] allValues() {
 
-        return new Object[] {jobLauncherId, jobType, jobName, jobUser, jobStatus, jobStartDate, jobStartTime,
+        return new Object[] {jobLauncherId, jobType, jobName, jobFinishStatus, jobStartDate, jobStartTime,
                 jobEndDate, jobEndTime, jobTotalActions, jobCompletedActions, jobTrackingUrl,
-                recordInsertTime, lastRecordUpdateTime
+                tsInsert, dtInsert
         };
     }
 }

@@ -11,16 +11,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public class CiclilavStep1Parameters extends JobParameters {
+public class CancelledFlightsParameters extends JobParameters {
 
     @NotBlank private final String startDate;
     @NotBlank private final String endDate;
+    @NotBlank private final String iataCode;
 
-    public CiclilavStep1Parameters(String startDate, String endDate) {
+    public CancelledFlightsParameters(String startDate, String endDate, String iataCode) {
 
-        super(WorkflowJobId.CICLILAV_STEP1);
+        super(WorkflowJobId.CANCELLED_FLIGHTS);
         this.startDate = startDate;
         this.endDate = endDate;
+        this.iataCode = iataCode;
     }
 
     @Override

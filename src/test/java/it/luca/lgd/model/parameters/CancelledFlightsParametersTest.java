@@ -7,13 +7,13 @@ import java.util.function.BiFunction;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CiclilavStep1ParametersTest {
+class CancelledFlightsParametersTest {
 
     @Test
     public void areValid() {
 
         BiFunction<String, String, Boolean> biFunction = (start, end) ->
-                new CiclilavStep1Parameters(start, end)
+                new CancelledFlightsParameters(start, end, "ABE")
                         .validate().getT1();
 
         String VALID_START_DATE = "2020-12-31";

@@ -2,7 +2,7 @@ package it.luca.lgd.controller;
 
 import it.luca.lgd.jdbc.record.OozieActionRecord;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
-import it.luca.lgd.model.parameters.CiclilavStep1Parameters;
+import it.luca.lgd.model.parameters.CancelledFlightsParameters;
 import it.luca.lgd.model.parameters.JobParameters;
 import it.luca.lgd.model.response.WorkflowJobResponse;
 import it.luca.lgd.oozie.WorkflowJobId;
@@ -49,15 +49,15 @@ public class DRLGDController {
         }
     }
 
-    @PostMapping("/submit/ciclilavstep1")
-    public WorkflowJobResponse<CiclilavStep1Parameters> runCiclilavStep1(@Valid @RequestBody CiclilavStep1Parameters ciclilavStep1Parameters) {
+    @PostMapping("/submit/cancelled_flights")
+    public WorkflowJobResponse<CancelledFlightsParameters> runCancelledFlightsJob(@Valid @RequestBody CancelledFlightsParameters parameters) {
 
-        String workflowJobId = ciclilavStep1Parameters.getWorkflowJobId().getId();
+        String workflowJobId = parameters.getWorkflowJobId().getId();
         log.info("Received a request for running workflow job '{}'", workflowJobId);
-        WorkflowJobResponse<CiclilavStep1Parameters> workflowJobResponse = runOozieJob(ciclilavStep1Parameters);
+        WorkflowJobResponse<CancelledFlightsParameters> workflowJobResponse = runOozieJob(parameters);
         log.info("Successfully retrieved {}<{}> for workflow job '{}'",
                 WorkflowJobResponse.class.getSimpleName(),
-                CiclilavStep1Parameters.class.getSimpleName(),
+                CancelledFlightsParameters.class.getSimpleName(),
                 workflowJobId);
         return workflowJobResponse;
     }
