@@ -1,5 +1,5 @@
 .idea/*
 target/*
-oozie/target/*
-pig/target/*
+cdh/impala/target/*
+cdh/pig/target/*
 *.iml

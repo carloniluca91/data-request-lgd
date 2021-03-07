@@ -23,7 +23,7 @@ public class Main {
         try {
 
             // Parse provided input args
-            CommandLineParser parser = new DefaultParser();
+            CommandLineParser parser = new BasicParser();
             CommandLine commandLine = parser.parse(options, args);
             String url = commandLine.getOptionValue(InputOption.URL.getShortOption());
             String[] statements = commandLine.getOptionValues(InputOption.STATEMENTS.getShortOption());

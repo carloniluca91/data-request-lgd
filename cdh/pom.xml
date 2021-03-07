@@ -23,6 +23,19 @@
         <lombok.version>1.18.10</lombok.version>
     </properties>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>**.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
+    </build>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>

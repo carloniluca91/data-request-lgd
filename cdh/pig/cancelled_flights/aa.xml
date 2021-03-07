@@ -41,18 +41,21 @@
             <param>db=${db}</param>
             <param>output_table=${output_table}</param>
         </pig>
-        <ok to="invalidate_metadata"/>
+        <ok to="impala"/>
         <error to="kill"/>
     </action>
 
-    <!-- Shell action (INVALIDATE METADATA) -->
-    <action name="invalidate_metadata">
-        <shell xmlns="uri:oozie:shell-action:0.2">
-            <exec>lib/invalidate_metadata.sh</exec>
-            <argument>${db}</argument>
-            <argument>${output_table}</argument>
+    <!-- Java action (Impala) -->
+    <action name="impala">
+        <java>
+            <main-class>it.luca.lgd.impala.Main</main-class>
+            <arg>-u</arg>
+            <arg>${impalaUrl}</arg>
+            <arg>-s</arg>
+            <arg>"INVALIDATE METADATA ${db}.${output_table}"</arg>
+            <file>${lgdApp_lib}/${impalaJarName}#${impalaJarName}</file>
             <capture-output/>
-        </shell>
+        </java>
         <ok to="end"/>
         <error to="kill"/>
     </action>
