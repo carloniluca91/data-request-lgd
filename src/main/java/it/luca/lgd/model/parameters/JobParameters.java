@@ -14,7 +14,7 @@ public abstract class JobParameters {
 
     protected final WorkflowJobId workflowJobId;
 
-    public abstract Tuple2<Boolean, String> areValid();
+    public abstract Tuple2<Boolean, String> validate();
 
     public abstract Map<WorkflowJobParameter, String> toMap();
 

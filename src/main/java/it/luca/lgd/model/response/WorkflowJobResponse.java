@@ -20,7 +20,7 @@ public class WorkflowJobResponse<T extends JobParameters> {
     private final String jobSubmissionError;
     private final String oozieWorkflowJobId;
 
-    public static <T extends JobParameters> WorkflowJobResponse<T> fromTuple2(T jobParameters, Tuple2<Boolean, String> tuple2) {
+    public static <T extends JobParameters> WorkflowJobResponse<T> from(T jobParameters, Tuple2<Boolean, String> tuple2) {
 
         return tuple2.getT1() ?
                 new WorkflowJobResponse<>(jobParameters, OK, null, tuple2.getT2()) :

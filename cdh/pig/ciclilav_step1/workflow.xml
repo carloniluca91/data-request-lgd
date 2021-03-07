@@ -1,0 +1,42 @@
+<workflow-app name="${workflowName}" xmlns="uri:oozie:workflow:0.2">
+
+    <!-- Oozie starting action -->
+    <start to="ciclilav_Step1"/>
+
+    <!-- Pig action -->
+    <action name="ciclilav_Step1">
+        <pig>
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <prepare>
+                <delete path="${ciclilavStep1_output}"/>
+            </prepare>
+            <configuration>
+                <property>
+                    <name>mapred.queue.name</name>
+                    <value>${yarnQueue}</value>
+                </property>
+            </configuration>
+            <script>${pigScript}</script>
+            <argument>-param</argument>
+            <argument>ciclilavStep1_input=${ciclilavStep1_input}</argument>
+            <argument>-param</argument>
+            <argument>ciclilavStep1_output=${ciclilavStep1_output}</argument>
+            <argument>-param</argument>
+            <argument>start_date=${start_date}</argument>
+            <argument>-param</argument>
+            <argument>end_date=${end_date}</argument>
+        </pig>
+        <ok to="End"/>
+        <error to="Kill"/>
+    </action>
+
+    <!-- Kill node (mandatory) -->
+    <kill name="Kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+
+    <!-- End node (mandatory) -->
+    <end name="End"/>
+
+</workflow-app>

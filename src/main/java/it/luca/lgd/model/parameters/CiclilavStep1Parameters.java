@@ -24,7 +24,7 @@ public class CiclilavStep1Parameters extends JobParameters {
     }
 
     @Override
-    public Tuple2<Boolean, String> areValid() {
+    public Tuple2<Boolean, String> validate() {
 
         String defaultFormat = "yyyy-MM-dd";
         return TimeUtils.isValidDate(startDate, defaultFormat) ?

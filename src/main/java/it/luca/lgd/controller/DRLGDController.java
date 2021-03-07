@@ -33,19 +33,19 @@ public class DRLGDController {
 
     private <T extends JobParameters> WorkflowJobResponse<T> runOozieJob(T jobParameters) {
 
-        Tuple2<Boolean, String> inputValidation = jobParameters.areValid();
+        Tuple2<Boolean, String> inputValidation = jobParameters.validate();
         WorkflowJobId workflowJobId = jobParameters.getWorkflowJobId();
         if (inputValidation.getT1()) {
 
             // If provided input matches given criterium, run workflow job
             log.info("Successsully validated input for workflow job '{}'. Parameters: {}", workflowJobId.getId(), jobParameters.toString());
-            return WorkflowJobResponse.fromTuple2(jobParameters, drlgdService.runWorkflowJob(workflowJobId, jobParameters.toMap()));
+            return WorkflowJobResponse.from(jobParameters, drlgdService.runWorkflowJob(workflowJobId, jobParameters.toMap()));
         } else {
 
             // Otherwise, report the issue
             String errorMsg = String.format("Invalid input for workflow job '%s'. Rationale: %s", workflowJobId.getId(), inputValidation.getT2());
             log.warn(errorMsg);
-            return WorkflowJobResponse.fromTuple2(jobParameters, inputValidation);
+            return WorkflowJobResponse.from(jobParameters, inputValidation);
         }
     }
 
@@ -68,7 +68,7 @@ public class DRLGDController {
     *************************
     */
 
-    @GetMapping("/jobs/status")
+    @GetMapping("/job/status")
     public OozieJobRecord getOozieJob(@RequestParam("id") String workflowJobId) {
 
         String className = OozieJobRecord.class.getSimpleName();
@@ -78,7 +78,7 @@ public class DRLGDController {
         return oozieJobRecord;
     }
 
-    @GetMapping("jobs/actions")
+    @GetMapping("job/actions")
     public List<OozieActionRecord> getOozieJobActions(@RequestParam("id") String workflowJobId) {
 
         String className = OozieActionRecord.class.getSimpleName();

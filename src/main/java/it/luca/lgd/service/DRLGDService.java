@@ -43,13 +43,12 @@ public class DRLGDService {
         return oozieClient;
     }
 
-    private WorkflowJob getWorkflowJobFromOozieClient(String workflowJobId) throws OozieClientException {
+    private WorkflowJob getWorkflowJob(String workflowJobId) throws OozieClientException {
 
+        // If job has completed, insert records on both Oozie Job and Oozie Action table
         log.info("Retrieving information about workflow job '{}' by means of {} API", workflowJobId, OozieClient.class.getName());
         WorkflowJob workflowJob = startOozieClient().getJobInfo(workflowJobId);
         WorkflowJob.Status status = workflowJob.getStatus();
-
-        // If job has completed, insert records on both Oozie Job and Oozie Action table
         boolean hasCompleted = OozieJobStatuses.COMPLETED.contains(status);
         if (hasCompleted) {
 
@@ -57,7 +56,7 @@ public class DRLGDService {
             oozieActionDao.saveBatch(OozieActionRecord.batchFrom(workflowJob));
         }
 
-        log.info("Workflow job '{}' has{}completed (status {})", workflowJobId, hasCompleted ? " " : " not ", status);
+        log.info("Workflow job '{}' has {} completed (status {})", workflowJobId, hasCompleted ? "" : "not", status);
         return workflowJob;
     }
 
@@ -121,7 +120,7 @@ public class DRLGDService {
                 return optionalOozieJobRecord.get();
             } else {
 
-                WorkflowJob workflowJob = getWorkflowJobFromOozieClient(workflowJobId);
+                WorkflowJob workflowJob = getWorkflowJob(workflowJobId);
                 return OozieJobRecord.from(workflowJob);
             }
         } catch (Exception e) {
@@ -137,11 +136,11 @@ public class DRLGDService {
             // Check if some Oozie Actions can be retrieved for provided Oozie Job id
             List<OozieActionRecord> oozieActionRecords = oozieActionDao.getOozieJobActions(workflowJobId);
             return oozieActionRecords.isEmpty() ?
-                    OozieActionRecord.batchFrom(getWorkflowJobFromOozieClient(workflowJobId)) :
+                    OozieActionRecord.batchFrom(getWorkflowJob(workflowJobId)) :
                     oozieActionRecords;
 
         } catch (Exception e) {
-            log.error("Exception while trying to retrieve {}(s) for workflow job '{}'. Stack trace: ", tClassName, workflowJobId, e);
+            log.error("Exception while trying to retrieve {}(s) of Oozie job '{}'. Stack trace: ", tClassName, workflowJobId, e);
             return Collections.emptyList();
         }
     }

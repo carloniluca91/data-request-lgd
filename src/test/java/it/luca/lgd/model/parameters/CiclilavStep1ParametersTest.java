@@ -14,7 +14,7 @@ class CiclilavStep1ParametersTest {
 
         BiFunction<String, String, Boolean> biFunction = (start, end) ->
                 new CiclilavStep1Parameters(start, end)
-                        .areValid().getT1();
+                        .validate().getT1();
 
         String VALID_START_DATE = "2020-12-31";
         String VALID_END_DATE = "2021-01-01";
