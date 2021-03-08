@@ -8,19 +8,15 @@ import lombok.NoArgsConstructor;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-@Entity
-@Table(schema = "oozie", name = "oozie_job")
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class OozieJobRecord extends DRLGDRecord {
 
     @Id private String jobLauncherId;

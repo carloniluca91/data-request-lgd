@@ -1,15 +1,12 @@
 package it.luca.lgd.jdbc.table;
 
-import it.luca.lgd.exception.IllegalTableEntityException;
 import it.luca.lgd.jdbc.record.DRLGDRecord;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
-import javax.persistence.Table;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 public abstract class DRLGDTable<R extends DRLGDRecord> {
@@ -37,17 +34,10 @@ public abstract class DRLGDTable<R extends DRLGDRecord> {
 
     public String schema() {
 
-        return Optional.ofNullable(tClass.getAnnotation(Table.class))
-                .map(Table::schema)
-                .orElseThrow(() -> new IllegalTableEntityException(tClass, "schema"));
+        return "oozie";
     }
 
-    public String tableName() {
-
-        return Optional.ofNullable(tClass.getAnnotation(Table.class))
-                .map(Table::name)
-                .orElseThrow(() -> new IllegalTableEntityException(tClass, "name"));
-    }
+    public abstract String tableName();
 
     public String tClassName() {
         return tClass.getSimpleName();

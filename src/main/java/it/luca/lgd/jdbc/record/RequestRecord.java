@@ -1,6 +1,7 @@
 package it.luca.lgd.jdbc.record;
 
 import it.luca.lgd.model.parameters.JobParameters;
+import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.utils.JsonUtils;
 import it.luca.lgd.utils.Tuple2;
 import lombok.Getter;
@@ -13,8 +14,6 @@ import java.sql.Timestamp;
 
 @Getter
 @Setter
-@Entity
-@Table(schema = "oozie", name = "request")
 @NoArgsConstructor
 public class RequestRecord extends DRLGDRecord {
 
@@ -27,9 +26,10 @@ public class RequestRecord extends DRLGDRecord {
     private Integer requestId;
 
     private String requestUser;
+    private WorkflowJobId workflowJobId;
     private Date requestDate;
     private Timestamp requestTime;
-    private String requestParameters;
+    private JobParameters requestParameters;
     private String jobLauncherId;
     private String jobSubmissionCode;
     private String jobSubmissionError;
@@ -40,7 +40,7 @@ public class RequestRecord extends DRLGDRecord {
         RequestRecord.setRequestUser("cloudera");
         RequestRecord.setRequestDate(new Date(System.currentTimeMillis()));
         RequestRecord.setRequestTime(new Timestamp(System.currentTimeMillis()));
-        RequestRecord.setRequestParameters(JsonUtils.objToString(requestParameters));
+        RequestRecord.setRequestParameters(requestParameters);
         if (tuple2.getT1()) {
 
             RequestRecord.setJobLauncherId(tuple2.getT2());
@@ -63,8 +63,7 @@ public class RequestRecord extends DRLGDRecord {
 
     @Override
     public Object[] allValues() {
-        return new Object[]{requestUser, requestDate, requestTime,
-                JsonUtils.objToString(requestParameters), jobLauncherId,
-                jobSubmissionCode, jobSubmissionError};
+        return new Object[]{requestUser, workflowJobId.getId(), requestDate, requestTime,
+                JsonUtils.objToString(requestParameters), jobLauncherId, jobSubmissionCode, jobSubmissionError};
     }
 }

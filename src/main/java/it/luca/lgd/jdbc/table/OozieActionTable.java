@@ -45,6 +45,11 @@ public class OozieActionTable extends DRLGDTable<OozieActionRecord> {
     }
 
     @Override
+    public String tableName() {
+        return "oozie_action";
+    }
+
+    @Override
     protected OozieActionRecord fromResultSetToTableRecord(ResultSet rs) throws SQLException {
 
         OozieActionRecord oozieActionRecord = new OozieActionRecord();

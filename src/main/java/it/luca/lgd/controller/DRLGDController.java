@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/jobs")
 public class DRLGDController {
 
     @Autowired
@@ -69,7 +69,7 @@ public class DRLGDController {
     *************************
     */
 
-    @GetMapping("/job/status")
+    @GetMapping("/status")
     public OozieJobRecord getOozieJob(@RequestParam("id") String workflowJobId) {
 
         String className = OozieJobRecord.class.getSimpleName();
@@ -79,7 +79,7 @@ public class DRLGDController {
         return oozieJobRecord;
     }
 
-    @GetMapping("job/actions")
+    @GetMapping("/actions")
     public List<OozieActionRecord> getOozieJobActions(@RequestParam("id") String workflowJobId) {
 
         String className = OozieActionRecord.class.getSimpleName();

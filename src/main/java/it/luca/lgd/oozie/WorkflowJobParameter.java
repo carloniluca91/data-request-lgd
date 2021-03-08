@@ -20,7 +20,7 @@ public enum WorkflowJobParameter {
     WORKFLOW_PATH(OozieClient.APP_PATH),
 
     // CANCELLED_FLIGHTS
-    CANCELLED_FLIGHTS_APP_PATH("ciclilavStep1_workflow"),
+    CANCELLED_FLIGHTS_APP_PATH("cancelledFlights_appPath"),
 
     // FPASPERD
     FPASPERD_WORKFLOW("fpasperd_workflow"),

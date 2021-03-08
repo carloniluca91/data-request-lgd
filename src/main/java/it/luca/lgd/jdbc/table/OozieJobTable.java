@@ -40,6 +40,11 @@ public class OozieJobTable extends DRLGDTable<OozieJobRecord> {
     }
 
     @Override
+    public String tableName() {
+        return "oozie_job";
+    }
+
+    @Override
     protected OozieJobRecord fromResultSetToTableRecord(ResultSet rs) throws SQLException {
 
         OozieJobRecord oozieJobRecord = new OozieJobRecord();

@@ -1,17 +1,22 @@
 package it.luca.lgd.jdbc.table;
 
 import it.luca.lgd.jdbc.record.RequestRecord;
+import it.luca.lgd.model.parameters.JobParameters;
+import it.luca.lgd.oozie.WorkflowJobId;
+import it.luca.lgd.utils.JsonUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class RequestTable extends DRLGDTable<RequestRecord> {
 
     public final String REQUEST_ID = "request_id";
     public final String REQUEST_USER = "request_user";
+    public final String JOB_ID = "job_id";
     public final String REQUEST_DATE = "request_date";
     public final String REQUEST_TIME = "request_time";
     public final String REQUEST_PARAMETERS = "request_parameters";
@@ -25,8 +30,8 @@ public class RequestTable extends DRLGDTable<RequestRecord> {
 
     @Override
     public List<String> allColumns() {
-        return Arrays.asList(REQUEST_DATE, REQUEST_TIME, REQUEST_PARAMETERS, JOB_LAUNCHER_ID,
-                JOB_SUBMISSION_CODE, JOB_SUBMISSION_ERROR);
+        return Arrays.asList(REQUEST_USER, JOB_ID, REQUEST_DATE, REQUEST_TIME, REQUEST_PARAMETERS,
+                JOB_LAUNCHER_ID, JOB_SUBMISSION_CODE, JOB_SUBMISSION_ERROR);
     }
 
     @Override
@@ -36,9 +41,12 @@ public class RequestTable extends DRLGDTable<RequestRecord> {
 
         requestRecord.setRequestId(rs.getInt(REQUEST_ID));
         requestRecord.setRequestUser(rs.getString(REQUEST_USER));
+        requestRecord.setWorkflowJobId(WorkflowJobId.withId(rs.getString(JOB_ID)));
         requestRecord.setRequestDate(rs.getDate(REQUEST_DATE));
         requestRecord.setRequestTime(rs.getTimestamp(REQUEST_TIME));
-        requestRecord.setRequestParameters(rs.getString(REQUEST_PARAMETERS));
+        requestRecord.setRequestParameters(Optional.ofNullable(rs.getString(REQUEST_PARAMETERS))
+                .map(s -> JsonUtils.stringToObj(s, JobParameters.class))
+                .orElse(null));
         requestRecord.setJobLauncherId(rs.getString(JOB_LAUNCHER_ID));
         requestRecord.setJobSubmissionCode(rs.getString(JOB_SUBMISSION_CODE));
         requestRecord.setJobSubmissionError(rs.getString(JOB_SUBMISSION_ERROR));
@@ -52,4 +60,7 @@ public class RequestTable extends DRLGDTable<RequestRecord> {
     public List<String> primaryKeyColumns() {
         return Collections.singletonList(REQUEST_ID);
     }
+
+    @Override
+    public String tableName() { return "request"; }
 }

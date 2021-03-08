@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Comparator;
@@ -18,11 +16,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-@Entity
-@Table(schema = "oozie", name = "oozie_action")
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class OozieActionRecord extends DRLGDRecord {
 
     @Id private String jobLauncherId;

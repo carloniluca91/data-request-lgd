@@ -15,18 +15,24 @@ public class JsonUtils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
+            log.error("Caught {} exception. Stack trace: ", e.getClass().getSimpleName(), e);
             return null;
         }
     }
 
-    public static <T> T stringToObj(String string, Class<T> tClass) throws JsonProcessingException {
+    public static <T> T stringToObj(String string, Class<T> tClass) {
 
-        String tClassName = tClass.getName();
-        log.info("Deserializing JSON string to object of type {}", tClassName);
-        T t = objectMapper
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .readValue(string, tClass);
-        log.info("Deserialized JSON string to object of type {}", tClassName);
-        return t;
+        try {
+            String tClassName = tClass.getName();
+            log.info("Deserializing JSON string to object of type {}", tClassName);
+            T t = objectMapper
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .readValue(string, tClass);
+            log.info("Deserialized JSON string to object of type {}", tClassName);
+            return t;
+        } catch (JsonProcessingException e) {
+            log.error("Caught {} exception. Stack trace: ", e.getClass().getSimpleName(), e);
+            return null;
+        }
     }
 }

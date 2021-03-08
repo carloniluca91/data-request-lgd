@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -56,14 +55,10 @@ public abstract class DRLGDDao<R extends DRLGDRecord, T extends DRLGDTable<R>> {
     public void save(R object) {
 
         String tClassName = table.tClassName();
-        String primaryKeyColumns = String.join("|", table.primaryKeyColumns());
-        String primaryKeyValues = Arrays.stream(object.primaryKeyValues())
-                .map(Object::toString)
-                .collect(Collectors.joining("|"));
         String allColumns = String.join(", ", table.allColumns());
         String nQuestionMarks = String.join(", ", Collections.nCopies(this.table.allColumns().size(), "?"));
 
-        log.info("Saving {} object with primaryKey ({}) = ({})", tClassName, primaryKeyColumns, primaryKeyValues);
+        log.info("Saving {} object into table '{}'", tClassName, fQTableName());
         String INSERT_INTO = String.format("INSERT INTO %s (%s) VALUES (%s)", fQTableName(), allColumns, nQuestionMarks);
         jdbcTemplate.update(INSERT_INTO, object.allValues());
         log.info("Saved {} object into table '{}'", tClassName, fQTableName());
