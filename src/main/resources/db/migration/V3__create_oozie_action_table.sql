@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS oozie_action (
     action_error_message TEXT,
     action_tracking_url TEXT,
     ts_insert TIMESTAMP NOT NULL DEFAULT NOW(),
-    dt_insert DATE NOT NULL DEFAULT NOW()::DATE
+    dt_insert DATE NOT NULL DEFAULT NOW()::DATE,
     PRIMARY KEY (job_launcher_id, action_id),
     CONSTRAINT oozie_action_job_launcher_id_fk
     FOREIGN KEY (job_launcher_id)

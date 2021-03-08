@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS oozie_job (
     job_completed_actions INT NOT NULL,
     job_tracking_url TEXT,
     ts_insert TIMESTAMP NOT NULL DEFAULT NOW(),
-    dt_insert DATE NOT NULL DEFAULT NOW()::DATE
+    dt_insert DATE NOT NULL DEFAULT NOW()::DATE,
     PRIMARY KEY (job_launcher_id)
 );
 

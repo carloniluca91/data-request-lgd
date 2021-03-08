@@ -22,7 +22,7 @@ public class RequestRecord extends DRLGDRecord {
     public static final String KO = "KO";
 
     @Id
-    @SequenceGenerator(name = "request_id", sequenceName = "oozie_request_id")
+    @SequenceGenerator(name = "request_id", sequenceName = "oozie_request_id", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "request_id")
     private Integer requestId;
 
