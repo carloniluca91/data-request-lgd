@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
@@ -18,7 +19,12 @@ public abstract class JobParameters {
 
     public abstract Map<WorkflowJobParameter, String> toMap();
 
-    protected abstract String asString();
+    protected String asString() {
+
+        return toMap().entrySet().stream()
+                .map(e -> String.format("%s = %s", e.getKey(), e.getValue()))
+                .collect(Collectors.joining(", "));
+    }
 
     @Override
     public String toString() {

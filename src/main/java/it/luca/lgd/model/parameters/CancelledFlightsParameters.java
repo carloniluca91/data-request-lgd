@@ -13,9 +13,14 @@ import java.util.Map;
 @Getter
 public class CancelledFlightsParameters extends JobParameters {
 
-    @NotBlank private final String startDate;
-    @NotBlank private final String endDate;
-    @NotBlank private final String iataCode;
+    @NotBlank
+    private final String startDate;
+
+    @NotBlank
+    private final String endDate;
+
+    @NotBlank
+    private final String iataCode;
 
     public CancelledFlightsParameters(String startDate, String endDate, String iataCode) {
 
@@ -28,10 +33,10 @@ public class CancelledFlightsParameters extends JobParameters {
     @Override
     public Tuple2<Boolean, String> validate() {
 
-        String defaultFormat = "yyyy-MM-dd";
-        return TimeUtils.isValidDate(startDate, defaultFormat) ?
-                TimeUtils.isValidDate(endDate, defaultFormat) ?
-                        TimeUtils.isBeforeOrEqual(startDate, endDate, defaultFormat) ?
+        String DEFAULT_FORMAT = "yyyy-MM-dd";
+        return TimeUtils.isValidDate(startDate, DEFAULT_FORMAT) ?
+                TimeUtils.isValidDate(endDate, DEFAULT_FORMAT) ?
+                        TimeUtils.isBeforeOrEqual(startDate, endDate, DEFAULT_FORMAT) ?
                                 new Tuple2<>(true, null) :
                                 // StartDate greater than endDate
                                 new Tuple2<>(false, String.format("%s (%s) is greater than %s (%s)",
@@ -40,11 +45,11 @@ public class CancelledFlightsParameters extends JobParameters {
 
                         // Invalid endDate
                         new Tuple2<>(false, String.format("Invalid %s (%s). It should follow format '%s'",
-                                WorkflowJobParameter.END_DATE.getName(), endDate, defaultFormat)) :
+                                WorkflowJobParameter.END_DATE.getName(), endDate, DEFAULT_FORMAT)) :
 
                 // Invalid startDate
                 new Tuple2<>(false, String.format("Invalid %s (%s). It should follow format '%s'",
-                        WorkflowJobParameter.START_DATE.getName(), startDate, defaultFormat));
+                        WorkflowJobParameter.START_DATE.getName(), startDate, DEFAULT_FORMAT));
     }
 
     @Override
@@ -53,14 +58,7 @@ public class CancelledFlightsParameters extends JobParameters {
         return new HashMap<WorkflowJobParameter, String>() {{
             put(WorkflowJobParameter.START_DATE, startDate);
             put(WorkflowJobParameter.END_DATE, endDate);
+            put(WorkflowJobParameter.IATA_CODE, iataCode);
         }};
-    }
-
-    @Override
-    protected String asString() {
-
-        return String.format("%s: '%s', %s: '%s'",
-                WorkflowJobParameter.START_DATE.getName(), startDate,
-                WorkflowJobParameter.END_DATE.getName(), endDate);
     }
 }

@@ -31,7 +31,7 @@ public class OozieJobTable extends DRLGDTable<OozieJobRecord> {
 
         return Arrays.asList(JOB_LAUNCHER_ID, JOB_TYPE, JOB_NAME, JOB_FINAL_STATUS, JOB_START_DATE,
                 JOB_START_TIME, JOB_END_DATE, JOB_END_TIME, JOB_TOTAL_ACTIONS, JOB_COMPLETED_ACTIONS,
-                JOB_TRACKING_URL, RECORD_INSERT_TIME, LAST_RECORD_UPDATE_TIME);
+                JOB_TRACKING_URL, TS_INSERT, DT_INSERT);
     }
 
     @Override
@@ -55,8 +55,8 @@ public class OozieJobTable extends DRLGDTable<OozieJobRecord> {
         oozieJobRecord.setJobTotalActions(rs.getInt(JOB_TOTAL_ACTIONS));
         oozieJobRecord.setJobCompletedActions(rs.getInt(JOB_COMPLETED_ACTIONS));
         oozieJobRecord.setJobTrackingUrl(rs.getString(JOB_TRACKING_URL));
-        oozieJobRecord.setTsInsert(rs.getTimestamp(RECORD_INSERT_TIME));
-        oozieJobRecord.setDtInsert(rs.getDate(LAST_RECORD_UPDATE_TIME));
+        oozieJobRecord.setTsInsert(rs.getTimestamp(TS_INSERT));
+        oozieJobRecord.setDtInsert(rs.getDate(DT_INSERT));
 
         return oozieJobRecord;
     }

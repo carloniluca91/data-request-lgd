@@ -1,8 +1,6 @@
 package it.luca.lgd.utils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -11,20 +9,6 @@ public class TimeUtils {
     public static String changeDateFormat(String date, String oldFormat, String newFormat) {
 
         return toString(toLocalDate(date, oldFormat), newFormat);
-    }
-
-    public static LocalDate fromUtilDateToLocalDate(java.util.Date date) {
-
-        return Optional.ofNullable(date)
-                .map(d -> d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-                .orElse(null);
-    }
-
-    public static LocalDateTime fromUtilDateToLocalDateTime(java.util.Date date) {
-
-        return Optional.ofNullable(date)
-                .map(d -> LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()))
-                .orElse(null);
     }
 
     public static java.sql.Date fromUtilDateToSqlDate(java.util.Date date) {

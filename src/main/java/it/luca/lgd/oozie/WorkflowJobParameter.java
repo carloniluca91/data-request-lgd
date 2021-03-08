@@ -14,14 +14,13 @@ public enum WorkflowJobParameter {
 
     // common parameters
     END_DATE("end_date"),
-    PIG_SCRIPT_PATH("pigScript"),
     START_DATE("start_date"),
+    IATA_CODE("iata_code"),
     WORKFLOW_NAME("workflowName"),
     WORKFLOW_PATH(OozieClient.APP_PATH),
 
-    // CICLILAV_STEP1
+    // CANCELLED_FLIGHTS
     CANCELLED_FLIGHTS_APP_PATH("ciclilavStep1_workflow"),
-    CICLILAV_STEP1_PIG("ciclilavStep1_pig"),
 
     // FPASPERD
     FPASPERD_WORKFLOW("fpasperd_workflow"),

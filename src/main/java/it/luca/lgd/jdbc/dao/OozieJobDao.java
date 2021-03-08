@@ -12,8 +12,4 @@ public abstract class OozieJobDao extends DRLGDDao<OozieJobRecord, OozieJobTable
     public OozieJobDao() {
         super(new OozieJobTable());
     }
-
-    public abstract List<OozieJobRecord> lastNOozieJobs(int n);
-
-    public abstract Optional<OozieJobRecord> lastOozieJobWithStatus(WorkflowJob.Status status);
 }

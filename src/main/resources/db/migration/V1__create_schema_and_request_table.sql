@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS request (
 
     request_id INT NOT NULL DEFAULT NEXTVAL('oozie_request_id'),
     request_user TEXT NOT NULL,
-    request_job_id TEXT NOT NULL,
     request_date DATE NOT NULL,
     request_time TIMESTAMP NOT NULL,
     request_parameters TEXT,

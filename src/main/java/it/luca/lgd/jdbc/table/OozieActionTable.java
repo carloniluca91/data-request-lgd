@@ -35,7 +35,7 @@ public class OozieActionTable extends DRLGDTable<OozieActionRecord> {
         return Arrays.asList(JOB_LAUNCHER_ID, ACTION_ID, ACTION_TYPE, ACTION_NAME, ACTION_NUMBER, ACTION_STATUS,
                 ACTION_CHILD_ID, ACTION_CHILD_YARN_APPLICATION_ID, ACTION_START_DATE, ACTION_START_TIME,
                 ACTION_END_DATE, ACTION_END_TIME, ACTION_ERROR_CODE, ACTION_ERROR_MESSAGE, ACTION_TRACKING_URL,
-                RECORD_INSERT_TIME, LAST_RECORD_UPDATE_TIME);
+                TS_INSERT, DT_INSERT);
     }
 
     @Override
@@ -64,8 +64,8 @@ public class OozieActionTable extends DRLGDTable<OozieActionRecord> {
         oozieActionRecord.setActionErrorCode(rs.getString(ACTION_ERROR_CODE));
         oozieActionRecord.setActionErrorMessage(rs.getString(ACTION_ERROR_MESSAGE));
         oozieActionRecord.setActionTrackingUrl(rs.getString(ACTION_TRACKING_URL));
-        oozieActionRecord.setTsInsert(rs.getTimestamp(RECORD_INSERT_TIME));
-        oozieActionRecord.setDtInsert(rs.getDate(LAST_RECORD_UPDATE_TIME));
+        oozieActionRecord.setTsInsert(rs.getTimestamp(TS_INSERT));
+        oozieActionRecord.setDtInsert(rs.getDate(DT_INSERT));
 
         return oozieActionRecord;
     }

@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class TimeUtilsTest {
 
     private final String startDate = "2021-01-01";
-    private final String endDate = "2021-02-01";
     private final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
     private final String OTHER_FORMAT = "yyyyMMdd";
 
@@ -24,6 +23,7 @@ class TimeUtilsTest {
     @Test
     public void isBeforeOrEqual() {
 
+        String endDate = "2021-02-01";
         assertTrue(TimeUtils.isBeforeOrEqual(startDate, endDate, DEFAULT_DATE_FORMAT));
         assertTrue(TimeUtils.isBeforeOrEqual(startDate, startDate, DEFAULT_DATE_FORMAT));
         assertFalse(TimeUtils.isBeforeOrEqual(endDate, startDate, DEFAULT_DATE_FORMAT));

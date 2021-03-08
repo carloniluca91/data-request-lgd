@@ -4,7 +4,7 @@ import it.luca.lgd.jdbc.record.OozieActionRecord;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
 import it.luca.lgd.model.parameters.CancelledFlightsParameters;
 import it.luca.lgd.model.parameters.JobParameters;
-import it.luca.lgd.model.response.WorkflowJobResponse;
+import it.luca.lgd.jdbc.record.RequestRecord;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.service.DRLGDService;
 import it.luca.lgd.utils.Tuple2;
@@ -31,35 +31,36 @@ public class DRLGDController {
      *************************
      */
 
-    private <T extends JobParameters> WorkflowJobResponse<T> runOozieJob(T jobParameters) {
+    private <T extends JobParameters> RequestRecord runOozieJob(T jobParameters) {
 
         Tuple2<Boolean, String> inputValidation = jobParameters.validate();
         WorkflowJobId workflowJobId = jobParameters.getWorkflowJobId();
+        RequestRecord requestRecord;
         if (inputValidation.getT1()) {
 
             // If provided input matches given criterium, run workflow job
             log.info("Successsully validated input for workflow job '{}'. Parameters: {}", workflowJobId.getId(), jobParameters.toString());
-            return WorkflowJobResponse.from(jobParameters, drlgdService.runWorkflowJob(workflowJobId, jobParameters.toMap()));
+            requestRecord = RequestRecord.from(jobParameters, drlgdService.runWorkflowJob(workflowJobId, jobParameters.toMap()));
         } else {
 
             // Otherwise, report the issue
             String errorMsg = String.format("Invalid input for workflow job '%s'. Rationale: %s", workflowJobId.getId(), inputValidation.getT2());
             log.warn(errorMsg);
-            return WorkflowJobResponse.from(jobParameters, inputValidation);
+            requestRecord = RequestRecord.from(jobParameters, inputValidation);
         }
+
+        drlgdService.insertRequestRecord(requestRecord);
+        return requestRecord;
     }
 
     @PostMapping("/submit/cancelled_flights")
-    public WorkflowJobResponse<CancelledFlightsParameters> runCancelledFlightsJob(@Valid @RequestBody CancelledFlightsParameters parameters) {
+    public RequestRecord runCancelledFlightsJob(@Valid @RequestBody CancelledFlightsParameters parameters) {
 
         String workflowJobId = parameters.getWorkflowJobId().getId();
         log.info("Received a request for running workflow job '{}'", workflowJobId);
-        WorkflowJobResponse<CancelledFlightsParameters> workflowJobResponse = runOozieJob(parameters);
-        log.info("Successfully retrieved {}<{}> for workflow job '{}'",
-                WorkflowJobResponse.class.getSimpleName(),
-                CancelledFlightsParameters.class.getSimpleName(),
-                workflowJobId);
-        return workflowJobResponse;
+        RequestRecord RequestRecord = runOozieJob(parameters);
+        log.info("Successfully retrieved {} for workflow job '{}'", RequestRecord.class.getSimpleName(), workflowJobId);
+        return RequestRecord;
     }
 
     /*
@@ -88,17 +89,5 @@ public class DRLGDController {
                 .collect(Collectors.toList());
         log.info("Successfully retrieved {} {}(s) related to workflow job '{}'", className, oozieActionRecords.size(), workflowJobId);
         return oozieActionRecords;
-    }
-
-    @GetMapping("/jobs/last")
-    public List<OozieJobRecord> getLastNOozieJobs(@Valid @RequestParam(name = "n", required = false, defaultValue = "1") Integer n) {
-
-        String className = OozieJobRecord.class.getSimpleName();
-        log.info("Received a request for getting {} of last {} workflow job(s)", className, n);
-        List<OozieJobRecord> oozieJobRecords = drlgdService.getLastOozieJobs(n).stream()
-                .sorted(Comparator.comparing(OozieJobRecord::getJobStartTime).reversed())
-                .collect(Collectors.toList());
-        log.info("Successfully retrieved {} of last {} (found {}) workflow job(s)", className, n, oozieJobRecords.size());
-        return oozieJobRecords;
     }
 }

@@ -14,8 +14,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public abstract class DRLGDTable<R extends DRLGDRecord> {
 
-    protected final String RECORD_INSERT_TIME = "record_insert_time";
-    protected final String LAST_RECORD_UPDATE_TIME = "last_record_update_time";
+    protected final String TS_INSERT = "ts_insert";
+    protected final String DT_INSERT = "dt_insert";
 
     private final Class<R> tClass;
 

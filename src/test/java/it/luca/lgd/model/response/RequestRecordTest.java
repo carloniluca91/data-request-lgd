@@ -1,12 +1,13 @@
 package it.luca.lgd.model.response;
 
+import it.luca.lgd.jdbc.record.RequestRecord;
 import it.luca.lgd.utils.Tuple2;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class WorkflowJobResponseTest {
+class RequestRecordTest {
 
     @Test
     public void fromTuple2() {
@@ -14,15 +15,15 @@ class WorkflowJobResponseTest {
         String OK_MSG = "That's right", KO_MSG = "Try again";
 
         Tuple2<Boolean, String> trueTuple = new Tuple2<>(true, OK_MSG);
-        WorkflowJobResponse<?> okResponse = WorkflowJobResponse.from(null, trueTuple);
-        assertEquals(okResponse.getJobSubmission(), WorkflowJobResponse.OK);
-        assertEquals(okResponse.getOozieWorkflowJobId(), OK_MSG);
+        RequestRecord okResponse = RequestRecord.from(null, trueTuple);
+        assertEquals(okResponse.getJobSubmissionCode(), RequestRecord.OK);
+        assertEquals(okResponse.getJobLauncherId(), OK_MSG);
         assertNull(okResponse.getJobSubmissionError());
 
         Tuple2<Boolean, String> falseTuple = new Tuple2<>(false, KO_MSG);
-        WorkflowJobResponse<?> koResponse = WorkflowJobResponse.from(null, falseTuple);
-        assertEquals(koResponse.getJobSubmission(), WorkflowJobResponse.KO);
+        RequestRecord koResponse = RequestRecord.from(null, falseTuple);
+        assertEquals(koResponse.getJobSubmissionCode(), RequestRecord.KO);
         assertEquals(koResponse.getJobSubmissionError(), KO_MSG);
-        assertNull(koResponse.getOozieWorkflowJobId());
+        assertNull(koResponse.getJobLauncherId());
     }
 }

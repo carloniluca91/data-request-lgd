@@ -2,8 +2,10 @@ package it.luca.lgd.service;
 
 import it.luca.lgd.jdbc.dao.OozieActionDao;
 import it.luca.lgd.jdbc.dao.OozieJobDao;
+import it.luca.lgd.jdbc.dao.RequestDao;
 import it.luca.lgd.jdbc.record.OozieActionRecord;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
+import it.luca.lgd.jdbc.record.RequestRecord;
 import it.luca.lgd.oozie.OozieJobStatuses;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.oozie.WorkflowJobParameter;
@@ -12,7 +14,6 @@ import it.luca.lgd.utils.JobProperties;
 import it.luca.lgd.utils.Tuple2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oozie.client.OozieClient;
-import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,9 @@ public class DRLGDService {
     @Autowired
     private OozieActionDao oozieActionDao;
 
+    @Autowired
+    private RequestDao requestDao;
+
     private OozieClient startOozieClient() {
 
         OozieClient oozieClient = new OozieClient(oozieServerUrl);
@@ -43,7 +47,7 @@ public class DRLGDService {
         return oozieClient;
     }
 
-    private WorkflowJob getWorkflowJob(String workflowJobId) throws OozieClientException {
+    private WorkflowJob getWorkflowJob(String workflowJobId) throws Exception {
 
         // If job has completed, insert records on both Oozie Job and Oozie Action table
         log.info("Retrieving information about workflow job '{}' by means of {} API", workflowJobId, OozieClient.class.getName());
@@ -65,6 +69,11 @@ public class DRLGDService {
      * OOZIE JOBS SUBMISSION *
      *************************
      */
+
+    public void insertRequestRecord(RequestRecord requestRecord) {
+
+        requestDao.save(requestRecord);
+    }
 
     public Tuple2<Boolean, String> runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterStringMap) {
 
@@ -139,10 +148,5 @@ public class DRLGDService {
             log.error("Exception while trying to retrieve {}(s) of Oozie job '{}'. Stack trace: ", tClassName, workflowJobId, e);
             return Collections.emptyList();
         }
-    }
-
-    public List<OozieJobRecord> getLastOozieJobs(int n) {
-
-        return oozieJobDao.lastNOozieJobs(n);
     }
 }
