@@ -2,12 +2,11 @@ package it.luca.lgd.jdbc.record;
 
 import lombok.Data;
 
-import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 
 @Data
-public abstract class DRLGDRecord implements Serializable {
+public abstract class DRLGDRecord {
 
     protected Timestamp tsInsert;
     protected Date dtInsert;

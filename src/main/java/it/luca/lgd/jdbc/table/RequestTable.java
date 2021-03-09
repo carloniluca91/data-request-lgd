@@ -1,9 +1,9 @@
 package it.luca.lgd.jdbc.table;
 
 import it.luca.lgd.jdbc.record.RequestRecord;
-import it.luca.lgd.model.parameters.JobParameters;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.utils.JsonUtils;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,17 +35,32 @@ public class RequestTable extends DRLGDTable<RequestRecord> {
     }
 
     @Override
+    public MapSqlParameterSource fromRecordToMapSqlParameterSource(RequestRecord record) {
+
+        return new MapSqlParameterSource()
+                .addValue(REQUEST_USER, record.getRequestUser())
+                .addValue(JOB_ID, record.getWorkflowJobId().getId())
+                .addValue(REQUEST_DATE, record.getRequestDate())
+                .addValue(REQUEST_TIME, record.getRequestTime())
+                .addValue(REQUEST_PARAMETERS, JsonUtils.objToString(record.getRequestParameters()))
+                .addValue(JOB_LAUNCHER_ID, record.getJobLauncherId())
+                .addValue(JOB_SUBMISSION_CODE, record.getJobSubmissionCode())
+                .addValue(JOB_SUBMISSION_ERROR, record.getJobSubmissionError());
+    }
+
+    @Override
     protected RequestRecord fromResultSetToTableRecord(ResultSet rs) throws SQLException {
 
         RequestRecord requestRecord = new RequestRecord();
 
         requestRecord.setRequestId(rs.getInt(REQUEST_ID));
         requestRecord.setRequestUser(rs.getString(REQUEST_USER));
-        requestRecord.setWorkflowJobId(WorkflowJobId.withId(rs.getString(JOB_ID)));
+        WorkflowJobId workflowJobId = WorkflowJobId.withId(rs.getString(JOB_ID));
+        requestRecord.setWorkflowJobId(workflowJobId);
         requestRecord.setRequestDate(rs.getDate(REQUEST_DATE));
         requestRecord.setRequestTime(rs.getTimestamp(REQUEST_TIME));
         requestRecord.setRequestParameters(Optional.ofNullable(rs.getString(REQUEST_PARAMETERS))
-                .map(s -> JsonUtils.stringToObj(s, JobParameters.class))
+                .map(s -> JsonUtils.stringToObj(s, workflowJobId.getParameterClass()))
                 .orElse(null));
         requestRecord.setJobLauncherId(rs.getString(JOB_LAUNCHER_ID));
         requestRecord.setJobSubmissionCode(rs.getString(JOB_SUBMISSION_CODE));

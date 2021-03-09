@@ -1,5 +1,7 @@
 package it.luca.lgd.oozie;
 
+import it.luca.lgd.model.parameters.CancelledFlightsParameters;
+import it.luca.lgd.model.parameters.JobParameters;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,10 +13,11 @@ import java.util.Map;
 @AllArgsConstructor
 public enum WorkflowJobId {
 
-    CANCELLED_FLIGHTS("CANCELLED_FLIGHTS"),
-    FPASPERD("FPASPERD");
+    CANCELLED_FLIGHTS("CANCELLED_FLIGHTS", CancelledFlightsParameters.class),
+    FPASPERD("FPASPERD", CancelledFlightsParameters.class);
 
     private final String id;
+    private final Class<? extends JobParameters> parameterClass;
 
     private static final Map<String, WorkflowJobId> map = new HashMap<>();
     static { Arrays.stream(WorkflowJobId.values()).forEach(v -> map.put(v.getId(), v)); }

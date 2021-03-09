@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/jobs")
+@RequestMapping("/api/v1/job")
 public class DRLGDController {
 
     @Autowired
@@ -31,34 +31,34 @@ public class DRLGDController {
      *************************
      */
 
-    private <T extends JobParameters> RequestRecord runOozieJob(T jobParameters) {
+    private <T extends JobParameters> RequestRecord runOozieJob(WorkflowJobId workflowJobId, T jobParameters) {
 
         Tuple2<Boolean, String> inputValidation = jobParameters.validate();
-        WorkflowJobId workflowJobId = jobParameters.getWorkflowJobId();
         RequestRecord requestRecord;
         if (inputValidation.getT1()) {
 
             // If provided input matches given criterium, run workflow job
-            log.info("Successsully validated input for workflow job '{}'. Parameters: {}", workflowJobId.getId(), jobParameters.toString());
-            requestRecord = RequestRecord.from(jobParameters, drlgdService.runWorkflowJob(workflowJobId, jobParameters.toMap()));
+            log.info("Successsully validated input for workflow job '{}'. Parameters: {}", workflowJobId.getId(), jobParameters.asString());
+            requestRecord = RequestRecord.from(workflowJobId, jobParameters, drlgdService.runWorkflowJob(workflowJobId, jobParameters.toMap()));
         } else {
 
             // Otherwise, report the issue
             String errorMsg = String.format("Invalid input for workflow job '%s'. Rationale: %s", workflowJobId.getId(), inputValidation.getT2());
             log.warn(errorMsg);
-            requestRecord = RequestRecord.from(jobParameters, inputValidation);
+            requestRecord = RequestRecord.from(workflowJobId, jobParameters, inputValidation);
         }
 
-        drlgdService.insertRequestRecord(requestRecord);
+        int requestId = drlgdService.insertRequestRecord(requestRecord);
+        requestRecord.setRequestId(requestId);
         return requestRecord;
     }
 
-    @PostMapping("/submit/cancelled_flights")
+    @PostMapping("submit/cancelled_flights")
     public RequestRecord runCancelledFlightsJob(@Valid @RequestBody CancelledFlightsParameters parameters) {
 
-        String workflowJobId = parameters.getWorkflowJobId().getId();
+        String workflowJobId = WorkflowJobId.CANCELLED_FLIGHTS.getId();
         log.info("Received a request for running workflow job '{}'", workflowJobId);
-        RequestRecord RequestRecord = runOozieJob(parameters);
+        RequestRecord RequestRecord = runOozieJob(WorkflowJobId.CANCELLED_FLIGHTS, parameters);
         log.info("Successfully retrieved {} for workflow job '{}'", RequestRecord.class.getSimpleName(), workflowJobId);
         return RequestRecord;
     }

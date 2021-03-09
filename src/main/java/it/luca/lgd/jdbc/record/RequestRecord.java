@@ -34,26 +34,29 @@ public class RequestRecord extends DRLGDRecord {
     private String jobSubmissionCode;
     private String jobSubmissionError;
 
-    public static <T extends JobParameters> RequestRecord from(T requestParameters, Tuple2<Boolean, String> tuple2) {
+    public static <T extends JobParameters> RequestRecord from(WorkflowJobId workflowJobId, T jobParameters, Tuple2<Boolean, String> tuple2) {
 
-        RequestRecord RequestRecord = new RequestRecord();
-        RequestRecord.setRequestUser("cloudera");
-        RequestRecord.setRequestDate(new Date(System.currentTimeMillis()));
-        RequestRecord.setRequestTime(new Timestamp(System.currentTimeMillis()));
-        RequestRecord.setRequestParameters(requestParameters);
+        RequestRecord requestRecord = new RequestRecord();
+        requestRecord.setRequestUser("cloudera");
+        requestRecord.setWorkflowJobId(workflowJobId);
+        requestRecord.setRequestDate(new Date(System.currentTimeMillis()));
+        requestRecord.setRequestTime(new Timestamp(System.currentTimeMillis()));
+        requestRecord.setRequestParameters(jobParameters);
         if (tuple2.getT1()) {
 
-            RequestRecord.setJobLauncherId(tuple2.getT2());
-            RequestRecord.setJobSubmissionCode(OK);
-            RequestRecord.setJobSubmissionError(null);
+            requestRecord.setJobLauncherId(tuple2.getT2());
+            requestRecord.setJobSubmissionCode(OK);
+            requestRecord.setJobSubmissionError(null);
         } else {
 
-            RequestRecord.setJobLauncherId(null);
-            RequestRecord.setJobSubmissionCode(KO);
-            RequestRecord.setJobSubmissionError(tuple2.getT2());
+            requestRecord.setJobLauncherId(null);
+            requestRecord.setJobSubmissionCode(KO);
+            requestRecord.setJobSubmissionError(tuple2.getT2());
         }
 
-        return RequestRecord;
+        requestRecord.setTsInsert(new Timestamp(System.currentTimeMillis()));
+        requestRecord.setDtInsert(new Date(System.currentTimeMillis()));
+        return requestRecord;
     }
 
     @Override

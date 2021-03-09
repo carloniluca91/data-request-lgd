@@ -28,8 +28,8 @@ import java.util.Optional;
 @Service
 public class DRLGDService {
 
-    @Value("${oozie.server.url}")
-    private String oozieServerUrl;
+    @Value("${oozie.url}")
+    private String oozieUrl;
 
     @Autowired
     private OozieJobDao oozieJobDao;
@@ -42,8 +42,8 @@ public class DRLGDService {
 
     private OozieClient startOozieClient() {
 
-        OozieClient oozieClient = new OozieClient(oozieServerUrl);
-        log.info("Successfully connected to Oozie Server Url {}", oozieServerUrl);
+        OozieClient oozieClient = new OozieClient(oozieUrl);
+        log.info("Successfully connected to Oozie Server Url {}", oozieUrl);
         return oozieClient;
     }
 
@@ -70,9 +70,14 @@ public class DRLGDService {
      *************************
      */
 
-    public void insertRequestRecord(RequestRecord requestRecord) {
+    public RequestRecord getRequestRecordById(int id) {
 
-        requestDao.save(requestRecord);
+        return requestDao.findById(id).orElse(null);
+    }
+
+    public int insertRequestRecord(RequestRecord requestRecord) {
+
+        return requestDao.saveAndGetKey(requestRecord);
     }
 
     public Tuple2<Boolean, String> runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterStringMap) {

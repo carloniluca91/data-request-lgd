@@ -3,6 +3,7 @@ package it.luca.lgd.jdbc.table;
 import it.luca.lgd.jdbc.record.DRLGDRecord;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +23,11 @@ public abstract class DRLGDTable<R extends DRLGDRecord> {
 
         return resultSet -> resultSet.next() ?
                 fromResultSetToTableRecord(resultSet) : null;
+    }
+
+    public MapSqlParameterSource fromRecordToMapSqlParameterSource(R record) {
+
+        throw new UnsupportedOperationException();
     }
 
     protected abstract R fromResultSetToTableRecord(ResultSet rs) throws SQLException;

@@ -1,9 +1,9 @@
 package it.luca.lgd.model.parameters;
 
-import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.TimeUtils;
 import it.luca.lgd.utils.Tuple2;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
@@ -11,7 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public class CancelledFlightsParameters extends JobParameters {
+@AllArgsConstructor
+public class CancelledFlightsParameters implements JobParameters {
 
     @NotBlank
     private final String startDate;
@@ -21,14 +22,6 @@ public class CancelledFlightsParameters extends JobParameters {
 
     @NotBlank
     private final String iataCode;
-
-    public CancelledFlightsParameters(String startDate, String endDate, String iataCode) {
-
-        super(WorkflowJobId.CANCELLED_FLIGHTS);
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.iataCode = iataCode;
-    }
 
     @Override
     public Tuple2<Boolean, String> validate() {

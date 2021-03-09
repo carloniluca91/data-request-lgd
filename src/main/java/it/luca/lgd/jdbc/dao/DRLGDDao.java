@@ -5,6 +5,7 @@ import it.luca.lgd.jdbc.table.DRLGDTable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +51,16 @@ public abstract class DRLGDDao<R extends DRLGDRecord, T extends DRLGDTable<R>> {
         }
 
         return optionalR;
+    }
+
+    public int saveAndGetKey(R object) {
+
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        simpleJdbcInsert.withTableName(table.fQTableName())
+                .usingGeneratedKeyColumns(table.primaryKeyColumns().toArray(new String[]{}));
+        return simpleJdbcInsert
+                .executeAndReturnKey(table.fromRecordToMapSqlParameterSource(object))
+                .intValue();
     }
 
     public void save(R object) {
