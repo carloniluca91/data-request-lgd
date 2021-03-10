@@ -49,8 +49,6 @@ public class DRLGDController {
             requestRecord = RequestRecord.from(workflowJobId, jobParameters, inputValidation);
         }
 
-        Long requestId = drlgdService.saveAndGetKey(requestRecord);
-        requestRecord.setRequestId(requestId.intValue());
         return requestRecord;
     }
 

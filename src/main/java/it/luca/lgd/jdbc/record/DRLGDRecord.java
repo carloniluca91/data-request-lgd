@@ -1,21 +1,19 @@
 package it.luca.lgd.jdbc.record;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 public abstract class DRLGDRecord {
 
-    protected Timestamp tsInsert;
-    protected Date dtInsert;
+    protected LocalDateTime tsInsert;
+    protected LocalDate dtInsert;
 
-    public PreparedStatement getPreparedStatement(PreparedStatement ps) throws SQLException {
-        throw  new UnsupportedOperationException();
+    public Object[] allValues() {
+        return new Object[]{};
     }
-
-    public abstract Object[] allValues();
 }

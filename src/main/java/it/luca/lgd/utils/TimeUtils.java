@@ -1,10 +1,23 @@
 package it.luca.lgd.utils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import static it.luca.lgd.utils.Java8Utils.orNull;
+
 public class TimeUtils {
+
+    public static java.sql.Date toSqlDate(LocalDate localDate) {
+
+        return orNull(localDate, java.sql.Date::valueOf);
+    }
+
+    public static java.sql.Timestamp toSqlTimestamp(LocalDateTime localDateTime) {
+
+        return orNull(localDateTime, java.sql.Timestamp::valueOf);
+    }
 
     public static String changeDateFormat(String date, String oldFormat, String newFormat) {
 
@@ -41,13 +54,23 @@ public class TimeUtils {
                 .compareTo(toLocalDate(seconDate, commonFormat)) <= 0;
     }
 
+    public static LocalDate toLocalDate(java.sql.Date date) {
+
+        return orNull(date, java.sql.Date::toLocalDate);
+    }
+
     public static LocalDate toLocalDate(String date, String format) {
 
-        return LocalDate.parse(date, DateTimeFormatter.ofPattern(format));
+        return orNull(date, s -> LocalDate.parse(s, DateTimeFormatter.ofPattern(format)));
+    }
+
+    public static LocalDateTime toLocalDateTime(java.sql.Timestamp timestamp) {
+
+        return orNull(timestamp, java.sql.Timestamp::toLocalDateTime);
     }
 
     public static String toString(LocalDate localDate, String format) {
 
-        return localDate.format(DateTimeFormatter.ofPattern(format));
+        return orNull(localDate, l -> l.format(DateTimeFormatter.ofPattern(format)));
     }
 }

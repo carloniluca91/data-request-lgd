@@ -1,3 +1,3 @@
 SELECT *
-FROM oozie.request
+FROM request
 WHERE request_id = :id

@@ -38,7 +38,7 @@ public class RequestTable extends DRLGDTable<RequestRecord> {
         return new LinkedHashMap<String, Object>(){{
 
             put(REQUEST_USER, record.getRequestUser());
-            put(JOB_ID, record.getJobId().getId());
+            put(JOB_ID, record.getWorkflowJobId().getId());
             put(REQUEST_DATE, record.getRequestDate());
             put(REQUEST_TIME, record.getRequestTime());
             put(REQUEST_PARAMETERS, JsonUtils.objToString(record.getRequestParameters()));
@@ -58,7 +58,7 @@ public class RequestTable extends DRLGDTable<RequestRecord> {
         requestRecord.setRequestId(rs.getInt(REQUEST_ID));
         requestRecord.setRequestUser(rs.getString(REQUEST_USER));
         WorkflowJobId workflowJobId = WorkflowJobId.withId(rs.getString(JOB_ID));
-        requestRecord.setJobId(workflowJobId);
+        requestRecord.setWorkflowJobId(workflowJobId);
         requestRecord.setRequestDate(rs.getDate(REQUEST_DATE));
         requestRecord.setRequestTime(rs.getTimestamp(REQUEST_TIME));
         requestRecord.setRequestParameters(Optional.ofNullable(rs.getString(REQUEST_PARAMETERS))
