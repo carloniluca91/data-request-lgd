@@ -3,17 +3,15 @@ package it.luca.lgd.jdbc.table;
 import it.luca.lgd.jdbc.record.RequestRecord;
 import it.luca.lgd.oozie.WorkflowJobId;
 import it.luca.lgd.utils.JsonUtils;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
+import javax.persistence.Id;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class RequestTable extends DRLGDTable<RequestRecord> {
 
+    @Id
     public final String REQUEST_ID = "request_id";
     public final String REQUEST_USER = "request_user";
     public final String JOB_ID = "job_id";
@@ -31,21 +29,25 @@ public class RequestTable extends DRLGDTable<RequestRecord> {
     @Override
     public List<String> allColumns() {
         return Arrays.asList(REQUEST_USER, JOB_ID, REQUEST_DATE, REQUEST_TIME, REQUEST_PARAMETERS,
-                JOB_LAUNCHER_ID, JOB_SUBMISSION_CODE, JOB_SUBMISSION_ERROR);
+                JOB_LAUNCHER_ID, JOB_SUBMISSION_CODE, JOB_SUBMISSION_ERROR, TS_INSERT, DT_INSERT);
     }
 
     @Override
-    public MapSqlParameterSource fromRecordToMapSqlParameterSource(RequestRecord record) {
+    public Map<String, Object> fromRecordToMapSqlParameterSource(RequestRecord record) {
 
-        return new MapSqlParameterSource()
-                .addValue(REQUEST_USER, record.getRequestUser())
-                .addValue(JOB_ID, record.getWorkflowJobId().getId())
-                .addValue(REQUEST_DATE, record.getRequestDate())
-                .addValue(REQUEST_TIME, record.getRequestTime())
-                .addValue(REQUEST_PARAMETERS, JsonUtils.objToString(record.getRequestParameters()))
-                .addValue(JOB_LAUNCHER_ID, record.getJobLauncherId())
-                .addValue(JOB_SUBMISSION_CODE, record.getJobSubmissionCode())
-                .addValue(JOB_SUBMISSION_ERROR, record.getJobSubmissionError());
+        return new LinkedHashMap<String, Object>(){{
+
+            put(REQUEST_USER, record.getRequestUser());
+            put(JOB_ID, record.getJobId().getId());
+            put(REQUEST_DATE, record.getRequestDate());
+            put(REQUEST_TIME, record.getRequestTime());
+            put(REQUEST_PARAMETERS, JsonUtils.objToString(record.getRequestParameters()));
+            put(JOB_LAUNCHER_ID, record.getJobLauncherId());
+            put(JOB_SUBMISSION_CODE, record.getJobSubmissionCode());
+            put(JOB_SUBMISSION_ERROR, record.getJobSubmissionError());
+            put(TS_INSERT, record.getTsInsert());
+            put(DT_INSERT, record.getDtInsert());
+        }};
     }
 
     @Override
@@ -56,7 +58,7 @@ public class RequestTable extends DRLGDTable<RequestRecord> {
         requestRecord.setRequestId(rs.getInt(REQUEST_ID));
         requestRecord.setRequestUser(rs.getString(REQUEST_USER));
         WorkflowJobId workflowJobId = WorkflowJobId.withId(rs.getString(JOB_ID));
-        requestRecord.setWorkflowJobId(workflowJobId);
+        requestRecord.setJobId(workflowJobId);
         requestRecord.setRequestDate(rs.getDate(REQUEST_DATE));
         requestRecord.setRequestTime(rs.getTimestamp(REQUEST_TIME));
         requestRecord.setRequestParameters(Optional.ofNullable(rs.getString(REQUEST_PARAMETERS))

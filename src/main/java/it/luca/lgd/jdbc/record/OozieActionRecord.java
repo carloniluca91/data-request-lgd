@@ -9,6 +9,7 @@ import org.apache.oozie.client.WorkflowJob;
 
 import javax.persistence.Id;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.List;
@@ -72,11 +73,6 @@ public class OozieActionRecord extends DRLGDRecord {
 
                     return oozieActionRecord;
                 }).collect(Collectors.toList());
-    }
-
-    @Override
-    public Object[] primaryKeyValues() {
-        return new Object[]{jobLauncherId, actionId};
     }
 
     @Override

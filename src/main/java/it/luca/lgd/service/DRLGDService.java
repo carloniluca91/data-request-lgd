@@ -75,9 +75,9 @@ public class DRLGDService {
         return requestDao.findById(id).orElse(null);
     }
 
-    public int insertRequestRecord(RequestRecord requestRecord) {
+    public Long saveAndGetKey(RequestRecord requestRecord) {
 
-        return requestDao.saveAndGetKey(requestRecord);
+        return requestDao.saveAndGetKey(requestRecord, Long.class);
     }
 
     public Tuple2<Boolean, String> runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterStringMap) {

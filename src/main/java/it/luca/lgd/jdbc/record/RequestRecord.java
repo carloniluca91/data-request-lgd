@@ -8,8 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 @Getter
@@ -21,12 +24,10 @@ public class RequestRecord extends DRLGDRecord {
     public static final String KO = "KO";
 
     @Id
-    @SequenceGenerator(name = "request_id", sequenceName = "oozie_request_id", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "request_id")
+    @GeneratedValue
     private Integer requestId;
-
     private String requestUser;
-    private WorkflowJobId workflowJobId;
+    private WorkflowJobId jobId;
     private Date requestDate;
     private Timestamp requestTime;
     private JobParameters requestParameters;
@@ -34,11 +35,27 @@ public class RequestRecord extends DRLGDRecord {
     private String jobSubmissionCode;
     private String jobSubmissionError;
 
+    @Override
+    public PreparedStatement getPreparedStatement(PreparedStatement ps) throws SQLException {
+
+        ps.setString(1, requestUser);
+        ps.setString(2, jobId.getId());
+        ps.setDate(3, requestDate);
+        ps.setTimestamp(4, requestTime);
+        ps.setString(5, JsonUtils.objToString(requestParameters));
+        ps.setString(6, jobLauncherId);
+        ps.setString(7, jobSubmissionCode);
+        ps.setString(8, jobSubmissionError);
+        ps.setTimestamp(9, tsInsert);
+        ps.setDate(10, dtInsert);
+        return ps;
+    }
+
     public static <T extends JobParameters> RequestRecord from(WorkflowJobId workflowJobId, T jobParameters, Tuple2<Boolean, String> tuple2) {
 
         RequestRecord requestRecord = new RequestRecord();
         requestRecord.setRequestUser("cloudera");
-        requestRecord.setWorkflowJobId(workflowJobId);
+        requestRecord.setJobId(workflowJobId);
         requestRecord.setRequestDate(new Date(System.currentTimeMillis()));
         requestRecord.setRequestTime(new Timestamp(System.currentTimeMillis()));
         requestRecord.setRequestParameters(jobParameters);
@@ -60,13 +77,9 @@ public class RequestRecord extends DRLGDRecord {
     }
 
     @Override
-    public Object[] primaryKeyValues() {
-        return new Object[]{requestId};
-    }
-
-    @Override
     public Object[] allValues() {
-        return new Object[]{requestUser, workflowJobId.getId(), requestDate, requestTime,
-                JsonUtils.objToString(requestParameters), jobLauncherId, jobSubmissionCode, jobSubmissionError};
+        return new Object[]{requestUser, jobId.getId(), requestDate, requestTime,
+                JsonUtils.objToString(requestParameters), jobLauncherId, jobSubmissionCode, jobSubmissionError,
+                tsInsert, dtInsert};
     }
 }

@@ -3,11 +3,11 @@ package it.luca.lgd.jdbc.table;
 import it.luca.lgd.jdbc.record.DRLGDRecord;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 public abstract class DRLGDTable<R extends DRLGDRecord> {
@@ -25,7 +25,7 @@ public abstract class DRLGDTable<R extends DRLGDRecord> {
                 fromResultSetToTableRecord(resultSet) : null;
     }
 
-    public MapSqlParameterSource fromRecordToMapSqlParameterSource(R record) {
+    public Map<String, Object> fromRecordToMapSqlParameterSource(R record) {
 
         throw new UnsupportedOperationException();
     }

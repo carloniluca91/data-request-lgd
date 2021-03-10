@@ -39,7 +39,8 @@ public class DRLGDController {
 
             // If provided input matches given criterium, run workflow job
             log.info("Successsully validated input for workflow job '{}'. Parameters: {}", workflowJobId.getId(), jobParameters.asString());
-            requestRecord = RequestRecord.from(workflowJobId, jobParameters, drlgdService.runWorkflowJob(workflowJobId, jobParameters.toMap()));
+            Tuple2<Boolean, String> booleanStringTuple2 = drlgdService.runWorkflowJob(workflowJobId, jobParameters.toMap());
+            requestRecord = RequestRecord.from(workflowJobId, jobParameters, booleanStringTuple2);
         } else {
 
             // Otherwise, report the issue
@@ -48,8 +49,8 @@ public class DRLGDController {
             requestRecord = RequestRecord.from(workflowJobId, jobParameters, inputValidation);
         }
 
-        int requestId = drlgdService.insertRequestRecord(requestRecord);
-        requestRecord.setRequestId(requestId);
+        Long requestId = drlgdService.saveAndGetKey(requestRecord);
+        requestRecord.setRequestId(requestId.intValue());
         return requestRecord;
     }
 

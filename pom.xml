@@ -29,8 +29,7 @@
         <cdh.version>cdh5.13.0</cdh.version>
         <hadoop.version>2.6.0-${cdh.version}</hadoop.version>
         <oozie.version>4.1.0-${cdh.version}</oozie.version>
-        <lombok.version>1.18.10</lombok.version>
-        <jdbi.version>3.16.0</jdbi.version>
+        <lombok.version>1.18.16</lombok.version>
 
         <!-- Test properties -->
         <junit.version>5.5.2</junit.version>
@@ -44,18 +43,6 @@
             <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
         </repository>
     </repositories>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jdbi</groupId>
-                <artifactId>jdbi3-bom</artifactId>
-                <type>pom</type>
-                <version>${jdbi.version}</version>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
 
@@ -89,17 +76,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.jdbi/jdbi3-core -->
-        <dependency>
-            <groupId>org.jdbi</groupId>
-            <artifactId>jdbi3-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jdbi</groupId>
-            <artifactId>jdbi3-postgres</artifactId>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->

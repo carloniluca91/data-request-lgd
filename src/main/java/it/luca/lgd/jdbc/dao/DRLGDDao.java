@@ -5,13 +5,17 @@ import it.luca.lgd.jdbc.table.DRLGDTable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 public abstract class DRLGDDao<R extends DRLGDRecord, T extends DRLGDTable<R>> {
@@ -53,14 +57,43 @@ public abstract class DRLGDDao<R extends DRLGDRecord, T extends DRLGDTable<R>> {
         return optionalR;
     }
 
-    public int saveAndGetKey(R object) {
+    public <K> K saveAndGetKey(R object, Class<K> kClass) {
 
+        String allColumns = String.join(", ", table.allColumns());
+        String nQuestionMarks = String.join(", ", Collections.nCopies(this.table.allColumns().size(), "?"));
+        String INSERT_INTO = String.format("INSERT INTO %s (%s) VALUES (%s)", fQTableName(), allColumns, nQuestionMarks);
+
+        log.info("Saving {} object into table '{}'", tClassName(), fQTableName());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        /*
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        simpleJdbcInsert.withTableName(table.fQTableName())
-                .usingGeneratedKeyColumns(table.primaryKeyColumns().toArray(new String[]{}));
-        return simpleJdbcInsert
-                .executeAndReturnKey(table.fromRecordToMapSqlParameterSource(object))
-                .intValue();
+        simpleJdbcInsert.withTableName("USER").usingGeneratedKeyColumns("ID");
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("USERNAME", user.getUserName())
+                .addValue("PASSWORD", user.getPassword())
+                .addValue("CREATEDTIME", user.getCreatedTime())
+                .addValue("UPDATEDTIME", user.getUpdatedTime())
+                .addValue("USERTYPE", user.getUserType())
+                .addValue("DATEOFBIRTH", user.getDateofBirth());
+
+        Number id = simpleJdbcInsert.executeAndReturnKey(params);
+        id.longValue();
+        */
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(INSERT_INTO, Statement.RETURN_GENERATED_KEYS);
+            return object.getPreparedStatement(ps);
+        }, keyHolder);
+
+        //K key = keyHolder.getKeyAs(kClass);
+        //log.info("Saved object {} to table '{}'. Generated key: {}", tClassName(), fQTableName(), key);
+
+         //*/
+
+        jdbcTemplate.update(INSERT_INTO, object.allValues(), keyHolder, table.primaryKeyColumns().toArray(new String[]{"request_id"}));
+        K key = keyHolder.getKeyAs(kClass);
+        log.info("Saved object {} to table '{}'. Generated key: {}", tClassName(), fQTableName(), key);
+        return key;
     }
 
     public void save(R object) {
@@ -78,18 +111,10 @@ public abstract class DRLGDDao<R extends DRLGDRecord, T extends DRLGDTable<R>> {
     public void saveBatch(List<R> rList) {
 
         String tClassName = table.tClassName();
-        String primaryKeyColumns = String.join("|", table.primaryKeyColumns());
-        String primaryKeyValueSet = rList.stream()
-                .map(r -> {
-                    String primaryKeyValues = Stream.of(r.primaryKeyValues())
-                            .map(Object::toString)
-                            .collect(Collectors.joining("|"));
-                    return String.format("(%s)", primaryKeyValues);
-                }).collect(Collectors.joining(", "));
 
         String allColumns = String.join(", ", table.allColumns());
         String nQuestionMarks = String.join(", ", Collections.nCopies(this.table.allColumns().size(), "?"));
-        log.info("Saving {} {} object(s) with following primaryKey set(s) ({}) in {}", rList.size(), tClassName, primaryKeyColumns, primaryKeyValueSet);
+        log.info("Saving {} {} object(s) into table '{}'", rList.size(), tClassName, fQTableName());
         String INSERT_BATCH_INTO = String.format("INSERT INTO %s (%s) VALUES (%s)", fQTableName(), allColumns, nQuestionMarks);
         jdbcTemplate.batchUpdate(INSERT_BATCH_INTO, rList.stream().map(DRLGDRecord::allValues).collect(Collectors.toList()));
         log.info("Saved {} {} object(s) into table '{}'", rList.size(), tClassName, fQTableName());

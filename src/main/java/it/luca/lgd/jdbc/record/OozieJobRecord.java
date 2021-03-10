@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
 
-import javax.persistence.Id;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -19,7 +18,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class OozieJobRecord extends DRLGDRecord {
 
-    @Id private String jobLauncherId;
+    private String jobLauncherId;
     private String jobType;
     private String jobName;
     private String jobFinishStatus;
@@ -56,11 +55,6 @@ public class OozieJobRecord extends DRLGDRecord {
         oozieJobRecord.setTsInsert(new Timestamp(System.currentTimeMillis()));
         oozieJobRecord.setDtInsert(new Date(System.currentTimeMillis()));
         return oozieJobRecord;
-    }
-
-    @Override
-    public Object[] primaryKeyValues() {
-        return new Object[]{jobLauncherId};
     }
 
     @Override
