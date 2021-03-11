@@ -1,0 +1,33 @@
+INSERT INTO oozie_action (
+action_id,
+job_launcher_id,
+action_type,
+action_name,
+action_number,
+action_finish_status,
+action_child_id,
+action_child_yarn_application_id,
+action_start_time,
+action_start_date,
+action_end_time,
+action_end_date,
+action_error_code,
+action_error_message,
+action_tracking_url
+) VALUES (
+:actionId,
+:jobLauncherId,
+:actionType,
+:actionName,
+:actionNumber,
+:actionFinishStatus,
+:actionChildId,
+:actionChildYarnApplicationId,
+:actionStartTime,
+:actionStartDate,
+:actionEndTime,
+:actionEndDate,
+:actionErrorCode,
+:actionErrorMessage,
+:actionTrackingUrl
+)

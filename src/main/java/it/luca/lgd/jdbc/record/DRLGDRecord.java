@@ -12,8 +12,4 @@ public abstract class DRLGDRecord {
 
     protected LocalDateTime tsInsert;
     protected LocalDate dtInsert;
-
-    public Object[] allValues() {
-        return new Object[]{};
-    }
 }

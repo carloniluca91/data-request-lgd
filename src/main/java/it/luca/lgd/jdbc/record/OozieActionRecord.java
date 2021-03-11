@@ -1,38 +1,39 @@
 package it.luca.lgd.jdbc.record;
 
-import it.luca.lgd.utils.TimeUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
 
-import javax.persistence.Id;
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static it.luca.lgd.utils.Java8Utils.orNull;
+import static it.luca.lgd.utils.TimeUtils.toLocalDate;
+import static it.luca.lgd.utils.TimeUtils.toLocalDateTime;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class OozieActionRecord extends DRLGDRecord {
 
-    @Id private String jobLauncherId;
-    @Id private String actionId;
+    private String actionId;
+    private String jobLauncherId;
     private String actionType;
     private String actionName;
     private int actionNumber;
     private String actionFinishStatus;
     private String actionChildId;
     private String actionChildYarnApplicationId;
-    private Date actionStartDate;
-    private Timestamp actionStartTime;
-    private Date actionEndDate;
-    private Timestamp actionEndTime;
+    private LocalDateTime actionStartTime;
+    private LocalDate actionStartDate;
+    private LocalDateTime actionEndTime;
+    private LocalDate actionEndDate;
     private String actionErrorCode;
     private String actionErrorMessage;
     private String actionTrackingUrl;
@@ -56,30 +57,19 @@ public class OozieActionRecord extends DRLGDRecord {
                     oozieActionRecord.setActionNumber(i + 1);
                     oozieActionRecord.setActionFinishStatus(workflowAction.getStatus().toString());
                     oozieActionRecord.setActionChildId(workflowAction.getExternalChildIDs());
-                    oozieActionRecord.setActionChildYarnApplicationId(Optional.ofNullable(workflowAction.getExternalChildIDs())
-                            .map(s -> s.replace("job", "application"))
-                            .orElse(null));
-
-                    oozieActionRecord.setActionStartDate(TimeUtils.toSqlDate(workflowAction.getStartTime()));
-                    oozieActionRecord.setActionStartTime(TimeUtils.fromUtilDateToSqlTimestamp(workflowAction.getStartTime()));
-                    oozieActionRecord.setActionEndDate(TimeUtils.toSqlDate(workflowAction.getEndTime()));
-                    oozieActionRecord.setActionEndTime(TimeUtils.fromUtilDateToSqlTimestamp(workflowAction.getEndTime()));
+                    oozieActionRecord.setActionChildYarnApplicationId(orNull(workflowAction.getExternalChildIDs(),
+                            s -> s.replace("job", "application")));
+                    oozieActionRecord.setActionStartTime(toLocalDateTime(workflowAction.getStartTime()));
+                    oozieActionRecord.setActionStartDate(toLocalDate(workflowAction.getStartTime()));
+                    oozieActionRecord.setActionEndTime(toLocalDateTime(workflowAction.getEndTime()));
+                    oozieActionRecord.setActionEndDate(toLocalDate(workflowAction.getEndTime()));
                     oozieActionRecord.setActionErrorCode(workflowAction.getErrorCode());
                     oozieActionRecord.setActionErrorMessage(workflowAction.getErrorMessage());
                     oozieActionRecord.setActionTrackingUrl(workflowAction.getTrackerUri());
-                    oozieActionRecord.setTsInsert(new Timestamp(System.currentTimeMillis()));
-                    oozieActionRecord.setDtInsert(new Date(System.currentTimeMillis()));
+                    oozieActionRecord.setTsInsert(LocalDateTime.now());
+                    oozieActionRecord.setDtInsert(LocalDate.now());
 
                     return oozieActionRecord;
                 }).collect(Collectors.toList());
-    }
-
-    @Override
-    public Object[] allValues() {
-
-        return new Object[] {jobLauncherId, actionId, actionType, actionName, actionNumber, actionFinishStatus, actionChildId,
-                actionChildYarnApplicationId, actionStartDate, actionStartTime, actionEndDate, actionEndTime,
-                actionErrorCode, actionErrorMessage, actionTrackingUrl, tsInsert, dtInsert
-        };
     }
 }

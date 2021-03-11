@@ -1,8 +1,3 @@
-CREATE SCHEMA IF NOT EXISTS oozie AUTHORIZATION CURRENT_USER;
-
--- set newly created schema as default
-SET SEARCH_PATH TO oozie;
-
 -- create sequence for request table
 CREATE SEQUENCE IF NOT EXISTS oozie_request_id;
 

@@ -1,15 +1,33 @@
 package it.luca.lgd.jdbc.dao;
 
 import it.luca.lgd.jdbc.record.OozieActionRecord;
-import it.luca.lgd.jdbc.table.OozieActionTable;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.locator.UseClasspathSqlLocator;
+import org.jdbi.v3.sqlobject.statement.SqlBatch;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 import java.util.List;
+import java.util.Optional;
 
-public abstract class OozieActionDao extends DRLGDDao<OozieActionRecord, OozieActionTable> {
+@UseClasspathSqlLocator
+@RegisterBeanMapper(OozieActionRecord.class)
+public interface OozieActionDao extends Dao<OozieActionRecord, String> {
 
-    public OozieActionDao() {
-        super(new OozieActionTable());
-    }
+    @Override
+    @SqlQuery
+    Optional<OozieActionRecord> findById(@Bind("id") String key);
 
-    public abstract List<OozieActionRecord> getOozieJobActions(String workflowJobId);
+    @SqlQuery
+    List<OozieActionRecord> findByLauncherId(@Bind("id") String jobLauncherId);
+
+    @Override
+    @SqlUpdate
+    OozieActionRecord save(@BindBean OozieActionRecord bean);
+
+    @SqlBatch("save")
+    List<OozieActionRecord> saveBatch(List<OozieActionRecord> oozieActionRecords);
+
 }

@@ -1,15 +1,25 @@
 package it.luca.lgd.jdbc.dao;
 
 import it.luca.lgd.jdbc.record.OozieJobRecord;
-import it.luca.lgd.jdbc.table.OozieJobTable;
-import org.apache.oozie.client.WorkflowJob;
+import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.locator.UseClasspathSqlLocator;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
-import java.util.List;
 import java.util.Optional;
 
-public abstract class OozieJobDao extends DRLGDDao<OozieJobRecord, OozieJobTable> {
+@UseClasspathSqlLocator
+@RegisterBeanMapper(OozieJobRecord.class)
+public interface OozieJobDao extends Dao<OozieJobRecord, String> {
 
-    public OozieJobDao() {
-        super(new OozieJobTable());
-    }
+    @Override
+    @SqlQuery
+    Optional<OozieJobRecord> findById(@Bind("id") String key);
+
+    @Override
+    @SqlUpdate
+    OozieJobRecord save(@BindBean OozieJobRecord bean);
+
 }

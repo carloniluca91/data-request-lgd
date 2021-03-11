@@ -1,7 +1,7 @@
 package it.luca.lgd.jdbc.binding;
 
 import it.luca.lgd.jdbc.record.RequestRecord;
-import it.luca.lgd.jdbc.table.RequestTable1;
+import it.luca.lgd.jdbc.table.RequestTable;
 import it.luca.lgd.utils.JsonUtils;
 import org.jdbi.v3.sqlobject.customizer.SqlStatementCustomizerFactory;
 import org.jdbi.v3.sqlobject.customizer.SqlStatementCustomizingAnnotation;
@@ -28,14 +28,14 @@ public @interface RequestBinding {
 
             return (q, arg) -> {
                 RequestRecord requestRecord = (RequestRecord) arg;
-                q.bind(RequestTable1.REQUEST_USER, requestRecord.getRequestUser());
-                q.bind(RequestTable1.JOB_ID, requestRecord.getWorkflowJobId().getId());
-                q.bind(RequestTable1.REQUEST_TIME, toSqlTimestamp(requestRecord.getRequestTime()));
-                q.bind(RequestTable1.REQUEST_DATE, toSqlDate(requestRecord.getRequestDate()));
-                q.bind(RequestTable1.REQUEST_PARAMETERS, JsonUtils.objToString(requestRecord.getRequestParameters()));
-                q.bind(RequestTable1.JOB_LAUNCHER_ID, requestRecord.getJobLauncherId());
-                q.bind(RequestTable1.JOB_SUBMISSION_CODE, requestRecord.getJobSubmissionCode());
-                q.bind(RequestTable1.JOB_SUBMISSION_ERROR, requestRecord.getJobSubmissionError());
+                q.bind(RequestTable.REQUEST_USER, requestRecord.getRequestUser());
+                q.bind(RequestTable.JOB_ID, requestRecord.getWorkflowJobId().getId());
+                q.bind(RequestTable.REQUEST_TIME, toSqlTimestamp(requestRecord.getRequestTime()));
+                q.bind(RequestTable.REQUEST_DATE, toSqlDate(requestRecord.getRequestDate()));
+                q.bind(RequestTable.REQUEST_PARAMETERS, JsonUtils.objToString(requestRecord.getRequestParameters()));
+                q.bind(RequestTable.JOB_LAUNCHER_ID, requestRecord.getJobLauncherId());
+                q.bind(RequestTable.JOB_SUBMISSION_CODE, requestRecord.getJobSubmissionCode());
+                q.bind(RequestTable.JOB_SUBMISSION_ERROR, requestRecord.getJobSubmissionError());
             };
         }
     }

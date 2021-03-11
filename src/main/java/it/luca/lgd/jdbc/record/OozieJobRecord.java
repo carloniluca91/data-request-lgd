@@ -32,6 +32,7 @@ public class OozieJobRecord extends DRLGDRecord {
         OozieJobRecord oozieJobRecord = new OozieJobRecord();
         oozieJobRecord.setJobLauncherId(workflowJob.getId());
         oozieJobRecord.setJobName(workflowJob.getAppName());
+        oozieJobRecord.setJobAppPath(workflowJob.getAppPath());
         oozieJobRecord.setJobFinishStatus(workflowJob.getStatus().toString());
         oozieJobRecord.setJobStartTime(toLocalDateTime(workflowJob.getStartTime()));
         oozieJobRecord.setJobStartDate(toLocalDate(workflowJob.getStartTime()));

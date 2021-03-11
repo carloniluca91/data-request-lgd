@@ -4,36 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 import static it.luca.lgd.utils.Java8Utils.orNull;
 
 public class TimeUtils {
-
-
-    public static java.sql.Timestamp toSqlTimestamp(LocalDateTime localDateTime) {
-
-        return orNull(localDateTime, java.sql.Timestamp::valueOf);
-    }
-
-    public static String changeDateFormat(String date, String oldFormat, String newFormat) {
-
-        return toString(toLocalDate(date, oldFormat), newFormat);
-    }
-
-    public static java.sql.Date toSqlDate(java.util.Date date) {
-
-        return Optional.ofNullable(date)
-                .map(d -> new java.sql.Date(d.getTime()))
-                .orElse(null);
-    }
-
-    public static java.sql.Timestamp fromUtilDateToSqlTimestamp(java.util.Date date) {
-
-        return Optional.ofNullable(date)
-                .map(d -> new java.sql.Timestamp(d.getTime()))
-                .orElse(null);
-    }
 
     public static Boolean isValidDate(String date, String format) {
 
@@ -41,7 +15,6 @@ public class TimeUtils {
         } catch (Exception e) {
             return false;
         }
-
         return true;
     }
 
@@ -76,13 +49,18 @@ public class TimeUtils {
         return orNull(date, x -> x.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
     }
 
+    public static java.sql.Date toSqlDate(java.util.Date date) {
+
+        return orNull(date, d -> new java.sql.Date(d.getTime()));
+    }
+
     public static java.sql.Date toSqlDate(LocalDate localDate) {
 
         return orNull(localDate, java.sql.Date::valueOf);
     }
 
-    public static String toString(LocalDate localDate, String format) {
+    public static java.sql.Timestamp toSqlTimestamp(LocalDateTime localDateTime) {
 
-        return orNull(localDate, l -> l.format(DateTimeFormatter.ofPattern(format)));
+        return orNull(localDateTime, java.sql.Timestamp::valueOf);
     }
 }

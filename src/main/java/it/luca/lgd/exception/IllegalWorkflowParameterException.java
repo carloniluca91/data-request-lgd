@@ -6,7 +6,7 @@ public class IllegalWorkflowParameterException extends RuntimeException {
 
     public IllegalWorkflowParameterException(WorkflowJobParameter workflowJobParameter) {
 
-        super(String.format("Undefined %s ('%s'). Check content of original job.properties file",
+        super(String.format("Illegal %s ('%s'). Check content of original job.properties file",
                 WorkflowJobParameter.class.getSimpleName(),
                 workflowJobParameter.getName()));
     }

@@ -1,77 +1,88 @@
 package it.luca.lgd.jdbc.dao;
 
-import it.luca.lgd.jdbc.record.DRLGDRecord;
-import it.luca.lgd.jdbc.table.DRLGDTable;
+import it.luca.lgd.jdbc.record.OozieActionRecord;
+import it.luca.lgd.jdbc.record.OozieJobRecord;
+import it.luca.lgd.jdbc.record.RequestRecord;
 import lombok.extern.slf4j.Slf4j;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.extension.ExtensionCallback;
+import org.jdbi.v3.postgres.PostgresPlugin;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class DRLGDDao<R extends DRLGDRecord, T extends DRLGDTable<R>> {
+@Component
+public class DRLGDDao {
 
     @Autowired
-    protected JdbcTemplate jdbcTemplate;
+    private DataSource dataSource;
 
-    protected final T table;
+    private Jdbi jdbi;
 
-    public DRLGDDao(T table) {
+    @PostConstruct
+    private void initJdbi() {
 
-        this.table = table;
+        String jdbiClass = jdbi.getClass().getName();
+        log.info("Initializing {}", jdbiClass);
+        jdbi = Jdbi.create(dataSource)
+                .installPlugin(new SqlObjectPlugin())
+                .installPlugin(new PostgresPlugin());
+
+        log.info("Initialized {}", jdbiClass);
     }
 
-    public String tClassName() {
-        return table.tClassName();
+    private <R, K, D extends Dao<R, K>> List<R> save(List<R> rList, Class<R> rClass, Class<D> daoClass,
+                                                     ExtensionCallback<List<R>, D, RuntimeException> extensionCallback) {
+
+        String rClassName = rClass.getSimpleName();
+        String daoClassName = daoClass.getSimpleName();
+        int listSize = rList.size();
+        log.info("Saving {} {} object(s) using {}", listSize, rClassName, daoClassName);
+        List<R> output = jdbi.withExtension(daoClass, extensionCallback);
+        log.info("Saved {} {} object(s) using {}", listSize, rClass, daoClassName);
+        return output;
     }
 
-    public String fQTableName() {
-        return table.fQTableName();
+    private <R, K, D extends Dao<R, K>> R save(R object, Class<R> rClass, Class<D> daoClass) {
+
+        String rClassName = rClass.getSimpleName();
+        String daoClassName = daoClass.getSimpleName();
+        ExtensionCallback<R, D, RuntimeException> extensionCallback = extension -> extension.save(object);
+        log.info("Saving {} object using {}", rClassName, daoClassName);
+        R output = jdbi.withExtension(daoClass, extensionCallback);
+        log.info("Saved {} object using {}", rClass, daoClassName);
+        return output;
     }
 
-    public Optional<R> findById(Object... args) {
+    public OozieJobRecord saveOozieJobRecord(OozieJobRecord oozieJobRecord) {
 
-        String whereCondition = table.primaryKeyColumns().stream()
-                .map(s -> String.format("%s = ?", s))
-                .collect(Collectors.joining(" AND "));
-
-        String tClassName = table.tClassName();
-        String SELECT_BY_ID = String.format("SELECT * FROM %s WHERE %s", fQTableName(), whereCondition);
-        log.info("Retrieving 1 {} object from table '{}'", tClassName, fQTableName());
-        Optional<R> optionalR = Optional.ofNullable(jdbcTemplate.query(SELECT_BY_ID, table.getResultSetExtractor(), args));
-        if (optionalR.isPresent()) {
-            log.info("Retrieved 1 {} object from table '{}'", tClassName, fQTableName());
-        } else {
-            log.warn("Unable to retrieve any {} object from table '{}'", tClassName, fQTableName());
-        }
-
-        return optionalR;
+        return save(oozieJobRecord, OozieJobRecord.class, OozieJobDao.class);
     }
 
-    public void save(R object) {
+    public List<OozieActionRecord> saveOozieActions(List<OozieActionRecord> oozieActionRecords) {
 
-        String tClassName = table.tClassName();
-        String allColumns = String.join(", ", table.allColumns());
-        String nQuestionMarks = String.join(", ", Collections.nCopies(this.table.allColumns().size(), "?"));
-
-        log.info("Saving {} object into table '{}'", tClassName, fQTableName());
-        String INSERT_INTO = String.format("INSERT INTO %s (%s) VALUES (%s)", fQTableName(), allColumns, nQuestionMarks);
-        jdbcTemplate.update(INSERT_INTO, object.allValues());
-        log.info("Saved {} object into table '{}'", tClassName, fQTableName());
+        ExtensionCallback<List<OozieActionRecord>, OozieActionDao, RuntimeException> extensionCallback = d -> d.saveBatch(oozieActionRecords);
+        return save(oozieActionRecords, OozieActionRecord.class, OozieActionDao.class, extensionCallback);
     }
 
-    public void saveBatch(List<R> rList) {
+    public RequestRecord saveRequestRecord(RequestRecord requestRecord) {
 
-        String tClassName = table.tClassName();
+        return save(requestRecord, RequestRecord.class, RequestDao.class);
+    }
 
-        String allColumns = String.join(", ", table.allColumns());
-        String nQuestionMarks = String.join(", ", Collections.nCopies(this.table.allColumns().size(), "?"));
-        log.info("Saving {} {} object(s) into table '{}'", rList.size(), tClassName, fQTableName());
-        String INSERT_BATCH_INTO = String.format("INSERT INTO %s (%s) VALUES (%s)", fQTableName(), allColumns, nQuestionMarks);
-        jdbcTemplate.batchUpdate(INSERT_BATCH_INTO, rList.stream().map(DRLGDRecord::allValues).collect(Collectors.toList()));
-        log.info("Saved {} {} object(s) into table '{}'", rList.size(), tClassName, fQTableName());
+    public Optional<OozieJobRecord> findOozieJob(String workflowJobId) {
+
+        return jdbi.withExtension(OozieJobDao.class, d -> d.findById(workflowJobId));
+    }
+
+    public List<OozieActionRecord> findOozieJobActions(String workflowJobId) {
+
+        return jdbi.withExtension(OozieActionDao.class, d -> d.findByLauncherId(workflowJobId));
     }
 }

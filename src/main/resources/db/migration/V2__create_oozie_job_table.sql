@@ -1,5 +1,3 @@
-SET SEARCH_PATH TO oozie;
-
 -- oozie_job table (and comments)
 CREATE TABLE IF NOT EXISTS oozie_job (
 
