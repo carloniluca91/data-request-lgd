@@ -2,6 +2,7 @@ package it.luca.lgd.utils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -9,10 +10,6 @@ import static it.luca.lgd.utils.Java8Utils.orNull;
 
 public class TimeUtils {
 
-    public static java.sql.Date toSqlDate(LocalDate localDate) {
-
-        return orNull(localDate, java.sql.Date::valueOf);
-    }
 
     public static java.sql.Timestamp toSqlTimestamp(LocalDateTime localDateTime) {
 
@@ -24,7 +21,7 @@ public class TimeUtils {
         return toString(toLocalDate(date, oldFormat), newFormat);
     }
 
-    public static java.sql.Date fromUtilDateToSqlDate(java.util.Date date) {
+    public static java.sql.Date toSqlDate(java.util.Date date) {
 
         return Optional.ofNullable(date)
                 .map(d -> new java.sql.Date(d.getTime()))
@@ -54,6 +51,11 @@ public class TimeUtils {
                 .compareTo(toLocalDate(seconDate, commonFormat)) <= 0;
     }
 
+    public static LocalDate toLocalDate(java.util.Date date) {
+
+        return orNull(date, x -> x.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+    }
+
     public static LocalDate toLocalDate(java.sql.Date date) {
 
         return orNull(date, java.sql.Date::toLocalDate);
@@ -67,6 +69,16 @@ public class TimeUtils {
     public static LocalDateTime toLocalDateTime(java.sql.Timestamp timestamp) {
 
         return orNull(timestamp, java.sql.Timestamp::toLocalDateTime);
+    }
+
+    public static LocalDateTime toLocalDateTime(java.util.Date date) {
+
+        return orNull(date, x -> x.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+    }
+
+    public static java.sql.Date toSqlDate(LocalDate localDate) {
+
+        return orNull(localDate, java.sql.Date::valueOf);
     }
 
     public static String toString(LocalDate localDate, String format) {

@@ -15,7 +15,7 @@ public class JsonUtils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            log.error("Caught {} exception. Stack trace: ", e.getClass().getSimpleName(), e);
+            log.error("Caught exception during JSON serialization. Stack trace: ", e);
             return null;
         }
     }
@@ -31,7 +31,7 @@ public class JsonUtils {
             log.info("Deserialized JSON string to object of type {}", tClassName);
             return t;
         } catch (JsonProcessingException e) {
-            log.error("Caught {} exception. Stack trace: ", e.getClass().getSimpleName(), e);
+            log.error("Caught exception during JSON deserialization. Stack trace: ", e);
             return null;
         }
     }

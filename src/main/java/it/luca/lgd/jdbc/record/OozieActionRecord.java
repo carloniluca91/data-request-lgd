@@ -9,7 +9,6 @@ import org.apache.oozie.client.WorkflowJob;
 
 import javax.persistence.Id;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.List;
@@ -61,9 +60,9 @@ public class OozieActionRecord extends DRLGDRecord {
                             .map(s -> s.replace("job", "application"))
                             .orElse(null));
 
-                    oozieActionRecord.setActionStartDate(TimeUtils.fromUtilDateToSqlDate(workflowAction.getStartTime()));
+                    oozieActionRecord.setActionStartDate(TimeUtils.toSqlDate(workflowAction.getStartTime()));
                     oozieActionRecord.setActionStartTime(TimeUtils.fromUtilDateToSqlTimestamp(workflowAction.getStartTime()));
-                    oozieActionRecord.setActionEndDate(TimeUtils.fromUtilDateToSqlDate(workflowAction.getEndTime()));
+                    oozieActionRecord.setActionEndDate(TimeUtils.toSqlDate(workflowAction.getEndTime()));
                     oozieActionRecord.setActionEndTime(TimeUtils.fromUtilDateToSqlTimestamp(workflowAction.getEndTime()));
                     oozieActionRecord.setActionErrorCode(workflowAction.getErrorCode());
                     oozieActionRecord.setActionErrorMessage(workflowAction.getErrorMessage());

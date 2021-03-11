@@ -50,7 +50,6 @@ public class OozieJobTable extends DRLGDTable<OozieJobRecord> {
         OozieJobRecord oozieJobRecord = new OozieJobRecord();
 
         oozieJobRecord.setJobLauncherId(rs.getString(JOB_LAUNCHER_ID));
-        oozieJobRecord.setJobType(rs.getString(JOB_TYPE));
         oozieJobRecord.setJobName(rs.getString(JOB_NAME));
         oozieJobRecord.setJobFinishStatus(rs.getString(JOB_FINAL_STATUS));
         oozieJobRecord.setJobStartDate(rs.getDate(JOB_START_DATE));
