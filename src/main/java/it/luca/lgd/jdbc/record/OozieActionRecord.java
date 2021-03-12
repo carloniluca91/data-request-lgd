@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -41,8 +42,13 @@ public class OozieActionRecord extends DRLGDRecord {
     public static List<OozieActionRecord> batchFrom(WorkflowJob workflowJob) {
 
         List<WorkflowAction> orderedActions = workflowJob.getActions().stream()
+                .filter(a -> Optional.ofNullable(a.getStartTime()).isPresent())
                 .sorted(Comparator.comparing(WorkflowAction::getStartTime))
                 .collect(Collectors.toList());
+
+        orderedActions.addAll(workflowJob.getActions().stream()
+                .filter(a -> !Optional.ofNullable(a.getStartTime()).isPresent())
+                .collect(Collectors.toList()));
 
         return IntStream.range(0, orderedActions.size())
                 .mapToObj(i -> {
@@ -55,7 +61,7 @@ public class OozieActionRecord extends DRLGDRecord {
                     oozieActionRecord.setActionType(workflowAction.getType());
                     oozieActionRecord.setActionName(workflowAction.getName());
                     oozieActionRecord.setActionNumber(i + 1);
-                    oozieActionRecord.setActionFinishStatus(workflowAction.getStatus().toString());
+                    oozieActionRecord.setActionFinishStatus(orNull(workflowAction.getStatus(), Enum::toString));
                     oozieActionRecord.setActionChildId(workflowAction.getExternalChildIDs());
                     oozieActionRecord.setActionChildYarnApplicationId(orNull(workflowAction.getExternalChildIDs(),
                             s -> s.replace("job", "application")));

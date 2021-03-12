@@ -8,7 +8,9 @@ job_start_time,
 job_start_date,
 job_end_time,
 job_end_date,
-job_tracking_url
+job_tracking_url,
+ts_insert,
+dt_insert
 ) VALUES (
 :jobLauncherId,
 :jobName,
@@ -19,5 +21,6 @@ job_tracking_url
 :jobStartDate,
 :jobEndTime,
 :jobEndDate,
-:jobTrackingUrl
-)
+:jobTrackingUrl,
+:tsInsert,
+:dtInsert)

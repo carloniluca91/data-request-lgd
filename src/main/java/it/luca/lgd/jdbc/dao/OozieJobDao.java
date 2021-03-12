@@ -1,5 +1,7 @@
 package it.luca.lgd.jdbc.dao;
 
+import it.luca.lgd.jdbc.common.FindDao;
+import it.luca.lgd.jdbc.common.SaveDao;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
@@ -12,7 +14,7 @@ import java.util.Optional;
 
 @UseClasspathSqlLocator
 @RegisterBeanMapper(OozieJobRecord.class)
-public interface OozieJobDao extends Dao<OozieJobRecord, String> {
+public interface OozieJobDao extends FindDao<OozieJobRecord, String>, SaveDao<OozieJobRecord> {
 
     @Override
     @SqlQuery
@@ -20,6 +22,5 @@ public interface OozieJobDao extends Dao<OozieJobRecord, String> {
 
     @Override
     @SqlUpdate
-    OozieJobRecord save(@BindBean OozieJobRecord bean);
-
+    void save(@BindBean OozieJobRecord bean);
 }

@@ -1,6 +1,8 @@
 package it.luca.lgd.jdbc.dao;
 
 import it.luca.lgd.jdbc.binding.RequestBinding;
+import it.luca.lgd.jdbc.common.FindDao;
+import it.luca.lgd.jdbc.common.SaveWithGeneratedKeyDao;
 import it.luca.lgd.jdbc.mapper.RequestMapper;
 import it.luca.lgd.jdbc.record.RequestRecord;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
@@ -14,7 +16,7 @@ import java.util.Optional;
 
 @UseClasspathSqlLocator
 @RegisterRowMapper(RequestMapper.class)
-public interface RequestDao extends Dao<RequestRecord, Integer> {
+public interface RequestDao extends FindDao<RequestRecord, Integer>, SaveWithGeneratedKeyDao<RequestRecord> {
 
     @Override
     @SqlQuery

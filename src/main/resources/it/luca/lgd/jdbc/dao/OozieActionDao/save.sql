@@ -13,7 +13,9 @@ action_end_time,
 action_end_date,
 action_error_code,
 action_error_message,
-action_tracking_url
+action_tracking_url,
+ts_insert,
+dt_insert
 ) VALUES (
 :actionId,
 :jobLauncherId,
@@ -29,5 +31,7 @@ action_tracking_url
 :actionEndDate,
 :actionErrorCode,
 :actionErrorMessage,
-:actionTrackingUrl
+:actionTrackingUrl,
+:tsInsert,
+:dtInsert
 )
