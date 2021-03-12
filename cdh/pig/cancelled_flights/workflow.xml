@@ -26,8 +26,8 @@
     <action name="create_table">
         <hive xmlns="uri:oozie:hive-action:0.5">
             <script>lib/cancelled_flights.sql</script>
-            <param>db=${hive_db}</param>
-            <param>table=${hive_t_cancelled_flights}</param>
+            <param>db=${hiveDb}</param>
+            <param>table=${hiveT_cancelledFlights}</param>
         </hive>
         <ok to="pig_job"/>
         <error to="kill"/>
@@ -37,16 +37,16 @@
     <action name="pig_job">
         <pig>
             <script>lib/cancelled_flights.pig</script>
-            <param>udf_jar_path=${lgdApp_lib}/${udfJarName}</param>
-            <param>db=${hive_db}</param>
-            <param>airports=${hive_t_airports}</param>
-            <param>iata_code=${iata_code}</param>
-            <param>flights=${hive_t_flights}</param>
-            <param>start_date=${start_date}</param>
-            <param>end_date=${end_date}</param>
-            <param>output_table=${hive_t_cancelled_flights}</param>
-            <param>user_name=${wf:user()}</param>
-            <param>wf_id=${wf:id()}</param>
+            <param>udfJarPath=${lgdApp_lib}/${udfJarName}</param>
+            <param>db=${hiveDb}</param>
+            <param>airports=${hiveT_airports}</param>
+            <param>iataCode=${iataCode}</param>
+            <param>flights=${hiveT_flights}</param>
+            <param>startDate=${startDate}</param>
+            <param>endDate=${endDate}</param>
+            <param>outputTable=${hiveT_cancelledFlights}</param>
+            <param>userName=${wf:user()}</param>
+            <param>wfId=${wf:id()}</param>
         </pig>
         <ok to="impala"/>
         <error to="kill"/>
@@ -59,7 +59,7 @@
             <arg>-u</arg>
             <arg>${impalaUrl}</arg>
             <arg>-s</arg>
-            <arg>"INVALIDATE METADATA ${hive_db}.${hive_t_cancelled_flights}"</arg>
+            <arg>"INVALIDATE METADATA ${hiveDb}.${hiveT_cancelledFlights}"</arg>
             <file>${lgdApp_lib}/${impalaJarName}#${impalaJarName}</file>
             <capture-output/>
         </java>

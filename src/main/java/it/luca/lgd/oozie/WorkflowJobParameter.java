@@ -4,18 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.oozie.client.OozieClient;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 @Getter
 @AllArgsConstructor
 public enum WorkflowJobParameter {
 
     // common parameters
-    END_DATE("end_date"),
-    START_DATE("start_date"),
-    IATA_CODE("iata_code"),
+    END_DATE("endDate"),
+    START_DATE("startDate"),
+    IATA_CODE("iataCode"),
     WORKFLOW_NAME("workflowName"),
     WORKFLOW_PATH(OozieClient.APP_PATH),
 

@@ -1,11 +1,13 @@
 package it.luca.lgd.jdbc.dao;
 
+import it.luca.lgd.jdbc.common.SaveBatchDao;
+import it.luca.lgd.jdbc.common.SaveDao;
+import it.luca.lgd.jdbc.common.SaveWithGeneratedKeyDao;
 import it.luca.lgd.jdbc.record.OozieActionRecord;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
 import it.luca.lgd.jdbc.record.RequestRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.extension.ExtensionCallback;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ public class DRLGDDao {
     @PostConstruct
     private void initJdbi() {
 
-        String jdbiClass = jdbi.getClass().getName();
+        String jdbiClass = Jdbi.class.getName();
         log.info("Initializing {}", jdbiClass);
         jdbi = Jdbi.create(dataSource)
                 .installPlugin(new SqlObjectPlugin())
@@ -37,52 +39,59 @@ public class DRLGDDao {
         log.info("Initialized {}", jdbiClass);
     }
 
-    private <R, K, D extends Dao<R, K>> List<R> save(List<R> rList, Class<R> rClass, Class<D> daoClass,
-                                                     ExtensionCallback<List<R>, D, RuntimeException> extensionCallback) {
+    private <R, D extends SaveBatchDao<R>> void saveBatch(List<R> rList, Class<R> rClass, Class<D> daoClass) {
 
         String rClassName = rClass.getSimpleName();
         String daoClassName = daoClass.getSimpleName();
         int listSize = rList.size();
         log.info("Saving {} {} object(s) using {}", listSize, rClassName, daoClassName);
-        List<R> output = jdbi.withExtension(daoClass, extensionCallback);
-        log.info("Saved {} {} object(s) using {}", listSize, rClass, daoClassName);
-        return output;
+        jdbi.useHandle(handle -> handle.attach(daoClass).save(rList));
+        log.info("Saved {} {} object(s) using {}", listSize, rClassName, daoClassName);
     }
 
-    private <R, K, D extends Dao<R, K>> R save(R object, Class<R> rClass, Class<D> daoClass) {
+    private <R, D extends SaveWithGeneratedKeyDao<R>> R saveObjectWithGeneratedKey(R object, Class<R> rClass, Class<D> daoClass) {
 
         String rClassName = rClass.getSimpleName();
         String daoClassName = daoClass.getSimpleName();
-        ExtensionCallback<R, D, RuntimeException> extensionCallback = extension -> extension.save(object);
         log.info("Saving {} object using {}", rClassName, daoClassName);
-        R output = jdbi.withExtension(daoClass, extensionCallback);
-        log.info("Saved {} object using {}", rClass, daoClassName);
+        R output = jdbi.withHandle(handle -> handle.attach(daoClass).save(object));
+        log.info("Saved {} object using {}", rClassName, daoClassName);
         return output;
     }
 
-    public OozieJobRecord saveOozieJobRecord(OozieJobRecord oozieJobRecord) {
+    private <R, D extends SaveDao<R>> void save(R object, Class<R> rClass, Class<D> daoClass) {
 
-        return save(oozieJobRecord, OozieJobRecord.class, OozieJobDao.class);
+        String rClassName = rClass.getSimpleName();
+        String daoClassName = daoClass.getSimpleName();
+        log.info("Saving {} object using {}", rClassName, daoClassName);
+        jdbi.useHandle(handle -> handle.attach(daoClass).save(object));
+        log.info("Saved {} object using {}", rClassName, daoClassName);
     }
 
-    public List<OozieActionRecord> saveOozieActions(List<OozieActionRecord> oozieActionRecords) {
+    public void saveOozieJobRecord(OozieJobRecord oozieJobRecord) {
 
-        ExtensionCallback<List<OozieActionRecord>, OozieActionDao, RuntimeException> extensionCallback = d -> d.saveBatch(oozieActionRecords);
-        return save(oozieActionRecords, OozieActionRecord.class, OozieActionDao.class, extensionCallback);
+        save(oozieJobRecord, OozieJobRecord.class, OozieJobDao.class);
+    }
+
+    public void saveOozieActions(List<OozieActionRecord> oozieActionRecords) {
+
+        saveBatch(oozieActionRecords, OozieActionRecord.class, OozieActionDao.class);
     }
 
     public RequestRecord saveRequestRecord(RequestRecord requestRecord) {
 
-        return save(requestRecord, RequestRecord.class, RequestDao.class);
+        return saveObjectWithGeneratedKey(requestRecord, RequestRecord.class, RequestDao.class);
     }
 
     public Optional<OozieJobRecord> findOozieJob(String workflowJobId) {
 
-        return jdbi.withExtension(OozieJobDao.class, d -> d.findById(workflowJobId));
+        return jdbi.withHandle(handle -> handle.attach(OozieJobDao.class)
+                .findById(workflowJobId));
     }
 
     public List<OozieActionRecord> findOozieJobActions(String workflowJobId) {
 
-        return jdbi.withExtension(OozieActionDao.class, d -> d.findByLauncherId(workflowJobId));
+        return jdbi.withHandle(handle -> handle.attach(OozieActionDao.class)
+                .findByLauncherId(workflowJobId));
     }
 }

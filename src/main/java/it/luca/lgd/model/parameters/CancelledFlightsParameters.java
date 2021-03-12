@@ -4,24 +4,26 @@ import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.TimeUtils;
 import it.luca.lgd.utils.Tuple2;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class CancelledFlightsParameters implements JobParameters {
 
     @NotBlank
-    private final String startDate;
+    private String startDate;
 
     @NotBlank
-    private final String endDate;
+    private String endDate;
 
     @NotBlank
-    private final String iataCode;
+    private String iataCode;
 
     @Override
     public Tuple2<Boolean, String> validate() {
