@@ -1,7 +1,6 @@
-package it.luca.lgd.model.response;
+package it.luca.lgd.jdbc.record;
 
-import it.luca.lgd.jdbc.record.RequestRecord;
-import it.luca.lgd.oozie.WorkflowJobId;
+import it.luca.lgd.oozie.WorkflowJobLabel;
 import it.luca.lgd.utils.Tuple2;
 import org.junit.jupiter.api.Test;
 
@@ -16,13 +15,13 @@ class RequestRecordTest {
         String OK_MSG = "That's right", KO_MSG = "Try again";
 
         Tuple2<Boolean, String> trueTuple = new Tuple2<>(true, OK_MSG);
-        RequestRecord okResponse = RequestRecord.from(WorkflowJobId.FPASPERD, null, trueTuple);
+        RequestRecord okResponse = RequestRecord.from(WorkflowJobLabel.FPASPERD, null, trueTuple);
         assertEquals(okResponse.getJobSubmissionCode(), RequestRecord.OK);
         assertEquals(okResponse.getJobLauncherId(), OK_MSG);
         assertNull(okResponse.getJobSubmissionError());
 
         Tuple2<Boolean, String> falseTuple = new Tuple2<>(false, KO_MSG);
-        RequestRecord koResponse = RequestRecord.from(WorkflowJobId.FPASPERD, null, falseTuple);
+        RequestRecord koResponse = RequestRecord.from(WorkflowJobLabel.FPASPERD, null, falseTuple);
         assertEquals(koResponse.getJobSubmissionCode(), RequestRecord.KO);
         assertEquals(koResponse.getJobSubmissionError(), KO_MSG);
         assertNull(koResponse.getJobLauncherId());

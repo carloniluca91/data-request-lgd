@@ -7,6 +7,10 @@ import java.time.format.DateTimeFormatter;
 
 import static it.luca.lgd.utils.Java8Utils.orNull;
 
+/**
+ * Time utilities class
+ */
+
 public class TimeUtils {
 
     public static Boolean isValidDate(String date, String format) {

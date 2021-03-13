@@ -2,8 +2,8 @@ package it.luca.lgd.jdbc.mapper;
 
 import it.luca.lgd.jdbc.record.RequestRecord;
 import it.luca.lgd.jdbc.table.RequestTable;
-import it.luca.lgd.model.parameters.JobParameters;
-import it.luca.lgd.oozie.WorkflowJobId;
+import it.luca.lgd.model.JobParameters;
+import it.luca.lgd.oozie.WorkflowJobLabel;
 import lombok.NoArgsConstructor;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
@@ -25,9 +25,9 @@ public class RequestMapper implements RowMapper<RequestRecord> {
         requestRecord.setRequestId(rs.getInt(RequestTable.REQUEST_ID));
         requestRecord.setRequestUser(rs.getString(RequestTable.REQUEST_USER));
 
-        WorkflowJobId workflowJobId = WorkflowJobId.withId(rs.getString(RequestTable.JOB_ID));
-        Class<? extends JobParameters> clazz = workflowJobId.getParameterClass();
-        requestRecord.setWorkflowJobId(workflowJobId);
+        WorkflowJobLabel workflowJobLabel = WorkflowJobLabel.withId(rs.getString(RequestTable.JOB_ID));
+        Class<? extends JobParameters> clazz = workflowJobLabel.getParameterClass();
+        requestRecord.setWorkflowJobLabel(workflowJobLabel);
         requestRecord.setRequestTime(toLocalDateTime(rs.getTimestamp(RequestTable.REQUEST_TIME)));
         requestRecord.setRequestDate(toLocalDate(rs.getDate(RequestTable.REQUEST_DATE)));
         requestRecord.setRequestParameters(stringToObject(rs.getString(RequestTable.REQUEST_PARAMETERS), clazz));

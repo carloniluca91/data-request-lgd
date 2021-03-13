@@ -8,6 +8,12 @@ import java.util.Properties;
 
 public class JobProperties extends Properties {
 
+    /**
+     * Create JobProperties object containing all key-value pairs within input object
+     * @param propertiesConfiguration: input properties
+     * @return object containing all key-value pairs within input object
+     */
+
     public static JobProperties copyOf(PropertiesConfiguration propertiesConfiguration) {
 
         JobProperties jobProperties = new JobProperties();
@@ -20,13 +26,29 @@ public class JobProperties extends Properties {
         return jobProperties;
     }
 
+    /**
+     * Add each key-value pair from provided map
+     * @param parameterMap: input map
+     */
+
     public void setParameters(Map<WorkflowJobParameter, String> parameterMap) {
         parameterMap.forEach(((workflowJobParameter, s) -> super.setProperty(workflowJobParameter.getName(), s)));
     }
 
+    /**
+     * Add new key-value pair
+     * @param workflowJobParameter: parameter (key)
+     * @param value: value
+     */
+
     public void setParameter(WorkflowJobParameter workflowJobParameter, String value) {
         super.setProperty(workflowJobParameter.getName(), value);
     }
+
+    /**
+     * Return a string representation of all stored key-value pairs
+     * @return all key-value pairs
+     */
 
     public String getPropertiesReport() {
 

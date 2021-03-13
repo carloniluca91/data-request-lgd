@@ -29,7 +29,7 @@ public @interface RequestBinding {
             return (q, arg) -> {
                 RequestRecord requestRecord = (RequestRecord) arg;
                 q.bind(RequestTable.REQUEST_USER, requestRecord.getRequestUser());
-                q.bind(RequestTable.JOB_ID, requestRecord.getWorkflowJobId().getId());
+                q.bind(RequestTable.JOB_ID, requestRecord.getWorkflowJobLabel().getId());
                 q.bind(RequestTable.REQUEST_TIME, toSqlTimestamp(requestRecord.getRequestTime()));
                 q.bind(RequestTable.REQUEST_DATE, toSqlDate(requestRecord.getRequestDate()));
                 q.bind(RequestTable.REQUEST_PARAMETERS, objectToString(requestRecord.getRequestParameters()));

@@ -13,6 +13,13 @@ public class JsonUtils {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    /**
+     * Serialized input object to JSON string
+     * @param object: input object
+     * @param <T>: input object type
+     * @return JSON string (null if serialization fails)
+     */
+
     public static <T> String objectToString(T object) {
 
         try {
@@ -26,6 +33,14 @@ public class JsonUtils {
             return null;
         }
     }
+
+    /**
+     * Deserialize input JSON string to an object
+     * @param string: JSON string
+     * @param tClass: return object class
+     * @param <T> return object type
+     * @return deserialized object (null if deserialization failed)
+     */
 
     public static <T> T stringToObject(String string, Class<T> tClass) {
 

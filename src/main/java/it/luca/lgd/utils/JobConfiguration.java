@@ -19,6 +19,13 @@ public class JobConfiguration extends PropertiesConfiguration {
         log.info("Successfully loaded {} file", fileName);
     }
 
+    /**
+     * Get value of provided key
+     * @param workflowJobParameter: key
+     * @return value of this key
+     * @throws IllegalWorkflowParameterException if provided key is not present
+     */
+
     public String getParameter(WorkflowJobParameter workflowJobParameter) throws IllegalWorkflowParameterException {
 
         return Optional.ofNullable(super.getString(workflowJobParameter.getName()))

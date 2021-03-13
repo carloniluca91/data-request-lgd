@@ -1,4 +1,4 @@
-package it.luca.lgd.model.parameters;
+package it.luca.lgd.model;
 
 import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.Tuple2;

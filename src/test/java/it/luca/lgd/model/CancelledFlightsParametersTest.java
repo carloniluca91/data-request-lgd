@@ -1,4 +1,4 @@
-package it.luca.lgd.model.parameters;
+package it.luca.lgd.model;
 
 import org.junit.jupiter.api.Test;
 

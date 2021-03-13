@@ -1,7 +1,7 @@
 package it.luca.lgd.jdbc.record;
 
-import it.luca.lgd.model.parameters.JobParameters;
-import it.luca.lgd.oozie.WorkflowJobId;
+import it.luca.lgd.model.JobParameters;
+import it.luca.lgd.oozie.WorkflowJobLabel;
 import it.luca.lgd.utils.Tuple2;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,7 @@ public class RequestRecord extends DRLGDRecord {
 
     private Integer requestId;
     private String requestUser;
-    private WorkflowJobId workflowJobId;
+    private WorkflowJobLabel workflowJobLabel;
     private LocalDate requestDate;
     private LocalDateTime requestTime;
     private JobParameters requestParameters;
@@ -28,11 +28,11 @@ public class RequestRecord extends DRLGDRecord {
     private String jobSubmissionCode;
     private String jobSubmissionError;
 
-    public static <T extends JobParameters> RequestRecord from(WorkflowJobId workflowJobId, T jobParameters, Tuple2<Boolean, String> tuple2) {
+    public static <T extends JobParameters> RequestRecord from(WorkflowJobLabel workflowJobLabel, T jobParameters, Tuple2<Boolean, String> tuple2) {
 
         RequestRecord requestRecord = new RequestRecord();
         requestRecord.setRequestUser("cloudera");
-        requestRecord.setWorkflowJobId(workflowJobId);
+        requestRecord.setWorkflowJobLabel(workflowJobLabel);
         requestRecord.setRequestDate(LocalDate.now());
         requestRecord.setRequestTime(LocalDateTime.now());
         requestRecord.setRequestParameters(jobParameters);

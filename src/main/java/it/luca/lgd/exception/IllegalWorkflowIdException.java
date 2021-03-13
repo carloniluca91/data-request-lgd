@@ -1,11 +1,11 @@
 package it.luca.lgd.exception;
 
-import it.luca.lgd.oozie.WorkflowJobId;
+import it.luca.lgd.oozie.WorkflowJobLabel;
 
 public class IllegalWorkflowIdException extends RuntimeException {
 
-    public IllegalWorkflowIdException(WorkflowJobId workflowJobId) {
+    public IllegalWorkflowIdException(WorkflowJobLabel workflowJobLabel) {
 
-        super(String.format("Illegal %s (%s)", WorkflowJobId.class.getSimpleName(), workflowJobId.getId()));
+        super(String.format("Illegal %s (%s)", WorkflowJobLabel.class.getSimpleName(), workflowJobLabel.getId()));
     }
 }

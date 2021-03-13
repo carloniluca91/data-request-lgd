@@ -5,14 +5,15 @@ import it.luca.lgd.jdbc.dao.DRLGDDao;
 import it.luca.lgd.jdbc.record.OozieActionRecord;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
 import it.luca.lgd.jdbc.record.RequestRecord;
-import it.luca.lgd.model.parameters.JobParameters;
-import it.luca.lgd.oozie.WorkflowJobId;
+import it.luca.lgd.model.JobParameters;
+import it.luca.lgd.oozie.WorkflowJobLabel;
 import it.luca.lgd.oozie.WorkflowJobParameter;
 import it.luca.lgd.utils.JobConfiguration;
 import it.luca.lgd.utils.JobProperties;
 import it.luca.lgd.utils.Tuple2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.oozie.client.OozieClient;
+import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,76 +35,106 @@ public class DRLGDService {
             WorkflowJob.Status.FAILED,
             WorkflowJob.Status.KILLED);
 
-    private OozieClient startOozieClient() {
+    /**
+     * Get OozieClient instance
+     * @return OozieClient
+     */
+
+    private OozieClient getOozieClientInstance() {
 
         OozieClient oozieClient = new OozieClient(oozieUrl);
         log.info("Successfully connected to Oozie Server Url {}", oozieUrl);
         return oozieClient;
     }
 
-    private WorkflowJob getWorkflowJob(String workflowJobId) throws Exception {
+    /**
+     * Retrieve WorkflowJob for provided workflow job id by means of OozieClien API
+     * @param workflowJobId: workflow job id
+     * @return WorkflowJob
+     * @throws OozieClientException if provided workflow job id cannot be found
+     */
 
-        // If job has completed, insert records on both Oozie Job and Oozie Action table
+    private WorkflowJob getWorkflowJob(String workflowJobId) throws OozieClientException {
+
         String className = OozieJobRecord.class.getSimpleName();
         String oozieClientName = OozieClient.class.getSimpleName();
         log.info("Retrieving {} for workflow job {} by means of {} API", className, workflowJobId, oozieClientName);
-        WorkflowJob workflowJob = startOozieClient().getJobInfo(workflowJobId);
+        WorkflowJob workflowJob = getOozieClientInstance().getJobInfo(workflowJobId);
         log.info("Retrieved {} for workflob job {} by means of {} API", className, workflowJobId, oozieClientName);
         return workflowJob;
     }
 
-    public <T extends JobParameters> RequestRecord runOozieJob(WorkflowJobId workflowJobId, T jobParameters) {
+    /**
+     * Submit Oozie job labeled by workflowJobLabel using provided parameter map
+     * @param workflowJobLabel: label of Oozie job to be submitted
+     * @param parameters: parameters for current Oozie job
+     * @return (true, generated Oozie job id) if job submission succeeded, (false, exception.getMessage()) if it failed
+     */
 
-        Tuple2<Boolean, String> inputValidation = jobParameters.validate();
-        RequestRecord requestRecord;
-        if (inputValidation.getT1()) {
-
-            // If provided input matches given criterium, run workflow job
-            log.info("Successsully validated input for Oozie job {}. Parameters: {}", workflowJobId.getId(), jobParameters.asString());
-            Tuple2<Boolean, String> jobSubmissionOutcome = runWorkflowJob(workflowJobId, jobParameters.toMap());
-            requestRecord = RequestRecord.from(workflowJobId, jobParameters, jobSubmissionOutcome);
-        } else {
-
-            // Otherwise, report the issue (wrapped around inputValidation object)
-            String errorMsg = String.format("Invalid input for Oozie job %s. Rationale: %s", workflowJobId.getId(), inputValidation.getT2());
-            log.warn(errorMsg);
-            requestRecord = RequestRecord.from(workflowJobId, jobParameters, inputValidation);
-        }
-
-        return saveRequestRecord(requestRecord);
-    }
-
-    private Tuple2<Boolean, String> runWorkflowJob(WorkflowJobId workflowJobId, Map<WorkflowJobParameter, String> parameterStringMap) {
+    private Tuple2<Boolean, String> runWorkflowJob(WorkflowJobLabel workflowJobLabel, Map<WorkflowJobParameter, String> parameters) {
 
         try {
-
             // Initialize job properties and then set specific workflow job parameters/properties
             JobConfiguration jobConfiguration = new JobConfiguration("job.properties");
             JobProperties jobProperties = JobProperties.copyOf(jobConfiguration);
-            jobProperties.setParameters(parameterStringMap);
-            jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_NAME, String.format("DataRequestLGD - %s", workflowJobId.getId()));
+            jobProperties.setParameters(parameters);
+            jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_NAME, String.format("DataRequestLGD - %s", workflowJobLabel.getId()));
             WorkflowJobParameter oozieWfPath;
-            switch (workflowJobId) {
+            switch (workflowJobLabel) {
                 case CANCELLED_FLIGHTS:
                     oozieWfPath = WorkflowJobParameter.CANCELLED_FLIGHTS_APP_PATH;
                     break;
                 case FPASPERD:
                     oozieWfPath = WorkflowJobParameter.FPASPERD_WORKFLOW;
                     break;
-                default: throw new IllegalWorkflowIdException(workflowJobId);
+                default: throw new IllegalWorkflowIdException(workflowJobLabel);
             }
 
             jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_PATH, jobConfiguration.getParameter(oozieWfPath));
-            log.info("Provided properties for Oozie job {}: {}", workflowJobId.getId(), jobProperties.getPropertiesReport());
-            String oozieWorkflowJobId = startOozieClient().run(jobProperties);
-            log.info("Workflow job {} submitted ({})", workflowJobId.getId(), oozieWorkflowJobId);
+            log.info("Provided properties for Oozie job {}: {}", workflowJobLabel.getId(), jobProperties.getPropertiesReport());
+            String oozieWorkflowJobId = getOozieClientInstance().run(jobProperties);
+            log.info("Workflow job {} submitted ({})", workflowJobLabel.getId(), oozieWorkflowJobId);
             return new Tuple2<>(true, oozieWorkflowJobId);
-
         } catch (Exception e) {
-            log.error("Unable to run Oozie job {}. Stack trace: ", workflowJobId.getId(), e);
+            log.error("Unable to run Oozie job {}. Stack trace: ", workflowJobLabel.getId(), e);
             return new Tuple2<>(false, e.getMessage());
         }
     }
+
+    /**
+     * Submit Oozie job labeled by workflowJobLabel using provided parameters
+     * @param workflowJobLabel: label of Oozie job to be submitted
+     * @param jobParameters: parameters for current Oozie job
+     * @param <T>: job parameters type (must extend class JobParameters)
+     * @return RequestRecord reporting job submission outcome
+     */
+
+    public <T extends JobParameters> RequestRecord runOozieJob(WorkflowJobLabel workflowJobLabel, T jobParameters) {
+
+        Tuple2<Boolean, String> inputValidation = jobParameters.validate();
+        RequestRecord requestRecord;
+        if (inputValidation.getT1()) {
+
+            // If provided input matches given criterium, run workflow job
+            log.info("Successsully validated input for Oozie job {}. Parameters: {}", workflowJobLabel.getId(), jobParameters.asString());
+            Tuple2<Boolean, String> jobSubmissionOutcome = runWorkflowJob(workflowJobLabel, jobParameters.toMap());
+            requestRecord = RequestRecord.from(workflowJobLabel, jobParameters, jobSubmissionOutcome);
+        } else {
+
+            // Otherwise, report the issue (wrapped around inputValidation object)
+            String errorMsg = String.format("Invalid input for Oozie job %s. Rationale: %s", workflowJobLabel.getId(), inputValidation.getT2());
+            log.warn(errorMsg);
+            requestRecord = RequestRecord.from(workflowJobLabel, jobParameters, inputValidation);
+        }
+
+        return saveRequestRecord(requestRecord);
+    }
+
+    /**
+     * Retrieve OozieJobRecord for provided workflow job id
+     * @param workflowJobId: workflow job id
+     * @return OozieJobRecord if provided id can be found by means of application DB or OozieClient API
+     */
 
     public OozieJobRecord findJob(String workflowJobId) {
 
@@ -133,6 +164,12 @@ public class DRLGDService {
         }
     }
 
+    /**
+     * Returns list of OozieActionRecord for Oozie job with provided id
+     * @param workflowJobId: Oozie job id
+     * @return list of OozieActionRecord for Oozie job with provided id
+     */
+
     public List<OozieActionRecord> findActionsForJob(String workflowJobId) {
 
         String className = OozieActionRecord.class.getSimpleName();
@@ -155,7 +192,6 @@ public class DRLGDService {
                         log.warn("Unable to find any {} for workflowJob {}", OozieJobRecord.class.getSimpleName(), workflowJob);
                         drlgdDao.saveOozieJobRecord(OozieJobRecord.from(workflowJob));
                     }
-
                     drlgdDao.saveOozieActions(oozieActionsFromWorkflowJob);
                 }
                 return oozieActionsFromWorkflowJob;
@@ -165,6 +201,12 @@ public class DRLGDService {
             return Collections.emptyList();
         }
     }
+
+    /***
+     * Save provided RequestRecord into application DB and get back same object with generated key
+     * @param requestRecord: RequestRecord to be saved into application DB
+     * @return same provided RequestRecord with generated id
+     */
 
     public RequestRecord saveRequestRecord(RequestRecord requestRecord) {
 
