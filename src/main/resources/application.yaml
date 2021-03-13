@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/data_request_lgd?currentSchema=oozie
+    url: @jdbc.url@
     username: cloudera
     password: cloudera
   flyway:

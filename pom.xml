@@ -37,6 +37,27 @@
         <mockito.version>3.3.3</mockito.version>
     </properties>
 
+    <!-- Profiles for moving between various deploying environments -->
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <jdbc.url>jdbc:postgresql://localhost:5432/data_request_lgd_d?currentSchema=oozie</jdbc.url>
+                <spring.profiles.active>dev</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <jdbc.url>jdbc:postgresql://localhost:5432/data_request_lgd_p?currentSchema=oozie</jdbc.url>
+                <spring.profiles.active>prod</spring.profiles.active>
+            </properties>
+        </profile>
+    </profiles>
+
     <!-- Cloudera Repository -->
     <repositories>
         <repository>
@@ -83,6 +104,14 @@
                 </executions>
             </plugin>
         </plugins>
+
+        <!-- Resource filtering -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
     <!-- JDBI aggregated dependencies -->
