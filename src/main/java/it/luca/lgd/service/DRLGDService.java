@@ -180,7 +180,7 @@ public class DRLGDService {
             if (oozieActionsFromDb.isEmpty()) {
 
                 // If not, retrieve Oozie Actions by means of Oozie Client API
-                log.warn("Unable to find any {} for workflowJob {} within application DB", className, workflowJobId);
+                log.warn("Unable to find any {} for workflow job {} within application DB", className, workflowJobId);
                 WorkflowJob workflowJob = getWorkflowJob(workflowJobId);
                 List<OozieActionRecord> oozieActionsFromWorkflowJob = OozieActionRecord.batchFrom(workflowJob);
                 if (COMPLETED.contains(workflowJob.getStatus())) {
@@ -189,9 +189,10 @@ public class DRLGDService {
                     Optional<OozieJobRecord> optionalOozieJobRecord = drlgdDao.findOozieJob(workflowJobId);
                     if (!optionalOozieJobRecord.isPresent()) {
 
-                        log.warn("Unable to find any {} for workflowJob {}", OozieJobRecord.class.getSimpleName(), workflowJob);
+                        log.warn("Unable to find any {} for workflow job {}", OozieJobRecord.class.getSimpleName(), workflowJob);
                         drlgdDao.saveOozieJobRecord(OozieJobRecord.from(workflowJob));
                     }
+
                     drlgdDao.saveOozieActions(oozieActionsFromWorkflowJob);
                 }
                 return oozieActionsFromWorkflowJob;
