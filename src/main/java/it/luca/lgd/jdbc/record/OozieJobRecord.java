@@ -7,7 +7,9 @@ import org.apache.oozie.client.WorkflowJob;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static it.luca.lgd.utils.Java8Utils.orNull;
 import static it.luca.lgd.utils.TimeUtils.toLocalDate;
 import static it.luca.lgd.utils.TimeUtils.toLocalDateTime;
 
@@ -33,6 +35,7 @@ public class OozieJobRecord extends DRLGDRecord {
         oozieJobRecord.setJobLauncherId(workflowJob.getId());
         oozieJobRecord.setJobName(workflowJob.getAppName());
         oozieJobRecord.setJobAppPath(workflowJob.getAppPath());
+        oozieJobRecord.setJobTotalActions(orNull(workflowJob.getActions(), List::size));
         oozieJobRecord.setJobFinishStatus(workflowJob.getStatus().toString());
         oozieJobRecord.setJobStartTime(toLocalDateTime(workflowJob.getStartTime()));
         oozieJobRecord.setJobStartDate(toLocalDate(workflowJob.getStartTime()));

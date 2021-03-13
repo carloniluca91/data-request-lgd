@@ -48,12 +48,12 @@
             <param>userName=${wf:user()}</param>
             <param>wfId=${wf:id()}</param>
         </pig>
-        <ok to="impala"/>
+        <ok to="execute_impala_statements"/>
         <error to="kill"/>
     </action>
 
     <!-- Java action (Impala) -->
-    <action name="impala">
+    <action name="execute_impala_statements">
         <java>
             <main-class>it.luca.lgd.impala.Main</main-class>
             <arg>-u</arg>
