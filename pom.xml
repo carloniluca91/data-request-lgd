@@ -29,13 +29,8 @@
         <cdh.version>cdh5.13.0</cdh.version>
         <hadoop.version>2.6.0-${cdh.version}</hadoop.version>
         <oozie.version>4.1.0-${cdh.version}</oozie.version>
-        <lombok.version>1.18.16</lombok.version>
         <jdbi.version>3.16.0</jdbi.version>
         <commons.configuration.version>1.6</commons.configuration.version>
-
-        <!-- Test properties -->
-        <junit.version>5.5.2</junit.version>
-        <mockito.version>3.3.3</mockito.version>
     </properties>
 
     <!-- Profiles for moving between various deploying environments -->
@@ -69,6 +64,8 @@
 
     <build>
         <plugins>
+
+            <!-- Default Jar plugin -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
@@ -79,6 +76,7 @@
                 </executions>
             </plugin>
 
+            <!-- Fat jar plugin -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
@@ -132,6 +130,11 @@
 
         <!-- Spring dependencies -->
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
@@ -161,13 +164,10 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.oozie/oozie-client -->
@@ -187,6 +187,7 @@
             </exclusions>
         </dependency>
 
+        <!-- Hadoop auth (required for running Oozie jobs) -->
         <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-client -->
         <dependency>
             <groupId>org.apache.hadoop</groupId>

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -41,19 +42,25 @@ public class OozieActionRecord extends DRLGDRecord {
 
     public static List<OozieActionRecord> batchFrom(WorkflowJob workflowJob) {
 
-        List<WorkflowAction> orderedActions = workflowJob.getActions().stream()
-                .filter(a -> Optional.ofNullable(a.getStartTime()).isPresent())
+        Predicate<WorkflowAction> predicate = a -> Optional
+                .ofNullable(a.getStartTime())
+                .isPresent();
+
+        // Order actions according to their startime (actions with null startTimes come last)
+        List<WorkflowAction> workflowActions = workflowJob.getActions();
+        List<WorkflowAction> actionsOrderedByStartTime = workflowActions.stream()
+                .filter(predicate)
                 .sorted(Comparator.comparing(WorkflowAction::getStartTime))
                 .collect(Collectors.toList());
 
-        orderedActions.addAll(workflowJob.getActions().stream()
-                .filter(a -> !Optional.ofNullable(a.getStartTime()).isPresent())
+        actionsOrderedByStartTime.addAll(workflowActions.stream()
+                .filter(predicate.negate())
                 .collect(Collectors.toList()));
 
-        return IntStream.range(0, orderedActions.size())
+        return IntStream.range(0, actionsOrderedByStartTime.size())
                 .mapToObj(i -> {
 
-                    WorkflowAction workflowAction = orderedActions.get(i);
+                    WorkflowAction workflowAction = actionsOrderedByStartTime.get(i);
                     OozieActionRecord oozieActionRecord = new OozieActionRecord();
 
                     oozieActionRecord.setJobLauncherId(workflowJob.getId());
@@ -64,7 +71,7 @@ public class OozieActionRecord extends DRLGDRecord {
                     oozieActionRecord.setActionFinishStatus(orNull(workflowAction.getStatus(), Enum::toString));
                     oozieActionRecord.setActionChildId(orNull(workflowAction.getExternalChildIDs(), s -> Arrays.asList(s.split(","))));
                     oozieActionRecord.setActionChildYarnApplicationId(orNull(workflowAction.getExternalChildIDs(),
-                            s -> Arrays.asList(s.replace("job", "application")
+                            s -> Arrays.asList(s.replace("job_", "application_")
                                     .split(","))));
                     oozieActionRecord.setActionStartTime(toLocalDateTime(workflowAction.getStartTime()));
                     oozieActionRecord.setActionStartDate(toLocalDate(workflowAction.getStartTime()));
