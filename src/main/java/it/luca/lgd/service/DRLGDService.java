@@ -1,7 +1,7 @@
 package it.luca.lgd.service;
 
 import it.luca.lgd.exception.IllegalWorkflowIdException;
-import it.luca.lgd.jdbc.dao.DRLGDDao;
+import it.luca.lgd.jdbc.dao.impl.DRLGDDao;
 import it.luca.lgd.jdbc.record.OozieActionRecord;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
 import it.luca.lgd.jdbc.record.RequestRecord;
@@ -154,7 +154,7 @@ public class DRLGDService {
                 WorkflowJob workflowJob = getWorkflowJob(workflowJobId);
                 OozieJobRecord oozieJobRecord = OozieJobRecord.from(workflowJob);
                 if (COMPLETED.contains(workflowJob.getStatus())) {
-                    drlgdDao.saveOozieJobRecord(oozieJobRecord);
+                    drlgdDao.saveOozieJob(oozieJobRecord);
                 }
                 return oozieJobRecord;
             }
@@ -190,7 +190,7 @@ public class DRLGDService {
                     if (!optionalOozieJobRecord.isPresent()) {
 
                         log.warn("Unable to find any {} for workflow job {}", OozieJobRecord.class.getSimpleName(), workflowJob);
-                        drlgdDao.saveOozieJobRecord(OozieJobRecord.from(workflowJob));
+                        drlgdDao.saveOozieJob(OozieJobRecord.from(workflowJob));
                     }
 
                     drlgdDao.saveOozieActions(oozieActionsFromWorkflowJob);
@@ -211,6 +211,6 @@ public class DRLGDService {
 
     public RequestRecord saveRequestRecord(RequestRecord requestRecord) {
 
-        return drlgdDao.saveRequestRecord(requestRecord);
+        return drlgdDao.saveRequest(requestRecord);
     }
 }

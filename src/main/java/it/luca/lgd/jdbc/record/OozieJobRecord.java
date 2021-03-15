@@ -16,7 +16,7 @@ import static it.luca.lgd.utils.TimeUtils.toLocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OozieJobRecord extends DRLGDRecord {
+public class OozieJobRecord extends BaseRecord {
 
     private String jobLauncherId;
     private String jobName;

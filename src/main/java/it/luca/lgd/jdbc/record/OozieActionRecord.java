@@ -23,7 +23,7 @@ import static it.luca.lgd.utils.TimeUtils.toLocalDateTime;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class OozieActionRecord extends DRLGDRecord {
+public class OozieActionRecord extends BaseRecord {
 
     private String actionId;
     private String jobLauncherId;

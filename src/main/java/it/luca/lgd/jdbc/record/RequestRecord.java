@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RequestRecord extends DRLGDRecord {
+public class RequestRecord extends BaseRecord {
 
     public static final String OK = "OK";
     public static final String KO = "KO";

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public abstract class DRLGDRecord {
+public abstract class BaseRecord {
 
     protected LocalDateTime tsInsert;
     protected LocalDate dtInsert;

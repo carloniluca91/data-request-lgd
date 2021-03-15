@@ -1,8 +1,8 @@
-package it.luca.lgd.jdbc.dao;
+package it.luca.lgd.jdbc.dao.impl;
 
 import it.luca.lgd.jdbc.binding.RequestBinding;
-import it.luca.lgd.jdbc.common.FindDao;
-import it.luca.lgd.jdbc.common.SaveWithGeneratedKeyDao;
+import it.luca.lgd.jdbc.dao.common.Find;
+import it.luca.lgd.jdbc.dao.common.SaveWithKeyGeneration;
 import it.luca.lgd.jdbc.mapper.RequestMapper;
 import it.luca.lgd.jdbc.record.RequestRecord;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
@@ -16,11 +16,11 @@ import java.util.Optional;
 
 @UseClasspathSqlLocator
 @RegisterRowMapper(RequestMapper.class)
-public interface RequestDao extends FindDao<RequestRecord, Integer>, SaveWithGeneratedKeyDao<RequestRecord> {
+public interface RequestDao extends Find<RequestRecord, Integer>, SaveWithKeyGeneration<RequestRecord> {
 
     @Override
     @SqlQuery
-    Optional<RequestRecord> findById(@Bind("id") Integer key);
+    Optional<RequestRecord> findByKey(@Bind("id") Integer key);
 
     @Override
     @SqlUpdate

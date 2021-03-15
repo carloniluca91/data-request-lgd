@@ -1,7 +1,7 @@
-package it.luca.lgd.jdbc.dao;
+package it.luca.lgd.jdbc.dao.impl;
 
-import it.luca.lgd.jdbc.common.FindDao;
-import it.luca.lgd.jdbc.common.SaveBatchDao;
+import it.luca.lgd.jdbc.dao.common.Find;
+import it.luca.lgd.jdbc.dao.common.SaveBatch;
 import it.luca.lgd.jdbc.record.OozieActionRecord;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
@@ -15,11 +15,11 @@ import java.util.Optional;
 
 @UseClasspathSqlLocator
 @RegisterBeanMapper(OozieActionRecord.class)
-public interface OozieActionDao extends FindDao<OozieActionRecord, String>, SaveBatchDao<OozieActionRecord> {
+public interface OozieActionDao extends Find<OozieActionRecord, String>, SaveBatch<OozieActionRecord> {
 
     @Override
     @SqlQuery
-    Optional<OozieActionRecord> findById(@Bind("id") String key);
+    Optional<OozieActionRecord> findByKey(@Bind("id") String key);
 
     @SqlQuery
     List<OozieActionRecord> findByLauncherId(@Bind("id") String jobLauncherId);

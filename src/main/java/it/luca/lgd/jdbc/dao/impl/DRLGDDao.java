@@ -1,8 +1,10 @@
-package it.luca.lgd.jdbc.dao;
+package it.luca.lgd.jdbc.dao.impl;
 
-import it.luca.lgd.jdbc.common.SaveBatchDao;
-import it.luca.lgd.jdbc.common.SaveDao;
-import it.luca.lgd.jdbc.common.SaveWithGeneratedKeyDao;
+import it.luca.lgd.jdbc.dao.common.Find;
+import it.luca.lgd.jdbc.dao.common.SaveBatch;
+import it.luca.lgd.jdbc.dao.common.Save;
+import it.luca.lgd.jdbc.dao.common.SaveWithKeyGeneration;
+import it.luca.lgd.jdbc.record.BaseRecord;
 import it.luca.lgd.jdbc.record.OozieActionRecord;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
 import it.luca.lgd.jdbc.record.RequestRecord;
@@ -44,6 +46,27 @@ public class DRLGDDao {
     }
 
     /**
+     * Retrieves an optional object of type R using dao type D
+     * @param key: object's key
+     * @param rClass: object's class
+     * @param dClass: dao's class
+     * @param <R>: object's type
+     * @param <D>: dao's type
+     * @param <K>: key's type
+     * @return an optional object of type R
+     */
+
+    private <R extends BaseRecord, D extends Find<R, K>, K> Optional<R> findByKey(K key, Class<R> rClass, Class<D> dClass) {
+
+        String rClassName = rClass.getSimpleName();
+        String dClassName = dClass.getSimpleName();
+        log.info("Retrieving (optional) {} object with key {} using {}", rClassName, key, dClassName);
+        Optional<R> rOptional = jdbi.withHandle(handle -> handle.attach(dClass).findByKey(key));
+        log.info("Retrieved (optional) {} object with key {} using {}", rClassName, key, dClassName);
+        return rOptional;
+    }
+
+    /**
      * Store provided list of records
      * @param rList: list of records to be storeed
      * @param rClass: record's class
@@ -52,7 +75,7 @@ public class DRLGDDao {
      * @param <D>: dao's type (must extend SaveBatch<R>
      */
 
-    private <R, D extends SaveBatchDao<R>> void saveBatch(List<R> rList, Class<R> rClass, Class<D> daoClass) {
+    private <R extends BaseRecord, D extends SaveBatch<R>> void saveBatch(List<R> rList, Class<R> rClass, Class<D> daoClass) {
 
         String rClassName = rClass.getSimpleName();
         String daoClassName = daoClass.getSimpleName();
@@ -72,7 +95,7 @@ public class DRLGDDao {
      * @return input record with generated key
      */
 
-    private <R, D extends SaveWithGeneratedKeyDao<R>> R saveObjectWithGeneratedKey(R object, Class<R> rClass, Class<D> daoClass) {
+    private <R extends BaseRecord, D extends SaveWithKeyGeneration<R>> R saveWithKeyGeneration(R object, Class<R> rClass, Class<D> daoClass) {
 
         String rClassName = rClass.getSimpleName();
         String daoClassName = daoClass.getSimpleName();
@@ -91,7 +114,7 @@ public class DRLGDDao {
      * @param <D>: dao's type (must extend SaveBatch<R>
      */
     
-    private <R, D extends SaveDao<R>> void save(R object, Class<R> rClass, Class<D> daoClass) {
+    private <R extends BaseRecord, D extends Save<R>> void save(R object, Class<R> rClass, Class<D> daoClass) {
 
         String rClassName = rClass.getSimpleName();
         String daoClassName = daoClass.getSimpleName();
@@ -105,7 +128,7 @@ public class DRLGDDao {
      * @param oozieJobRecord: record to be stored
      */
     
-    public void saveOozieJobRecord(OozieJobRecord oozieJobRecord) {
+    public void saveOozieJob(OozieJobRecord oozieJobRecord) {
 
         save(oozieJobRecord, OozieJobRecord.class, OozieJobDao.class);
     }
@@ -126,21 +149,21 @@ public class DRLGDDao {
      * @return provided RequestRecord with generated key
      */
 
-    public RequestRecord saveRequestRecord(RequestRecord requestRecord) {
+    public RequestRecord saveRequest(RequestRecord requestRecord) {
 
-        return saveObjectWithGeneratedKey(requestRecord, RequestRecord.class, RequestDao.class);
+        return saveWithKeyGeneration(requestRecord, RequestRecord.class, RequestDao.class);
     }
 
     /**
-     * Retrieve OozieJobRecord with provided Oozie job id
+     * Retrieve an optional OozieJobRecord for given Oozie job id
      * @param workflowJobId: Oozie job id
-     * @return Optional.of(retrieved record) if a record is found, Optional.empty() otherwise
+     * @return non-empty optional if a record is found
      */
 
     public Optional<OozieJobRecord> findOozieJob(String workflowJobId) {
 
         return jdbi.withHandle(handle -> handle.attach(OozieJobDao.class)
-                .findById(workflowJobId));
+                .findByKey(workflowJobId));
     }
 
     /**
@@ -153,5 +176,16 @@ public class DRLGDDao {
 
         return jdbi.withHandle(handle -> handle.attach(OozieActionDao.class)
                 .findByLauncherId(workflowJobId));
+    }
+
+    /**
+     * Retrieve an optional RequestRecord for given request id
+     * @param key: request id
+     * @return non-empty optional if a RequestRecord with given key exists
+     */
+
+    public Optional<RequestRecord> findRequestRecord(Integer key) {
+
+        return findByKey(key, RequestRecord.class, RequestDao.class);
     }
 }
