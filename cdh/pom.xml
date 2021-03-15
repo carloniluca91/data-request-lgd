@@ -29,7 +29,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <excludes>
-                    <exclude>**.properties</exclude>
+                    <exclude>*.properties</exclude>
                 </excludes>
             </resource>
         </resources>
