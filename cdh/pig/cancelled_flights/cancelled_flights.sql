@@ -3,6 +3,8 @@ CREATE TABLE IF NOT EXISTS ${db}.${table} (
     origin_iata STRING COMMENT "Origin airport IATA code",
     origin_aiport STRING,
     origin_city STRING,
+    airline_iata STRING COMMENT "Airline IATA code",
+    airline_name STRING,
     destination_iata STRING COMMENT "Destination airport IATA code",
     destination_airport STRING,
     destination_city STRING,

@@ -91,7 +91,7 @@ public class DRLGDService {
             }
 
             jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_PATH, jobConfiguration.getParameter(oozieWfPath));
-            log.info("given properties for Oozie job {}: {}", workflowJobLabel.getId(), jobProperties.getPropertiesReport());
+            log.info("Properties for Oozie job {}: {}", workflowJobLabel.getId(), jobProperties.getPropertiesReport());
             String oozieWorkflowJobId = getOozieClientInstance().run(jobProperties);
             log.info("Workflow job {} submitted ({})", workflowJobLabel.getId(), oozieWorkflowJobId);
             return new Tuple2<>(true, oozieWorkflowJobId);

@@ -45,6 +45,7 @@
             <param>startDate=${startDate}</param>
             <param>endDate=${endDate}</param>
             <param>outputTable=${hiveT_cancelledFlights}</param>
+            <param>airlines=${hiveT_airlines}</param>
             <param>userName=${wf:user()}</param>
             <param>wfId=${wf:id()}</param>
         </pig>

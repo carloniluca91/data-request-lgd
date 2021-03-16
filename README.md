@@ -2,10 +2,6 @@
 
 ---
 
-`java-8` `spring-boot` `oozie` `pig` `postgresql` `jdbi`
-
----
-
 Spring Boot-based REST API for submitting and monitoring Oozie workflows
 
 Oozie workflows are submitted and monitored by means of `OozieClient` API. They consist of
