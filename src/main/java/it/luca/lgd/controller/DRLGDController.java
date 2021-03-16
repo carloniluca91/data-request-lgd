@@ -22,7 +22,7 @@ public class DRLGDController {
     private DRLGDService drlgdService;
 
     /**
-     * Run CANCELLED_FLIGHTS Oozie job
+     * Runs CANCELLED_FLIGHTS Oozie job
      * @param parameters: job parameters
      * @return RequestRecord reporting job submission outcome
      */
@@ -38,7 +38,7 @@ public class DRLGDController {
     }
 
     /**
-     * Return OozieJobRecord for provided Oozie job id
+     * Returns OozieJobRecord for given Oozie job id
      * @param workflowJobId: Oozie job id
      * @return OozieJobRecord
      */
@@ -54,7 +54,7 @@ public class DRLGDController {
     }
 
     /**
-     * Return a list of OozieActionRecords for provided Oozie job id
+     * Returns a list of OozieActionRecords for given Oozie job id
      * @param workflowJobId: Oozie job id
      * @return a list of OozieActionRecords
      */

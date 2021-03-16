@@ -65,7 +65,6 @@ class OozieActionRecordTest extends OozieRecordTest {
     @Test
     public void batchFrom() {
 
-
         List<OozieActionRecord> oozieActionRecords = OozieActionRecord.batchFrom(workflowJob);
         assertEquals(2, oozieActionRecords.size());
         OozieActionRecord firstAction = oozieActionRecords.get(0);

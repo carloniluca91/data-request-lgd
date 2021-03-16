@@ -20,10 +20,10 @@ public class JobConfiguration extends PropertiesConfiguration {
     }
 
     /**
-     * Get value of provided key
+     * Gets value of given key
      * @param workflowJobParameter: key
      * @return value of this key
-     * @throws IllegalWorkflowParameterException if provided key is not present
+     * @throws IllegalWorkflowParameterException if given key is not present
      */
 
     public String getParameter(WorkflowJobParameter workflowJobParameter) throws IllegalWorkflowParameterException {

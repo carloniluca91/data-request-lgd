@@ -14,7 +14,7 @@ public class JsonUtils {
     }
 
     /**
-     * Serialized input object to JSON string
+     * Serializes input object to JSON string
      * @param object: input object
      * @param <T>: input object type
      * @return JSON string (null if serialization fails)
@@ -35,7 +35,7 @@ public class JsonUtils {
     }
 
     /**
-     * Deserialize input JSON string to an object
+     * Deserializes input JSON string to an object
      * @param string: JSON string
      * @param tClass: return object class
      * @param <T> return object type

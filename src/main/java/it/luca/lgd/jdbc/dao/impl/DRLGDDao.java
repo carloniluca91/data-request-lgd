@@ -67,7 +67,7 @@ public class DRLGDDao {
     }
 
     /**
-     * Store provided list of records
+     * Stores given list of records
      * @param rList: list of records to be storeed
      * @param rClass: record's class
      * @param daoClass: class of DAO to be used
@@ -86,7 +86,7 @@ public class DRLGDDao {
     }
 
     /**
-     * Store provided record and return same record with generated key(s)
+     * Stores given record and return same record with generated key(s)
      * @param object: record to be storeed
      * @param rClass: record's class
      * @param daoClass: class of Dao to be used
@@ -106,7 +106,7 @@ public class DRLGDDao {
     }
 
     /**
-     * Store provided record and return same record with generated key(s)
+     * Stores given record and return same record with generated key(s)
      * @param object: record to be storeed
      * @param rClass: record's class
      * @param daoClass: class of Dao to be used
@@ -124,7 +124,7 @@ public class DRLGDDao {
     }
 
     /**
-     * Store provided OozieJobRecord
+     * Stores given OozieJobRecord
      * @param oozieJobRecord: record to be stored
      */
     
@@ -134,7 +134,7 @@ public class DRLGDDao {
     }
 
     /**
-     * Store provided list of OozieActionRecord
+     * Stores given list of OozieActionRecord
      * @param oozieActionRecords: records to be stored
      */
 
@@ -144,7 +144,7 @@ public class DRLGDDao {
     }
 
     /**
-     * Store provided RequestRecord
+     * Stores given RequestRecord
      * @param requestRecord: record to be stored
      * @return provided RequestRecord with generated key
      */
@@ -155,7 +155,7 @@ public class DRLGDDao {
     }
 
     /**
-     * Retrieve an optional OozieJobRecord for given Oozie job id
+     * Retrieves an optional OozieJobRecord for given Oozie job id
      * @param workflowJobId: Oozie job id
      * @return non-empty optional if a record is found
      */
@@ -167,7 +167,7 @@ public class DRLGDDao {
     }
 
     /**
-     * Retrieve OozieActionRecords of provided Oozie job id
+     * Retrieves OozieActionRecords for given Oozie job id
      * @param workflowJobId: Oozie job id
      * @return list of OozieActionRecords (empty if no record was retrieved)
      */
@@ -179,7 +179,7 @@ public class DRLGDDao {
     }
 
     /**
-     * Retrieve an optional RequestRecord for given request id
+     * Retrieves an optional RequestRecord for given request id
      * @param key: request id
      * @return non-empty optional if a RequestRecord with given key exists
      */

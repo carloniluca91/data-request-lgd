@@ -23,7 +23,7 @@ public class Java8Utils {
     }
 
     /**
-     * Applies function to input object if not null, or returns null
+     * Applies function to input object if not null
      * @param input: input object
      * @param trFunction: function to be applied to input object
      * @param <T>: input object type

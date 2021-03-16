@@ -9,7 +9,7 @@ import java.util.Properties;
 public class JobProperties extends Properties {
 
     /**
-     * Create JobProperties object containing all key-value pairs within input object
+     * Creates JobProperties object containing all key-value pairs of input object
      * @param propertiesConfiguration: input properties
      * @return object containing all key-value pairs within input object
      */
@@ -27,7 +27,7 @@ public class JobProperties extends Properties {
     }
 
     /**
-     * Add each key-value pair from provided map
+     * Adds each key-value pair of given map
      * @param parameterMap: input map
      */
 
@@ -36,7 +36,7 @@ public class JobProperties extends Properties {
     }
 
     /**
-     * Add new key-value pair
+     * Adds new key-value pair
      * @param workflowJobParameter: parameter (key)
      * @param value: value
      */
@@ -46,7 +46,7 @@ public class JobProperties extends Properties {
     }
 
     /**
-     * Return a string representation of all stored key-value pairs
+     * Returns a string representation of all stored key-value pairs
      * @return all key-value pairs
      */
 

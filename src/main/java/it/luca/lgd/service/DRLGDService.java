@@ -36,7 +36,7 @@ public class DRLGDService {
             WorkflowJob.Status.KILLED);
 
     /**
-     * Get OozieClient instance
+     * Gets OozieClient instance
      * @return OozieClient
      */
 
@@ -48,10 +48,10 @@ public class DRLGDService {
     }
 
     /**
-     * Retrieve WorkflowJob for provided workflow job id by means of OozieClien API
+     * Retrieves WorkflowJob for given Oozie job id job id by means of OozieClient API
      * @param workflowJobId: workflow job id
      * @return WorkflowJob
-     * @throws OozieClientException if provided workflow job id cannot be found
+     * @throws OozieClientException if given Oozie job id cannot be found
      */
 
     private WorkflowJob getWorkflowJob(String workflowJobId) throws OozieClientException {
@@ -65,7 +65,7 @@ public class DRLGDService {
     }
 
     /**
-     * Submit Oozie job labeled by workflowJobLabel using provided parameter map
+     * Submits Oozie job using given parameter map
      * @param workflowJobLabel: label of Oozie job to be submitted
      * @param parameters: parameters for current Oozie job
      * @return (true, generated Oozie job id) if job submission succeeded, (false, exception.getMessage()) if it failed
@@ -91,7 +91,7 @@ public class DRLGDService {
             }
 
             jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_PATH, jobConfiguration.getParameter(oozieWfPath));
-            log.info("Provided properties for Oozie job {}: {}", workflowJobLabel.getId(), jobProperties.getPropertiesReport());
+            log.info("given properties for Oozie job {}: {}", workflowJobLabel.getId(), jobProperties.getPropertiesReport());
             String oozieWorkflowJobId = getOozieClientInstance().run(jobProperties);
             log.info("Workflow job {} submitted ({})", workflowJobLabel.getId(), oozieWorkflowJobId);
             return new Tuple2<>(true, oozieWorkflowJobId);
@@ -102,7 +102,7 @@ public class DRLGDService {
     }
 
     /**
-     * Submit Oozie job labeled by workflowJobLabel using provided parameters
+     * Submits Oozie job using given parameters
      * @param workflowJobLabel: label of Oozie job to be submitted
      * @param jobParameters: parameters for current Oozie job
      * @param <T>: job parameters type (must extend class JobParameters)
@@ -115,7 +115,7 @@ public class DRLGDService {
         RequestRecord requestRecord;
         if (inputValidation.getT1()) {
 
-            // If provided input matches given criterium, run workflow job
+            // If given input matches given criterium, run workflow job
             log.info("Successsully validated input for Oozie job {}. Parameters: {}", workflowJobLabel.getId(), jobParameters.asString());
             Tuple2<Boolean, String> jobSubmissionOutcome = runWorkflowJob(workflowJobLabel, jobParameters.toMap());
             requestRecord = RequestRecord.from(workflowJobLabel, jobParameters, jobSubmissionOutcome);
@@ -131,9 +131,9 @@ public class DRLGDService {
     }
 
     /**
-     * Retrieve OozieJobRecord for provided workflow job id
+     * Retrieves OozieJobRecord for given Oozie job id
      * @param workflowJobId: workflow job id
-     * @return OozieJobRecord if provided id can be found by means of application DB or OozieClient API
+     * @return OozieJobRecord if given id can be found by means of application DB or OozieClient API
      */
 
     public OozieJobRecord findJob(String workflowJobId) {
@@ -165,9 +165,9 @@ public class DRLGDService {
     }
 
     /**
-     * Returns list of OozieActionRecord for Oozie job with provided id
+     * Returns list of OozieActionRecord for Oozie job with given id
      * @param workflowJobId: Oozie job id
-     * @return list of OozieActionRecord for Oozie job with provided id
+     * @return list of OozieActionRecord for Oozie job with given id
      */
 
     public List<OozieActionRecord> findActionsForJob(String workflowJobId) {
@@ -204,9 +204,9 @@ public class DRLGDService {
     }
 
     /***
-     * Save provided RequestRecord into application DB and get back same object with generated key
+     * Saves given RequestRecord into application DB and get back same object with generated key
      * @param requestRecord: RequestRecord to be saved into application DB
-     * @return same provided RequestRecord with generated id
+     * @return given RequestRecord with generated id
      */
 
     public RequestRecord saveRequestRecord(RequestRecord requestRecord) {
