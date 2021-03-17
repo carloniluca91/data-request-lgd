@@ -43,7 +43,7 @@ cancelled_flights = FOREACH flights_filtered GENERATE
     cancellation_reason;
 
 -- resolve origin by iata_code
-join_airport_cancelled_flights_origin = JOIN cancelled_flights BY origin_iata, airports_final BY iata_code;
+join_airport_cancelled_flights_origin = JOIN cancelled_flights BY origin_iata, airports_final BY iata_code USING 'replicated';
 cancelled_flights_origin = FOREACH join_airport_cancelled_flights_origin GENERATE
 
     cancelled_flights::scheduled_departure AS scheduled_departure,
@@ -55,7 +55,7 @@ cancelled_flights_origin = FOREACH join_airport_cancelled_flights_origin GENERAT
     cancelled_flights::cancellation_reason AS cancellation_reason;
 
 -- resolve destination by iata_code
-join_airport_cancelled_flights_destination = JOIN cancelled_flights_origin BY destination_iata, airports_final BY iata_code;
+join_airport_cancelled_flights_destination = JOIN cancelled_flights_origin BY destination_iata, airports_final BY iata_code USING 'replicated';
 cancelled_flights = FOREACH join_airport_cancelled_flights_destination GENERATE
 
     cancelled_flights_origin::scheduled_departure AS scheduled_departure,
@@ -76,7 +76,7 @@ airlines_subset = FOREACH airlines GENERATE
     iata_code,
     airline;
     
-cancelled_flights_join_airlines = JOIN cancelled_flights BY airline_iata, airlines_subset BY iata_code;
+cancelled_flights_join_airlines = JOIN cancelled_flights BY airline_iata, airlines_subset BY iata_code USING 'replicated';
 cancelled_flights_output = FOREACH cancelled_flights_join_airlines GENERATE
 
     cancelled_flights::scheduled_departure AS scheduled_departure,
