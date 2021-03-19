@@ -3,7 +3,7 @@ package pig.udf;
 import org.apache.pig.EvalFunc;
 import org.apache.pig.data.Tuple;
 
-public abstract class AbstractPigUDF<T> extends EvalFunc<T> {
+public abstract class PigEvalFunction<T> extends EvalFunc<T> {
 
     protected abstract T processTuple(Tuple tuple) throws Exception;
 

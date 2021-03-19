@@ -8,7 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static pig.udf.DecodeCancellationReason.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DecodeCancellationReasonTest extends AbstractPigUDFTest<String, String> {
+public class DecodeCancellationReasonTest extends PigEvalFunctionTest<String, String> {
 
     public DecodeCancellationReasonTest() {
         super(new DecodeCancellationReason(), new String[]{A, B, C, D, "E"});

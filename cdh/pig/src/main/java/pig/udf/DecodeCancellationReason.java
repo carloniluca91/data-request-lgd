@@ -2,7 +2,7 @@ package pig.udf;
 
 import org.apache.pig.data.Tuple;
 
-public class DecodeCancellationReason extends AbstractPigUDF<String> {
+public class DecodeCancellationReason extends PigEvalFunction<String> {
 
     // Cases
     public static final String A = "A";

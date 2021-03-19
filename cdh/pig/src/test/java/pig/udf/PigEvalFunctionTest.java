@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @AllArgsConstructor
-public abstract class AbstractPigUDFTest<T, R> {
+public abstract class PigEvalFunctionTest<T, R> {
 
     protected final Tuple tuple = Mockito.mock(Tuple.class);
-    private final AbstractPigUDF<R> tAbstractPigUDF;
+    private final PigEvalFunction<R> tAbstractPigUDF;
     protected final T[] inputValues;
 
     abstract protected void setMockingBehavior() throws ExecException;
