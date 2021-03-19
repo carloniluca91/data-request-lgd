@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CancelledFlightsParametersTest {
 
     @Test
-    public void areValid() {
+    public void validate() {
 
         BiFunction<String, String, Boolean> biFunction = (start, end) ->
                 new CancelledFlightsParameters(start, end, "ABE")

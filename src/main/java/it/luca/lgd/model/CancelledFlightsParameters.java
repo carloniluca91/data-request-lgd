@@ -5,16 +5,18 @@ import it.luca.lgd.utils.TimeUtils;
 import it.luca.lgd.utils.Tuple2;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.util.HashMap;
 import java.util.Map;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CancelledFlightsParameters implements JobParameters {
+public class CancelledFlightsParameters extends JobParameters {
 
     @NotBlank
     private String startDate;
@@ -27,11 +29,10 @@ public class CancelledFlightsParameters implements JobParameters {
 
     @Override
     public Tuple2<Boolean, String> validate() {
-
-        String DEFAULT_FORMAT = "yyyy-MM-dd";
-        return TimeUtils.isValidDate(startDate, DEFAULT_FORMAT) ?
-                TimeUtils.isValidDate(endDate, DEFAULT_FORMAT) ?
-                        TimeUtils.isBeforeOrEqual(startDate, endDate, DEFAULT_FORMAT) ?
+        
+        return TimeUtils.isValidDate(startDate, DEFAULT_DATE_FORMAT) ?
+                TimeUtils.isValidDate(endDate, DEFAULT_DATE_FORMAT) ?
+                        TimeUtils.isBeforeOrEqual(startDate, endDate, DEFAULT_DATE_FORMAT) ?
                                 new Tuple2<>(true, null) :
                                 // StartDate greater than endDate
                                 new Tuple2<>(false, String.format("%s (%s) is greater than %s (%s)",
@@ -40,11 +41,11 @@ public class CancelledFlightsParameters implements JobParameters {
 
                         // Invalid endDate
                         new Tuple2<>(false, String.format("Invalid %s (%s). It should follow format '%s'",
-                                WorkflowJobParameter.END_DATE.getName(), endDate, DEFAULT_FORMAT)) :
+                                WorkflowJobParameter.END_DATE.getName(), endDate, DEFAULT_DATE_FORMAT)) :
 
                 // Invalid startDate
                 new Tuple2<>(false, String.format("Invalid %s (%s). It should follow format '%s'",
-                        WorkflowJobParameter.START_DATE.getName(), startDate, DEFAULT_FORMAT));
+                        WorkflowJobParameter.START_DATE.getName(), startDate, DEFAULT_DATE_FORMAT));
     }
 
     @Override

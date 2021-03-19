@@ -67,4 +67,9 @@ public class TimeUtils {
 
         return orNull(localDateTime, java.sql.Timestamp::valueOf);
     }
+
+    public static String localDateToString(LocalDate localDate, String pattern) {
+
+        return orNull(localDate, l -> l.format(DateTimeFormatter.ofPattern(pattern)));
+    }
 }

@@ -18,9 +18,9 @@ public enum WorkflowJobParameter {
     // CANCELLED_FLIGHTS
     CANCELLED_FLIGHTS_APP_PATH("cancelledFlights_appPath"),
 
-    // FPASPERD
-    FPASPERD_WORKFLOW("fpasperd_workflow"),
-    FPASPERD_PIG("fpasperd_pig");
+    // MONTHLY_GROUPED_DELAYS
+    MONTHLY_GROUPED_DELAYS_APP_PATH("monthlyGroupedDelays_appPath"),
+    AIRLINE_IATAS("airlineIatas");
 
     private final String name;
 }

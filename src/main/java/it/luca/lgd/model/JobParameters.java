@@ -6,13 +6,15 @@ import it.luca.lgd.utils.Tuple2;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public interface JobParameters {
+public abstract class JobParameters {
 
-    Tuple2<Boolean, String> validate();
+    protected static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
-    Map<WorkflowJobParameter, String> toMap();
+    public abstract Tuple2<Boolean, String> validate();
 
-    default String asString() {
+    public abstract Map<WorkflowJobParameter, String> toMap();
+
+    public String asString() {
 
         return toMap().entrySet().stream()
                 .map(e -> String.format("%s = %s", e.getKey(), e.getValue()))
