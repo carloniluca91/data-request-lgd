@@ -15,13 +15,13 @@ class RequestRecordTest {
         String OK_MSG = "That's right", KO_MSG = "Try again";
 
         Tuple2<Boolean, String> trueTuple = new Tuple2<>(true, OK_MSG);
-        RequestRecord okResponse = RequestRecord.from(WorkflowJobLabel.FPASPERD, null, trueTuple);
+        RequestRecord okResponse = RequestRecord.from(WorkflowJobLabel.MONTHLY_GROUPED_DELAYS, null, trueTuple);
         assertEquals(okResponse.getJobSubmissionCode(), RequestRecord.OK);
         assertEquals(okResponse.getJobLauncherId(), OK_MSG);
         assertNull(okResponse.getJobSubmissionError());
 
         Tuple2<Boolean, String> falseTuple = new Tuple2<>(false, KO_MSG);
-        RequestRecord koResponse = RequestRecord.from(WorkflowJobLabel.FPASPERD, null, falseTuple);
+        RequestRecord koResponse = RequestRecord.from(WorkflowJobLabel.MONTHLY_GROUPED_DELAYS, null, falseTuple);
         assertEquals(koResponse.getJobSubmissionCode(), RequestRecord.KO);
         assertEquals(koResponse.getJobSubmissionError(), KO_MSG);
         assertNull(koResponse.getJobLauncherId());

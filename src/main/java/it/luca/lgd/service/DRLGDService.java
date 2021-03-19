@@ -84,7 +84,7 @@ public class DRLGDService {
                 case CANCELLED_FLIGHTS:
                     oozieWfPath = WorkflowJobParameter.CANCELLED_FLIGHTS_APP_PATH;
                     break;
-                case FPASPERD:
+                case MONTHLY_GROUPED_DELAYS:
                     oozieWfPath = WorkflowJobParameter.FPASPERD_WORKFLOW;
                     break;
                 default: throw new IllegalWorkflowIdException(workflowJobLabel);
