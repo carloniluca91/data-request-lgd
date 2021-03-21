@@ -72,39 +72,39 @@ flights_output = FOREACH flights_filter_gen_join_group_gen GENERATE
     flights_filter_gen::scheduled_departure AS scheduled_departure,
     flights_filter_gen::effective_departure AS effective_departure,
     flights_filter_gen::departure_delay AS departure_delay,
-    (double) (flights_filter_gen::departure_delay / flights_group_gen::total_departure_delay) AS departure_delay_weight,
+    ((float) flights_filter_gen::departure_delay / (float) flights_group_gen::total_departure_delay) AS departure_delay_weight,
     flights_group_gen::total_departure_delay AS total_departure_delay,
 
     -- arrival stats
     flights_filter_gen::scheduled_arrival AS scheduled_arrival,
     flights_filter_gen::effective_arrival AS effective_arrival,
     flights_filter_gen::arrival_delay AS arrival_delay,
-    (double) (flights_filter_gen::arrival_delay / flights_group_gen::total_arrival_delay) AS arrival_delay_weight,
+    ((float) flights_filter_gen::arrival_delay / (float) flights_group_gen::total_arrival_delay) AS arrival_delay_weight,
     flights_group_gen::total_arrival_delay AS total_arrival_delay,
 
     -- air_system stats
     flights_filter_gen::air_system_delay AS air_system_delay,
-    (double) (flights_filter_gen::air_system_delay / flights_group_gen::total_air_system_delay) AS air_system_delay_weight,
+    ((float) flights_filter_gen::air_system_delay / (float) flights_group_gen::total_air_system_delay) AS air_system_delay_weight,
     flights_group_gen::total_air_system_delay AS total_air_system_delay,
 
     -- security stats
     flights_filter_gen::security_delay AS security_delay,
-    (double) (flights_filter_gen::security_delay / flights_group_gen::total_security_delay) AS security_delay_weight,
+    ((float) flights_filter_gen::security_delay / (float) flights_group_gen::total_security_delay) AS security_delay_weight,
     flights_group_gen::total_security_delay AS total_security_delay,
 
     -- airline stats
     flights_filter_gen::airline_delay AS airline_delay,
-    (double) (flights_filter_gen::airline_delay / flights_group_gen::total_airline_delay) AS airline_delay_weight,
+    ((float) flights_filter_gen::airline_delay / (float) flights_group_gen::total_airline_delay) AS airline_delay_weight,
     flights_group_gen::total_airline_delay AS total_airline_delay,
 
     -- aircraft stats
     flights_filter_gen::late_aircraft_delay AS late_aircraft_delay,
-    (double) (flights_filter_gen::late_aircraft_delay / flights_group_gen::total_late_aircraft_delay) AS late_aircraft_delay_weight,
+    ((float) flights_filter_gen::late_aircraft_delay / (float) flights_group_gen::total_late_aircraft_delay) AS late_aircraft_delay_weight,
     flights_group_gen::total_late_aircraft_delay AS total_late_aircraft_delay,
 
     -- weather stats
     flights_filter_gen::weather_delay AS weather_delay,
-    (double) (flights_filter_gen::weather_delay / flights_group_gen::total_weather_delay) AS weather_delay_weight,
+    ((float) flights_filter_gen::weather_delay / (float) flights_group_gen::total_weather_delay) AS weather_delay_weight,
     flights_group_gen::total_weather_delay AS total_weather_delay,
 
     flights_group_gen::number_of_delayed_flights AS number_of_delayed_flights;
@@ -164,6 +164,6 @@ flights_output_unordered_gen = FOREACH flights_output_unordered GENERATE
     CurrentTime() AS ts_insert,
     ToString(CurrentTime(), 'yyyy-MM-dd') AS dt_insert;
 
-monthly_grouped_delays = ORDER flights_output_unordered_gen BY airline_iata_code, year_month, scheduled_departure;
+monthly_grouped_delays = ORDER flights_output_unordered_gen BY airline_iata_code, year_month, departure_delay_weight DESC, arrival_delay_weight DESC;
 
 STORE monthly_grouped_delays INTO '$db.$outputTable' USING org.apache.hive.hcatalog.pig.HCatStorer();
