@@ -1,14 +1,11 @@
 package pig.udf;
 
 import org.apache.pig.backend.executionengine.ExecException;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public class IsInTest extends PigEvalFunctionTest<String, Boolean> {
 
     private static final String FIRST = "first";

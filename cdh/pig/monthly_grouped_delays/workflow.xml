@@ -1,0 +1,78 @@
+<workflow-app name="${workflowName}" xmlns="uri:oozie:workflow:0.5">
+
+    <global>
+        <job-tracker>${jobTracker}</job-tracker>
+        <name-node>${nameNode}</name-node>
+        <configuration>
+            <property>
+                <name>oozie.action.sharelib.for.pig</name>
+                <value>pig,hcatalog</value>
+            </property>
+            <property>
+                <name>mapreduce.job.queue.name</name>
+                <value>${yarnQueue}</value>
+            </property>
+            <property>
+                <name>hive.metastore.uris</name>
+                <value>${hiveMetastoreUris}</value>
+            </property>
+        </configuration>
+    </global>
+
+    <!-- Oozie starting action -->
+    <start to="create_table"/>
+
+    <!-- Hive action (CREATE TABLE) -->
+    <action name="create_table">
+        <hive xmlns="uri:oozie:hive-action:0.5">
+            <script>lib/monthly_grouped_delays.sql</script>
+            <param>db=${hiveDb}</param>
+            <param>table=${hiveT_monthlyGroupedDelays}</param>
+        </hive>
+        <ok to="pig_job"/>
+        <error to="kill"/>
+    </action>
+
+    <!-- Pig action (PROCESS DATA) -->
+    <action name="pig_job">
+        <pig>
+            <script>lib/monthly_grouped_delays.pig</script>
+            <param>udfJarPath=${lgdApp_lib}/${udfJarName}</param>
+            <param>db=${hiveDb}</param>
+            <param>flights=${hiveT_flights}</param>
+            <param>startDate=${startDate}</param>
+            <param>endDate=${endDate}</param>
+            <param>airlineIatas=${airlineIatas}</param>
+            <param>outputTable=${hiveT_monthlyGroupedDelays}</param>
+            <param>airlines=${hiveT_airlines}</param>
+            <param>userName=${wf:user()}</param>
+            <param>wfId=${wf:id()}</param>
+        </pig>
+        <ok to="execute_impala_statements"/>
+        <error to="kill"/>
+    </action>
+
+    <!-- Java action (Impala) -->
+    <action name="execute_impala_statements">
+        <java>
+            <main-class>it.luca.lgd.impala.Main</main-class>
+            <arg>-u</arg>
+            <arg>${impalaUrl}</arg>
+            <arg>-s</arg>
+            <arg>"INVALIDATE METADATA ${hiveDb}.${hiveT_monthlyGroupedDelays}"</arg>
+            <file>${lgdApp_lib}/${impalaJarName}#${impalaJarName}</file>
+            <capture-output/>
+        </java>
+        <ok to="end"/>
+        <error to="kill"/>
+    </action>
+
+    <!-- Kill node (mandatory) -->
+    <kill name="kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+
+    <!-- End node (mandatory) -->
+    <end name="end"/>
+
+</workflow-app>

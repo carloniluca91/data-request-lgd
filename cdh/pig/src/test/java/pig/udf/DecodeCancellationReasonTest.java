@@ -1,13 +1,10 @@
 package pig.udf;
 
 import org.apache.pig.backend.executionengine.ExecException;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static pig.udf.DecodeCancellationReason.*;
 
-@RunWith(MockitoJUnitRunner.class)
 public class DecodeCancellationReasonTest extends PigEvalFunctionTest<String, String> {
 
     public DecodeCancellationReasonTest() {

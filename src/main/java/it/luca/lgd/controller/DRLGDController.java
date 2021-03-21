@@ -4,6 +4,7 @@ import it.luca.lgd.jdbc.record.OozieActionRecord;
 import it.luca.lgd.jdbc.record.OozieJobRecord;
 import it.luca.lgd.jdbc.record.RequestRecord;
 import it.luca.lgd.model.CancelledFlightsParameters;
+import it.luca.lgd.model.MonthlyGroupedDelaysParameters;
 import it.luca.lgd.oozie.WorkflowJobLabel;
 import it.luca.lgd.service.DRLGDService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +33,25 @@ public class DRLGDController {
 
         String workflowJobId = WorkflowJobLabel.CANCELLED_FLIGHTS.getId();
         log.info("Received a request for running Oozie job {}", workflowJobId);
-        RequestRecord RequestRecord = drlgdService.runOozieJob(WorkflowJobLabel.CANCELLED_FLIGHTS, parameters);
+        RequestRecord requestRecord = drlgdService.runOozieJob(WorkflowJobLabel.CANCELLED_FLIGHTS, parameters);
         log.info("Successfully retrieved {} for Oozie job {}", RequestRecord.class.getSimpleName(), workflowJobId);
-        return RequestRecord;
+        return requestRecord;
+    }
+
+    /**
+     * Runs MONTHLY_GROUPED_DELAYS Oozie job
+     * @param parameters: job parameters
+     * @return RequestRecord reporting job submission outcome
+     */
+
+    @PostMapping("submit/monthly_grouped_delays")
+    public RequestRecord runMonthlyGroupedDelaysJob(@Valid @RequestBody MonthlyGroupedDelaysParameters parameters) {
+
+        String workflowJobId = WorkflowJobLabel.MONTHLY_GROUPED_DELAYS.getId();
+        log.info("Received a request for running Oozie job {}", workflowJobId);
+        RequestRecord requestRecord = drlgdService.runOozieJob(WorkflowJobLabel.MONTHLY_GROUPED_DELAYS, parameters);
+        log.info("Successfully retrieved {} for Oozie job {}", RequestRecord.class.getSimpleName(), workflowJobId);
+        return requestRecord;
     }
 
     /**

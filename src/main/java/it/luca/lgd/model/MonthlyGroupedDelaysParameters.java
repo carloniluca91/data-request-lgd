@@ -6,6 +6,7 @@ import it.luca.lgd.utils.Tuple2;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class MonthlyGroupedDelaysParameters extends JobParameters {
     @NotBlank
     private String endMonth;
 
-    @NotBlank
+    @NotEmpty
     private List<String> airlines;
 
     @Override

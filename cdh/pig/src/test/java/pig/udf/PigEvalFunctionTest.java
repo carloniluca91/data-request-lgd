@@ -7,7 +7,7 @@ import org.apache.pig.data.Tuple;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 @Slf4j
 @AllArgsConstructor
