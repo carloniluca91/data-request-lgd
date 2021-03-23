@@ -47,7 +47,7 @@ public class DRLGDController {
      * @return RequestRecord reporting job submission outcome
      */
 
-    @PostMapping("submit/fligh_details")
+    @PostMapping("submit/flight_details")
     public RequestRecord runFlightDetails(@Valid @RequestBody FlightDetailsParameters parameters) {
         return runOozieJob(WorkflowJobLabel.FLIGHT_DETAILS, parameters);
     }
