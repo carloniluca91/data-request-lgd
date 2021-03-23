@@ -1,9 +1,11 @@
 package it.luca.lgd.model;
 
 import it.luca.lgd.oozie.WorkflowJobParameter;
-import it.luca.lgd.utils.TimeUtils;
 import it.luca.lgd.utils.Tuple2;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -11,8 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static it.luca.lgd.utils.TimeUtils.localDateToString;
-import static it.luca.lgd.utils.TimeUtils.toLocalDate;
+import static it.luca.lgd.utils.TimeUtils.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -36,22 +37,7 @@ public class MonthlyGroupedDelaysParameters extends JobParameters {
         String endDate = localDateToString(toLocalDate(String.format("%s-01", endMonth), DEFAULT_DATE_FORMAT)
                 .plusMonths(1).minusDays(1), DEFAULT_DATE_FORMAT);
 
-        return TimeUtils.isValidDate(startDate, DEFAULT_DATE_FORMAT) ?
-                TimeUtils.isValidDate(endDate, DEFAULT_DATE_FORMAT) ?
-                        TimeUtils.isBeforeOrEqual(startDate, endDate, DEFAULT_DATE_FORMAT) ?
-                                new Tuple2<>(true, null) :
-                                // StartDate greater than endDate
-                                new Tuple2<>(false, String.format("%s (%s) is greater than %s (%s)",
-                                        WorkflowJobParameter.START_DATE.getName(), startDate,
-                                        WorkflowJobParameter.END_DATE.getName(), endDate)) :
-
-                        // Invalid endDate
-                        new Tuple2<>(false, String.format("Invalid %s (%s). It should follow format '%s'",
-                                WorkflowJobParameter.END_DATE.getName(), endDate, DEFAULT_DATE_FORMAT)) :
-
-                // Invalid startDate
-                new Tuple2<>(false, String.format("Invalid %s (%s). It should follow format '%s'",
-                        WorkflowJobParameter.START_DATE.getName(), startDate, DEFAULT_DATE_FORMAT));
+        return isBothStartDateAndEndDateValid(startDate, endDate, DEFAULT_DATE_FORMAT);
     }
 
     @Override

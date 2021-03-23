@@ -81,6 +81,9 @@ public class DRLGDService {
             jobProperties.setParameter(WorkflowJobParameter.WORKFLOW_NAME, String.format("DataRequestLGD - %s", workflowJobLabel.getId()));
             WorkflowJobParameter oozieWfPath;
             switch (workflowJobLabel) {
+                case FLIGHT_DETAILS:
+                    oozieWfPath = WorkflowJobParameter.FLIGHT_DETAILS_APP_PATH;
+                    break;
                 case CANCELLED_FLIGHTS:
                     oozieWfPath = WorkflowJobParameter.CANCELLED_FLIGHTS_APP_PATH;
                     break;

@@ -25,9 +25,9 @@
     <!-- Hive action (CREATE TABLE) -->
     <action name="create_hive_table">
         <hive xmlns="uri:oozie:hive-action:0.5">
-            <script>lib/monthly_grouped_delays.sql</script>
+            <script>lib/flight_details.sql</script>
             <param>db=${hiveDb}</param>
-            <param>table=${hiveT_monthlyGroupedDelays}</param>
+            <param>table=${hiveT_flightDetails}</param>
         </hive>
         <ok to="pig_job"/>
         <error to="kill"/>
@@ -36,15 +36,15 @@
     <!-- Pig action (PROCESS DATA) -->
     <action name="pig_job">
         <pig>
-            <script>lib/monthly_grouped_delays.pig</script>
+            <script>lib/flight_details.pig</script>
             <param>udfJarPath=${lgdApp_lib}/${udfJarName}</param>
             <param>db=${hiveDb}</param>
             <param>flights=${hiveT_flights}</param>
             <param>startDate=${startDate}</param>
             <param>endDate=${endDate}</param>
-            <param>airlineIatas=${airlineIatas}</param>
-            <param>outputTable=${hiveT_monthlyGroupedDelays}</param>
             <param>airlines=${hiveT_airlines}</param>
+            <param>airports=${hiveT_airports}</param>
+            <param>outputTable=${hiveT_flightDetails}</param>
             <param>userName=${wf:user()}</param>
             <param>wfId=${wf:id()}</param>
         </pig>
@@ -59,7 +59,7 @@
             <arg>-u</arg>
             <arg>${impalaUrl}</arg>
             <arg>-s</arg>
-            <arg>"INVALIDATE METADATA ${hiveDb}.${hiveT_monthlyGroupedDelays}"</arg>
+            <arg>"INVALIDATE METADATA ${hiveDb}.${hiveT_flightDetails}"</arg>
             <file>${lgdApp_lib}/${impalaJarName}#${impalaJarName}</file>
             <capture-output/>
         </java>

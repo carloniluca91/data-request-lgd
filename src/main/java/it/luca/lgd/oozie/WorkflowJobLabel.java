@@ -1,6 +1,7 @@
 package it.luca.lgd.oozie;
 
 import it.luca.lgd.model.CancelledFlightsParameters;
+import it.luca.lgd.model.FlightDetailsParameters;
 import it.luca.lgd.model.JobParameters;
 import it.luca.lgd.model.MonthlyGroupedDelaysParameters;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.Map;
 @AllArgsConstructor
 public enum WorkflowJobLabel {
 
+    FLIGHT_DETAILS("FLIGHT_DETAILS", FlightDetailsParameters.class),
     CANCELLED_FLIGHTS("CANCELLED_FLIGHTS", CancelledFlightsParameters.class),
     MONTHLY_GROUPED_DELAYS("MONTHLY_GROUPED_DELAYS", MonthlyGroupedDelaysParameters.class);
 

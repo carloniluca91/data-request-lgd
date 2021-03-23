@@ -15,6 +15,9 @@ public enum WorkflowJobParameter {
     WORKFLOW_NAME("workflowName"),
     WORKFLOW_PATH(OozieClient.APP_PATH),
 
+    // FLIGHT_DETAILS
+    FLIGHT_DETAILS_APP_PATH("flightDetails_appPath"),
+
     // CANCELLED_FLIGHTS
     CANCELLED_FLIGHTS_APP_PATH("cancelledFlights_appPath"),
 

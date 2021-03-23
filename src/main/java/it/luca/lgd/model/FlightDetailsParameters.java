@@ -17,7 +17,7 @@ import static it.luca.lgd.utils.TimeUtils.isBothStartDateAndEndDateValid;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CancelledFlightsParameters extends JobParameters {
+public class FlightDetailsParameters extends JobParameters {
 
     @NotBlank
     private String startDate;
@@ -25,12 +25,9 @@ public class CancelledFlightsParameters extends JobParameters {
     @NotBlank
     private String endDate;
 
-    @NotBlank
-    private String iataCode;
-
     @Override
     public Tuple2<Boolean, String> validate() {
-        
+
         return isBothStartDateAndEndDateValid(startDate, endDate, DEFAULT_DATE_FORMAT);
     }
 
@@ -40,7 +37,6 @@ public class CancelledFlightsParameters extends JobParameters {
         return new HashMap<WorkflowJobParameter, String>() {{
             put(WorkflowJobParameter.START_DATE, startDate);
             put(WorkflowJobParameter.END_DATE, endDate);
-            put(WorkflowJobParameter.IATA_CODE, iataCode);
         }};
     }
 }

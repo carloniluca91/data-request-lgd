@@ -1,5 +1,7 @@
 package it.luca.lgd.utils;
 
+import it.luca.lgd.oozie.WorkflowJobParameter;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -12,6 +14,26 @@ import static it.luca.lgd.utils.Java8Utils.orNull;
  */
 
 public class TimeUtils {
+
+    public static Tuple2<Boolean, String> isBothStartDateAndEndDateValid(String startDate, String endDate, String format) {
+
+        return isValidDate(startDate, format) ?
+                isValidDate(endDate, format) ?
+                        isBeforeOrEqual(startDate, endDate, format) ?
+                                new Tuple2<>(true, null) :
+                                // StartDate greater than endDate
+                                new Tuple2<>(false, String.format("%s (%s) is greater than %s (%s)",
+                                        WorkflowJobParameter.START_DATE.getName(), startDate,
+                                        WorkflowJobParameter.END_DATE.getName(), endDate)) :
+
+                        // Invalid endDate
+                        new Tuple2<>(false, String.format("Invalid %s (%s). It should follow format '%s'",
+                                WorkflowJobParameter.END_DATE.getName(), endDate, format)) :
+
+                // Invalid startDate
+                new Tuple2<>(false, String.format("Invalid %s (%s). It should follow format '%s'",
+                        WorkflowJobParameter.START_DATE.getName(), startDate, format));
+    }
 
     public static Boolean isValidDate(String date, String format) {
 
